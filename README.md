@@ -8,7 +8,7 @@ FleteYa conecta a personas que necesitan transportar materiales (por ejemplo, al
 
 | Rol | Acceso | Descripción |
 |-----|--------|-------------|
-| **Propietarios / Admin** | Panel web con **su propio** inicio de sesión | Gestionan motoristas, viajes, tarifas y reportes |
+| **Propietarios / Admin** | Panel en computadora y celular, con **su propio** inicio de sesión | Gestionan motoristas, viajes, tarifas y reportes |
 | **Motoristas** | App móvil con **otro** inicio de sesión, aparte | Reciben y aceptan solicitudes de viaje en tiempo real |
 | **Clientes** | Link web, **sin registro** | Solicitan un flete de forma rápida y sencilla |
 

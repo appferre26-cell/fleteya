@@ -13,7 +13,7 @@ FleteYa es una plataforma bajo demanda que conecta a **clientes que necesitan tr
 
 | Usuario | Acceso | Rol |
 |---------|--------|-----|
-| **Propietario / Admin** | Panel web (login) | Gestiona toda la operación: motoristas, tarifas, reportes, viajes |
+| **Propietario / Admin** | Panel admin en computadora **y celular** (login) | Gestiona toda la operación: motoristas, tarifas, reportes, viajes |
 | **Motorista** | App móvil (login) | Recibe y acepta solicitudes de viaje en tiempo real |
 | **Cliente** | Link web (sin registro) | Solicita el viaje de forma rápida y simple |
 
@@ -23,7 +23,7 @@ Cada tipo de usuario tiene su **propia entrada y su propio perfil**. No comparte
 
 | Acceso | Dónde entra | Cómo se identifica | ¿Se registra? |
 |--------|-------------|--------------------|---------------|
-| **Propietarios** | Panel admin (web, dirección propia) | Correo + contraseña de propietario | No hay registro público: las cuentas las crean los propios propietarios |
+| **Propietarios** | Panel admin (computadora y celular, dirección propia) | Correo + contraseña de propietario | No hay registro público: las cuentas las crean los propios propietarios |
 | **Motoristas** | App del motorista | Teléfono + contraseña de motorista | No hay registro libre: el motorista lo da de alta un propietario y recibe sus credenciales |
 | **Clientes** | Link web para pedir viaje | Solo nombre y teléfono en cada pedido | **No se registra** — sin cuenta ni contraseña |
 
@@ -131,7 +131,14 @@ El cliente **no descarga ninguna app**. Recibe o busca el link de FleteYa y desd
 
 ---
 
-## 5. Flujo del Propietario / Admin (Panel Web)
+## 5. Flujo del Propietario / Admin (Panel en computadora y celular)
+
+El panel de propietarios funciona **en computadora y en el celular**:
+
+- **Computadora:** vista completa con menú lateral, mapa grande y tablas.
+- **Celular:** el mismo panel adaptado a pantalla pequeña, con barra de navegación inferior, tarjetas en lugar de tablas y botones grandes. Se puede **instalar como app** en la pantalla de inicio del teléfono (PWA), sin pasar por Play Store ni App Store, y recibir notificaciones (por ejemplo, "solicitud sin motorista" o "motorista pendiente de aprobación").
+- Es la **misma cuenta de propietario** en ambos dispositivos, y sigue separada de la app del motorista.
+- Si más adelante se prefiere una app nativa de propietarios en las tiendas, se puede construir sin cambiar esta estructura.
 
 ### Pantallas del panel admin
 
@@ -257,7 +264,7 @@ SOLICITADO → EN BÚSQUEDA DE MOTORISTA → MOTORISTA ASIGNADO
 |------------|-------------------|---------|
 | App móvil (motorista) | React Native / Flutter | Motorista |
 | Link web (cliente) | Página web responsive (PWA) | Cliente |
-| Panel admin | Web app | Propietario |
+| Panel admin | Web app adaptable a celular, instalable (PWA) | Propietario |
 
 ---
 
