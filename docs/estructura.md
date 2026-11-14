@@ -17,6 +17,20 @@ FleteYa es una plataforma bajo demanda que conecta a **clientes que necesitan tr
 | **Motorista** | App móvil (login) | Recibe y acepta solicitudes de viaje en tiempo real |
 | **Cliente** | Link web (sin registro) | Solicita el viaje de forma rápida y simple |
 
+### 2.1 Accesos separados (regla fija)
+
+Cada tipo de usuario tiene su **propia entrada y su propio perfil**. No comparten pantalla de inicio de sesión ni cuentas.
+
+| Acceso | Dónde entra | Cómo se identifica | ¿Se registra? |
+|--------|-------------|--------------------|---------------|
+| **Propietarios** | Panel admin (web, dirección propia) | Correo + contraseña de propietario | No hay registro público: las cuentas las crean los propios propietarios |
+| **Motoristas** | App del motorista | Teléfono + contraseña de motorista | No hay registro libre: el motorista lo da de alta un propietario y recibe sus credenciales |
+| **Clientes** | Link web para pedir viaje | Solo nombre y teléfono en cada pedido | **No se registra** — sin cuenta ni contraseña |
+
+- Una cuenta de motorista **no puede** entrar al panel de propietarios, y una de propietario no se usa en la app del motorista.
+- Son perfiles diferentes: el perfil del propietario guarda permisos de administración; el del motorista guarda vehículo, documentos, calificación y ganancias.
+- Al cliente se le reconoce por su número de teléfono para ver su historial, pero nunca crea una cuenta.
+
 ---
 
 ## 3. Flujo del Cliente (vía Link Web)
