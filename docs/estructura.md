@@ -27,6 +27,7 @@ Cada tipo de usuario tiene su **propia entrada y su propio perfil**. No comparte
 | **Motoristas** | App del motorista | Teléfono + contraseña de motorista | No hay registro libre: el motorista lo da de alta un propietario y recibe sus credenciales |
 | **Clientes** | Link web para pedir viaje | Solo nombre y teléfono en cada pedido | **No se registra** — sin cuenta ni contraseña |
 
+- **Decisión: dos apps separadas (Opción A).** La app **FleteYa Motorista** solo tiene el inicio de sesión de motoristas; el **panel de propietarios** es otra app aparte, con su propio inicio de sesión, que se abre en la computadora o se instala en el celular desde su link. Los motoristas no ven ningún botón ni acceso a la parte de propietarios.
 - Una cuenta de motorista **no puede** entrar al panel de propietarios, y una de propietario no se usa en la app del motorista.
 - Son perfiles diferentes: el perfil del propietario guarda permisos de administración; el del motorista guarda vehículo, documentos, calificación y ganancias.
 - Al cliente se le reconoce por su número de teléfono para ver su historial, pero nunca crea una cuenta.
