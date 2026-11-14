@@ -8,9 +8,11 @@ FleteYa conecta a personas que necesitan transportar materiales (por ejemplo, al
 
 | Rol | Acceso | Descripción |
 |-----|--------|-------------|
-| **Propietarios / Admin** | Panel web con inicio de sesión | Gestionan motoristas, viajes, tarifas y reportes |
-| **Motoristas** | App móvil con inicio de sesión | Reciben y aceptan solicitudes de viaje en tiempo real |
-| **Clientes** | Link web (sin descargar app) | Solicitan un flete de forma rápida y sencilla |
+| **Propietarios / Admin** | Panel web con **su propio** inicio de sesión | Gestionan motoristas, viajes, tarifas y reportes |
+| **Motoristas** | App móvil con **otro** inicio de sesión, aparte | Reciben y aceptan solicitudes de viaje en tiempo real |
+| **Clientes** | Link web, **sin registro** | Solicitan un flete de forma rápida y sencilla |
+
+> Propietarios y motoristas tienen perfiles e inicios de sesión separados. El cliente no crea cuenta.
 
 ## 🛠️ Tecnologías (propuestas)
 
