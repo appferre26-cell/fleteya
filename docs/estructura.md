@@ -52,7 +52,6 @@ El cliente **no descarga ninguna app**. Recibe o busca el link de FleteYa y desd
 - Punto de destino (mapa o dirección escrita)
 - Tipo de carga: `Materiales de construcción / Muebles / Mudanza / Mercadería / Otro`
 - Número aproximado de bultos o descripción breve
-- ¿Necesita ayuda para cargar? (sí/no) → *por ahora solo informativo para el motorista; si tendrá costo extra está por definir*
 
 **Paso 3 — Peso de la carga**
 - El cliente indica el peso aproximado (en toneladas o kg).
@@ -338,10 +337,18 @@ Se aceptan **desde pick-ups en adelante**: pick-ups, camiones livianos, medianos
 
 ### Vehículo propio, prestado o alquilado
 - El motorista **puede trabajar con un vehículo prestado o alquilado**; no es obligatorio que sea el dueño.
-- Igual se registran los datos del vehículo (placa, tarjeta de circulación y foto) para identificarlo en cada viaje.
+- Igual se registra la **tarjeta de circulación** del vehículo con el que trabaja (de ahí salen la placa y los datos del vehículo).
 
-#### Pregunta pendiente
-- Si el vehículo es prestado o alquilado, ¿se pide algún documento del dueño, por ejemplo una carta de autorización? *(recomendado: sí, una carta simple con copia del DUI del dueño)*
+### Documentos que se piden a cada motorista
+Únicamente estos tres:
+1. **DUI**
+2. **Licencia de conducir**
+3. **Tarjeta de circulación** del vehículo
+
+No se pide carta del dueño cuando el vehículo es prestado o alquilado.
+
+### Carga y descarga
+No existe la opción de "ayuda para cargar": normalmente los trabajadores de las ferreterías cargan el material. El precio no lleva ningún cargo extra por esto.
 
 ---
 
@@ -404,7 +411,7 @@ Una sección sencilla **"Puntos QR"**:
 
 1. **Zona de lanzamiento** — Lourdes, Colón. La zona se configura desde el panel antes de abrir el servicio.
 2. **Captación de motoristas** — Sin motoristas, no hay servicio. Plan de reclutamiento antes del lanzamiento.
-3. **Verificación de motoristas** — DUI, licencia vigente, tarjeta de circulación, foto del vehículo y **cuenta de banco** (obligatoria).
+3. **Verificación de motoristas** — Documentos: únicamente DUI, licencia y tarjeta de circulación. Además, el motorista debe tener cuenta de banco (para recargas en línea y pagos semanales).
 4. **QR en ferreterías** — Pedir permiso a las ferreterías de Lourdes para pegar el QR de FleteYa antes del lanzamiento.
 5. **Soporte al cliente** — WhatsApp Business o número directo para quejas/incidencias.
 6. **Sistema de calificaciones** — Protege tanto al cliente como al motorista.
