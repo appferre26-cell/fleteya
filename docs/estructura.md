@@ -308,9 +308,12 @@ Cliente paga en línea desde el link web
   - Historial de pagos
 - El motorista ve en su app cuánto tiene acumulado para su próximo pago semanal.
 
-#### Preguntas pendientes
-- ¿Qué día de la semana se paga a los motoristas? *(ej. todos los lunes, con el corte del domingo)*
-- Al pagar los viajes en línea, ¿se transfiere el monto completo? *(recomendado: sí, porque el 10% ya se descuenta de los créditos)*
+#### Calendario y monto del pago
+- **Corte:** domingo. Se suman los viajes pagados en línea de lunes a domingo.
+- **Día de pago:** lunes.
+- **Monto:** se transfiere **completo** lo que le corresponde al motorista por esos viajes. No se descuenta nada, porque el 10% ya sale de sus créditos.
+
+*(Decisión vigente por ahora; se puede cambiar más adelante.)*
 
 ---
 
