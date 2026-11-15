@@ -215,9 +215,13 @@ SOLICITADO → EN BÚSQUEDA DE MOTORISTA → MOTORISTA ASIGNADO
 |----------|-------|
 | Precio por tonelada | $10.00 |
 | Distancia incluida | 5 km a la redonda desde el punto de salida |
+| **Tarifa mínima** | **$10.00** (los motoristas no hacen viajes por menos) |
 | Distancia adicional | Negociable entre motorista y cliente (ver abajo) |
 
-**Ejemplo:** Un cliente lleva 500 kg a 3 km → paga $5.00 (media tonelada, dentro de los 5 km incluidos).
+**Ejemplos (dentro de los 5 km):**
+- 300 kg → paga $10.00 (se aplica la tarifa mínima)
+- 1 tonelada → paga $10.00
+- 2 toneladas → paga $20.00
 
 ### Distancia mayor a 5 km — Modelo InDrive
 
@@ -229,11 +233,6 @@ Cuando el destino está a más de 5 km del punto de salida:
 4. Solo cuando ambos están de acuerdo se confirma el viaje.
 
 > Este mecanismo protege al motorista en viajes largos sin que FleteYa tenga que definir tarifas por zona.
-
-### Preguntas pendientes sobre tarifas
-- **¿$10 por tonelada es el precio para cualquier peso hasta 1 ton, o se cobra proporcional?**
-  Ejemplo: ¿500 kg paga $5 o paga $10?
-- ¿Habrá tarifa mínima (por ejemplo $3 aunque el peso sea muy poco)?
 
 ---
 
@@ -253,7 +252,9 @@ El motorista trabaja con un **saldo de créditos prepagados**. FleteYa gana de d
 | Semanal | $20.00 |
 | Mensual | $60.00 |
 
-El motorista recarga antes de poder recibir viajes.
+El motorista recarga antes de poder recibir viajes. **Las recargas son solo en línea** (desde la app del motorista, con el mismo proveedor de pagos que se elija para los clientes).
+
+> **Requisito:** todo motorista debe tener **cuenta de banco** para poder recargar créditos y recibir los pagos en línea de los clientes.
 
 #### 2. Comisión por viaje
 
@@ -277,8 +278,7 @@ Motorista recarga ($20 semana o $60 mes)
 
 #### Preguntas pendientes sobre créditos
 - ¿Qué pasa si el motorista tiene $0.80 en créditos y llega un viaje de $10 (que descontaría $1.00)? ¿Se bloquea antes de aceptar ese viaje?
-- ¿El motorista puede ver en su app cuántos créditos le quedan en tiempo real?
-- ¿Las recargas serán en línea, en efectivo o las dos opciones?
+- ¿El motorista puede ver en su app cuántos créditos le quedan en tiempo real? *(recomendado: sí)*
 
 ---
 
@@ -351,7 +351,7 @@ Una sección sencilla **"Puntos QR"**:
 
 1. **Zona de lanzamiento** — Lourdes, Colón. La zona se configura desde el panel antes de abrir el servicio.
 2. **Captación de motoristas** — Sin motoristas, no hay servicio. Plan de reclutamiento antes del lanzamiento.
-3. **Verificación de motoristas** — DUI, licencia vigente, tarjeta de circulación, foto del vehículo.
+3. **Verificación de motoristas** — DUI, licencia vigente, tarjeta de circulación, foto del vehículo y **cuenta de banco** (obligatoria).
 4. **QR en ferreterías** — Pedir permiso a las ferreterías de Lourdes para pegar el QR de FleteYa antes del lanzamiento.
 5. **Soporte al cliente** — WhatsApp Business o número directo para quejas/incidencias.
 6. **Sistema de calificaciones** — Protege tanto al cliente como al motorista.
