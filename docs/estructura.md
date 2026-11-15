@@ -52,16 +52,13 @@ El cliente **no descarga ninguna app**. Recibe o busca el link de FleteYa y desd
 - Punto de destino (mapa o dirección escrita)
 - Tipo de carga: `Materiales de construcción / Muebles / Mudanza / Mercadería / Otro`
 - Número aproximado de bultos o descripción breve
-- ¿Necesita ayuda para cargar? (sí/no) → esto afecta la tarifa
 
-**Paso 3 — Selección de vehículo**
-- Pick-up estándar (hasta 500 kg)
-- Camión pequeño (hasta 1 ton)
-- Camión mediano (hasta 2 ton)
-- *(Con foto ilustrativa de cada tipo y precio estimado)*
+**Paso 3 — Peso de la carga**
+- El cliente indica el peso aproximado (en toneladas o kg).
+- No elige vehículo: la app manda la solicitud solo a motoristas cuyo vehículo aguanta ese peso.
 
 **Paso 4 — Cotización estimada**
-- Precio calculado automáticamente según distancia + tipo de vehículo
+- Precio calculado automáticamente: $10 por tonelada, mínimo $10, dentro de 5 km. *(Más de 5 km: el motorista puede ofrecer otro precio, ver sección 7.)*
 - Tiempo estimado de llegada del motorista
 - Botón: **"Solicitar FleteYa"**
 
@@ -170,11 +167,11 @@ El panel de propietarios funciona **en computadora y en el celular**:
 - Exportar a Excel
 
 **Gestión de tarifas**
-- Precio base por tipo de vehículo
-- Precio por kilómetro
-- Recargo por ayuda con carga
-- Tarifa mínima
-- Comisión de FleteYa (% que retiene la plataforma)
+- Precio por tonelada (hoy $10, igual para todos los vehículos)
+- Tarifa mínima (hoy $10)
+- Distancia incluida (hoy 5 km)
+- Comisión de FleteYa descontada de créditos (hoy 10%)
+- Precio de las recargas (hoy $20 semanal / $60 mensual)
 
 **Clientes**
 - Historial de clientes (por número de teléfono)
@@ -317,13 +314,41 @@ Cliente paga en línea desde el link web
 
 ---
 
-## 9. Tipos de Vehículos Aceptados
+## 9. Vehículos y Motoristas
 
-| Tipo | Capacidad | Ideal para |
-|------|-----------|-----------|
-| Pick-up estándar | Hasta 500 kg | Materiales ligeros, compras de ferretería |
-| Camión liviano | Hasta 1 tonelada | Muebles, mudanzas pequeñas |
-| Camión mediano | Hasta 2 toneladas | Mudanzas medianas, mercadería |
+### Vehículos aceptados
+Se aceptan **desde pick-ups en adelante**: pick-ups, camiones livianos, medianos y más grandes. No hay límite de tamaño por arriba.
+
+| Tipo (ejemplos) | Capacidad aproximada |
+|-----------------|---------------------|
+| Pick-up | Hasta ~1 tonelada |
+| Camión liviano | 1 – 3 toneladas |
+| Camión mediano o grande | Más de 3 toneladas |
+
+- Cuando el propietario da de alta al motorista, registra el tipo de vehículo y su **capacidad máxima en toneladas**.
+- La app solo le muestra al motorista los viajes cuyo peso cabe en su vehículo.
+
+### Mismo precio para todos los vehículos
+- El precio es **$10 por tonelada** para cualquier tipo de vehículo, con mínimo de $10. Así la app lo calcula sola.
+- El cliente indica el peso aproximado y la app calcula el precio automáticamente.
+
+### Motoristas para el lanzamiento
+- Se arranca con **alrededor de 10 motoristas** en Lourdes, Colón.
+
+### Vehículo propio, prestado o alquilado
+- El motorista **puede trabajar con un vehículo prestado o alquilado**; no es obligatorio que sea el dueño.
+- Igual se registra la **tarjeta de circulación** del vehículo con el que trabaja (de ahí salen la placa y los datos del vehículo).
+
+### Documentos que se piden a cada motorista
+Únicamente estos tres:
+1. **DUI**
+2. **Licencia de conducir**
+3. **Tarjeta de circulación** del vehículo
+
+No se pide carta del dueño cuando el vehículo es prestado o alquilado.
+
+### Carga y descarga
+No existe la opción de "ayuda para cargar": normalmente los trabajadores de las ferreterías cargan el material. El precio no lleva ningún cargo extra por esto.
 
 ---
 
@@ -386,7 +411,7 @@ Una sección sencilla **"Puntos QR"**:
 
 1. **Zona de lanzamiento** — Lourdes, Colón. La zona se configura desde el panel antes de abrir el servicio.
 2. **Captación de motoristas** — Sin motoristas, no hay servicio. Plan de reclutamiento antes del lanzamiento.
-3. **Verificación de motoristas** — DUI, licencia vigente, tarjeta de circulación, foto del vehículo y **cuenta de banco** (obligatoria).
+3. **Verificación de motoristas** — Documentos: únicamente DUI, licencia y tarjeta de circulación. Además, el motorista debe tener cuenta de banco (para recargas en línea y pagos semanales).
 4. **QR en ferreterías** — Pedir permiso a las ferreterías de Lourdes para pegar el QR de FleteYa antes del lanzamiento.
 5. **Soporte al cliente** — WhatsApp Business o número directo para quejas/incidencias.
 6. **Sistema de calificaciones** — Protege tanto al cliente como al motorista.
