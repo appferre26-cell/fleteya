@@ -50,11 +50,34 @@ El cliente **no descarga ninguna app**. Recibe o busca el link de FleteYa y desd
 **Paso 2 — Detalles del viaje**
 - Punto de recogida (mapa o dirección escrita)
 - Punto de destino (mapa o dirección escrita)
-- Tipo de carga: `Materiales de construcción / Muebles / Mudanza / Mercadería / Otro`
-- Número aproximado de bultos o descripción breve
 
-**Paso 3 — Peso de la carga**
-- El cliente indica el peso aproximado (en toneladas o kg).
+**Paso 3 — ¿Qué vas a llevar? (lista detallada) — PROPUESTA, por confirmar**
+
+El cliente arma una lista de lo que lleva, eligiendo de un catálogo de materiales comunes y poniendo la cantidad. **La app suma el peso sola** y calcula el precio. El cliente no tiene que adivinar cuántos kilos lleva.
+
+| Material (ejemplos) | Peso aproximado por unidad |
+|---------------------|---------------------------|
+| Bolsa de cemento | 42.5 kg |
+| Bloque de concreto 15 cm | ~13 kg |
+| Varilla de hierro 3/8" (6 m) | ~3.4 kg |
+| Varilla de hierro 1/2" (6 m) | ~6 kg |
+| Metro cúbico de arena | ~1.5 ton |
+| Metro cúbico de grava | ~1.6 ton |
+| Lámina de zinc | ~6 kg |
+
+*(Los pesos son aproximados: se revisan y ajustan desde el panel de propietarios, en **Configuración → Catálogo de materiales**, sin tocar código. Ahí también se pueden agregar o quitar materiales.)*
+
+Ejemplo de lo que ve el cliente:
+```
+10  × Bolsa de cemento        425 kg
+50  × Bloque 15 cm            650 kg
+10  × Varilla 3/8"             34 kg
+-----------------------------------
+Peso estimado:            1,109 kg (≈ 1.1 ton)
+```
+
+- Opción **"Otro"**: si lo que lleva no está en el catálogo, escribe qué es y su peso aproximado.
+- Campo opcional de nota (ej. "son varillas largas").
 - No elige vehículo: la app manda la solicitud solo a motoristas cuyo vehículo aguanta ese peso.
 
 **Paso 4 — Cotización estimada**
@@ -102,7 +125,7 @@ El cliente **no descarga ninguna app**. Recibe o busca el link de FleteYa y desd
 **Solicitud entrante** *(notificación + pantalla emergente)*
 - Nombre del cliente
 - Punto de recogida y destino en el mapa
-- Tipo de carga y descripción
+- **Lista detallada de lo que lleva el cliente** (material y cantidad) y **peso total estimado**
 - Distancia total del viaje
 - Precio del viaje
 - Tiempo límite para aceptar (ej. 30 segundos)
@@ -219,6 +242,11 @@ SOLICITADO → EN BÚSQUEDA DE MOTORISTA → MOTORISTA ASIGNADO
 - 300 kg → paga $10.00 (se aplica la tarifa mínima)
 - 1 tonelada → paga $10.00
 - 2 toneladas → paga $20.00
+
+### Cómo se calcula el peso
+El peso sale de la lista detallada del cliente (ver sección 3, paso 3). El motorista ve esa misma lista en la solicitud, así sabe qué va a cargar antes de aceptar.
+
+> **Por definir:** si el peso da, por ejemplo, 1.3 ton, ¿se cobran $13 (proporcional) o $20 (se redondea a la tonelada completa)?
 
 ### Distancia mayor a 5 km — Modelo InDrive
 
