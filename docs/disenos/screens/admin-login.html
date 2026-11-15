@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa Admin — Acceso de propietarios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+</head>
+<body class="w-[1440px] h-[900px] bg-[#121212] text-[#F5F5F5] font-sans antialiased flex">
+
+<!-- Panel de marca -->
+<aside data-design-id="admin-login-brand-a1b2c3" class="relative w-[640px] shrink-0 bg-[#171717] border-r border-[#2C2C2C] overflow-hidden flex flex-col justify-between p-14">
+  <svg viewBox="0 0 640 900" class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <rect width="640" height="900" fill="#17191c"/>
+    <rect x="60" y="430" width="140" height="90" rx="8" fill="#1a231d"/>
+    <rect x="420" y="620" width="120" height="110" rx="8" fill="#1a231d"/>
+    <g stroke="#202428" stroke-width="7" fill="none">
+      <path d="M0 400 H640"/><path d="M0 560 H640"/><path d="M0 760 H640"/>
+      <path d="M110 300 V900"/><path d="M300 300 V900"/><path d="M500 300 V900"/>
+    </g>
+    <path d="M-20 880 C 150 760, 220 640, 330 600 S 560 470, 680 380" stroke="#2a2e34" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <path d="M-20 880 C 150 760, 220 640, 330 600 S 560 470, 680 380" stroke="#FF6B00" stroke-opacity=".55" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <g fill="#FF6B00">
+      <circle cx="330" cy="600" r="7"/><circle cx="165" cy="745" r="6" fill-opacity=".75"/><circle cx="520" cy="470" r="6" fill-opacity=".75"/>
+    </g>
+    <g fill="#4CAF50" fill-opacity=".8"><circle cx="230" cy="470" r="5"/><circle cx="440" cy="800" r="5"/></g>
+    <rect width="640" height="900" fill="url(#fade)"/>
+    <defs>
+      <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#171717" stop-opacity="1"/>
+        <stop offset=".42" stop-color="#171717" stop-opacity=".92"/>
+        <stop offset=".7" stop-color="#171717" stop-opacity=".35"/>
+        <stop offset="1" stop-color="#171717" stop-opacity=".75"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="relative flex items-center gap-3">
+    <div class="h-11 w-11 rounded-xl bg-[#FF6B00] flex items-center justify-center"><i class="fa-solid fa-truck-fast text-lg text-[#F5F5F5]"></i></div>
+    <p class="text-2xl font-extrabold leading-none">Flete<span class="text-[#FF6B00]">Ya</span></p>
+  </div>
+
+  <div class="relative -mt-40">
+    <p class="text-xs font-semibold uppercase tracking-wider text-[#FF6B00]">Panel de propietarios</p>
+    <h2 class="mt-3 text-[40px] font-extrabold leading-[1.1] max-w-[460px]">Toda tu operación de fletes, en un solo lugar.</h2>
+    <ul class="mt-8 space-y-3.5 text-[15px] text-[#C8C8C8]">
+      <li class="flex items-center gap-3"><span class="h-8 w-8 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] flex items-center justify-center"><i class="fa-solid fa-map-location-dot text-sm text-[#FF6B00]"></i></span>Viajes y motoristas en tiempo real</li>
+      <li class="flex items-center gap-3"><span class="h-8 w-8 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] flex items-center justify-center"><i class="fa-solid fa-id-card-clip text-sm text-[#FF6B00]"></i></span>Alta y verificación de motoristas</li>
+      <li class="flex items-center gap-3"><span class="h-8 w-8 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] flex items-center justify-center"><i class="fa-solid fa-chart-line text-sm text-[#FF6B00]"></i></span>Tarifas, ingresos y reportes</li>
+    </ul>
+  </div>
+
+  <p class="relative text-xs text-[#A0A0A0]">© 2026 FleteYa · El Salvador</p>
+</aside>
+
+<!-- Formulario -->
+<main data-design-id="admin-login-form-wrap-b2c3d4" class="flex-1 flex items-center justify-center">
+  <div class="w-[420px]">
+    <span class="inline-flex items-center gap-2 rounded-full bg-[#FF6B00]/15 text-[#FF6B00] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5"><i class="fa-solid fa-shield-halved"></i>Solo propietarios</span>
+    <h1 class="mt-5 text-[30px] font-extrabold leading-tight">Acceso de propietarios</h1>
+    <p class="mt-2 text-sm text-[#A0A0A0]">Ingresa con tu cuenta de propietario para administrar FleteYa.</p>
+
+    <form data-design-id="admin-login-form-c3d4e5" class="mt-8 space-y-5">
+      <div>
+        <label for="email" class="block text-xs font-semibold text-[#A0A0A0] mb-1.5">Correo electrónico</label>
+        <div class="flex items-center h-12 rounded-lg bg-[#1E1E1E] border border-[#FF6B00] ring-4 ring-[#FF6B00]/10 px-3.5 gap-3">
+          <i class="fa-regular fa-envelope text-[#FF6B00] text-sm"></i>
+          <input id="email" type="email" value="gerencia@fleteya.sv" class="flex-1 bg-transparent text-sm outline-none">
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-baseline justify-between mb-1.5">
+          <label for="pwd" class="text-xs font-semibold text-[#A0A0A0]">Contraseña</label>
+          <a href="#" class="text-xs font-semibold text-[#FF6B00]">¿Olvidaste tu contraseña?</a>
+        </div>
+        <div class="flex items-center h-12 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] px-3.5 gap-3">
+          <i class="fa-solid fa-lock text-[#A0A0A0] text-sm"></i>
+          <input id="pwd" type="password" placeholder="Tu contraseña" class="flex-1 bg-transparent text-sm outline-none placeholder:text-[#6b6b6b]">
+          <button type="button" aria-label="Mostrar contraseña" class="text-[#A0A0A0]"><i class="fa-regular fa-eye"></i></button>
+        </div>
+      </div>
+
+      <label class="flex items-center gap-3 cursor-pointer select-none">
+        <span class="h-5 w-5 rounded-md border border-[#3a3a3a] bg-[#1E1E1E]"></span>
+        <span class="text-sm">Recordar este equipo por 30 días</span>
+      </label>
+
+      <button data-design-id="admin-login-submit-d4e5f6" type="button" class="w-full h-[52px] rounded-3xl bg-gradient-to-b from-[#FF7A1A] to-[#FF6B00] text-[#121212] text-[15px] font-extrabold flex items-center justify-center gap-2.5 shadow-[0_8px_24px_rgba(255,107,0,0.2)]">
+        Entrar al panel <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </form>
+
+    <div data-design-id="admin-login-notice-e5f6a7" class="mt-8 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-4 flex gap-3.5">
+      <i class="fa-solid fa-circle-info text-[#A0A0A0] mt-0.5"></i>
+      <div class="text-xs text-[#A0A0A0] leading-relaxed">
+        <p><span class="text-[#F5F5F5] font-semibold">No hay registro público.</span> Las cuentas de propietario las crea otro propietario desde <span class="text-[#F5F5F5]">Configuración → Administradores</span>.</p>
+        <p class="mt-2">¿Eres motorista? Entra desde la <span class="text-[#F5F5F5]">app FleteYa Motorista</span>; tu cuenta no funciona aquí.</p>
+      </div>
+    </div>
+
+    <p class="mt-6 flex items-center justify-center gap-2 text-[11px] text-[#A0A0A0]"><i class="fa-solid fa-lock text-[10px]"></i>Conexión cifrada · admin.fleteya.sv</p>
+  </div>
+</main>
+
+</body>
+</html>

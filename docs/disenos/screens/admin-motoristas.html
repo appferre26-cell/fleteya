@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa Admin — Motoristas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+</head>
+<body class="w-[1440px] bg-[#121212] text-[#F5F5F5] font-sans antialiased">
+<div class="flex">
+
+<!-- SIDEBAR -->
+<aside data-design-id="sidebar-admin-m1a2b3" class="w-64 shrink-0 bg-[#171717] border-r border-[#2C2C2C] min-h-[900px] flex flex-col">
+  <div class="flex items-center gap-2.5 px-6 h-[72px] border-b border-[#2C2C2C]">
+    <div class="h-9 w-9 rounded-[10px] bg-[#FF6B00] flex items-center justify-center"><i class="fa-solid fa-truck-fast text-[#F5F5F5]"></i></div>
+    <div>
+      <p class="text-lg font-extrabold leading-none">Flete<span class="text-[#FF6B00]">Ya</span></p>
+      <p class="text-[10px] text-[#A0A0A0] mt-1 uppercase tracking-wider font-semibold">Panel de propietarios</p>
+    </div>
+  </div>
+  <nav data-design-id="nav-admin-m2b3c4" class="px-3 py-5 flex-1">
+    <p class="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#6b6b6b] mb-2">Operación</p>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-gauge-high w-4"></i>Dashboard</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-route w-4"></i>Viajes<span class="ml-auto text-[10px] font-bold bg-[#FF6B00] text-[#121212] rounded-full px-1.5 py-0.5">3</span></a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg bg-[#FF6B00]/10 text-[#FF6B00] font-semibold text-sm"><i class="fa-solid fa-id-card w-4"></i>Motoristas<span class="ml-auto text-[10px] font-bold bg-[#262626] text-[#F5F5F5] rounded-full px-1.5 py-0.5">6</span></a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-users w-4"></i>Clientes</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-map-location-dot w-4"></i>Mapa en vivo</a>
+    <p class="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#6b6b6b] mt-6 mb-2">Negocio</p>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-tags w-4"></i>Tarifas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-wallet w-4"></i>Pagos a motoristas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-coins w-4"></i>Créditos y recargas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-qrcode w-4"></i>Puntos QR</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-chart-line w-4"></i>Reportes</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-gear w-4"></i>Configuración</a>
+  </nav>
+  <div class="mx-4 mb-4 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-4">
+    <p class="text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-link text-[#FF6B00]"></i>Link para clientes</p>
+    <p class="text-[11px] text-[#A0A0A0] mt-1">Compártelo en WhatsApp o en la ferretería para recibir pedidos.</p>
+    <div class="flex items-center mt-3 bg-[#121212] border border-[#2C2C2C] rounded-lg h-9 pl-3 pr-1">
+      <span class="text-xs text-[#F5F5F5] flex-1 truncate">fleteya.sv/pedir</span>
+      <button data-design-id="btn-copiar-link-m3c4d5" type="button" class="h-7 px-2.5 rounded-md bg-[#262626] text-[11px] font-semibold text-[#F5F5F5]"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+    </div>
+  </div>
+  <div class="flex items-center gap-3 px-5 py-4 border-t border-[#2C2C2C]">
+    <div class="h-9 w-9 rounded-full bg-[#3a3330] flex items-center justify-center text-xs font-bold">AG</div>
+    <div class="flex-1"><p class="text-sm font-semibold leading-tight">Andrés Guzmán</p><p class="text-[11px] text-[#A0A0A0]">Propietario</p></div>
+    <i class="fa-solid fa-right-from-bracket text-[#A0A0A0] text-sm"></i>
+  </div>
+</aside>
+
+<!-- CONTENIDO -->
+<div class="flex-1 min-w-0">
+  <header data-design-id="topbar-motoristas-m4d5e6" class="h-[72px] flex items-center gap-4 px-8 border-b border-[#2C2C2C]">
+    <div class="flex-1">
+      <p class="text-xs text-[#A0A0A0]">FleteYa <span class="mx-1">/</span> <span class="text-[#F5F5F5]">Motoristas</span></p>
+    </div>
+    <div class="flex items-center gap-2.5 w-80 h-10 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] px-3">
+      <i class="fa-solid fa-magnifying-glass text-[#A0A0A0] text-sm"></i>
+      <span class="text-sm text-[#A0A0A0]">Buscar viaje, motorista o cliente…</span>
+      <span class="ml-auto text-[10px] text-[#A0A0A0] border border-[#2C2C2C] rounded px-1.5">⌘K</span>
+    </div>
+    <button data-design-id="btn-notif-m5e6f7" type="button" class="relative h-10 w-10 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] flex items-center justify-center"><i class="fa-regular fa-bell text-[#A0A0A0]"></i><span class="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-[#FF6B00]"></span></button>
+  </header>
+
+  <main data-design-id="main-motoristas-m6f7a8" class="px-8 py-7">
+    <div class="flex items-end justify-between mb-6">
+      <div>
+        <h1 class="text-[28px] font-extrabold leading-tight">Gestión de motoristas</h1>
+        <p class="text-sm text-[#A0A0A0] mt-1">Aprueba nuevos registros, revisa el desempeño y controla quién puede recibir viajes.</p>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <button data-design-id="btn-exportar-m7a8b9" type="button" class="h-11 px-4 rounded-3xl border border-[#2C2C2C] text-sm font-semibold flex items-center gap-2"><i class="fa-solid fa-download text-[#A0A0A0]"></i>Exportar lista</button>
+        <button data-design-id="btn-agregar-m8b9c1" type="button" class="h-11 px-5 rounded-3xl bg-gradient-to-b from-[#FF7A1A] to-[#FF6B00] hover:to-[#E65C00] text-[#121212] text-sm font-extrabold flex items-center gap-2 shadow-[0_6px_18px_rgba(255,107,0,0.25)]"><i class="fa-solid fa-user-plus"></i>Agregar motorista</button>
+      </div>
+    </div>
+
+    <!-- Aviso pendientes -->
+    <section data-design-id="aviso-pendientes-m9c1d2" class="flex items-center gap-4 rounded-xl bg-[#FF6B00]/[0.07] border border-[#FF6B00]/30 px-5 py-4 mb-5">
+      <div class="h-10 w-10 rounded-lg bg-[#FF6B00]/15 flex items-center justify-center"><i class="fa-solid fa-file-circle-check text-[#FF6B00]"></i></div>
+      <div class="flex-1">
+        <p class="text-sm font-semibold">6 motoristas esperan aprobación</p>
+        <p class="text-xs text-[#A0A0A0] mt-0.5">Revisa DUI, licencia y tarjeta de circulación antes de activarlos para recibir viajes.</p>
+      </div>
+      <a href="#" class="text-sm font-semibold text-[#FF6B00]">Revisar documentos <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>
+    </section>
+
+    <section data-design-id="tabla-motoristas-m1d2e3" class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] overflow-hidden">
+      <!-- filtros -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-[#2C2C2C]">
+        <div class="flex items-center gap-1 rounded-lg bg-[#121212] border border-[#2C2C2C] p-1 text-sm">
+          <span class="h-8 px-3.5 flex items-center gap-2 rounded-md bg-[#262626] font-semibold">Todos <span class="text-[11px] text-[#A0A0A0]">52</span></span>
+          <span class="h-8 px-3.5 flex items-center gap-2 text-[#A0A0A0]">Activos <span class="text-[11px] font-semibold text-[#4CAF50]">37</span></span>
+          <span class="h-8 px-3.5 flex items-center gap-2 text-[#A0A0A0]">Inactivos <span class="text-[11px]">9</span></span>
+          <span class="h-8 px-3.5 flex items-center gap-2 text-[#A0A0A0]">Pendientes <span class="text-[11px] font-semibold text-[#FF6B00]">6</span></span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <div class="flex items-center gap-2 h-9 w-64 rounded-lg bg-[#121212] border border-[#2C2C2C] px-3">
+            <i class="fa-solid fa-magnifying-glass text-[#A0A0A0] text-xs"></i>
+            <span class="text-sm text-[#A0A0A0]">Nombre, teléfono o placa</span>
+          </div>
+          <div class="flex items-center gap-2 h-9 rounded-lg bg-[#121212] border border-[#2C2C2C] px-3 text-sm text-[#F5F5F5]">
+            <i class="fa-solid fa-truck text-[#A0A0A0] text-xs"></i>Todos los vehículos<i class="fa-solid fa-chevron-down text-[10px] text-[#A0A0A0] ml-1"></i>
+          </div>
+        </div>
+      </div>
+
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-[11px] uppercase tracking-wider text-[#A0A0A0] border-b border-[#2C2C2C]">
+            <th class="font-semibold pl-5 py-3 w-16">Foto</th>
+            <th class="font-semibold py-3">Nombre <i class="fa-solid fa-sort text-[9px] ml-1"></i></th>
+            <th class="font-semibold py-3">Teléfono</th>
+            <th class="font-semibold py-3">Vehículo</th>
+            <th class="font-semibold py-3">Estado</th>
+            <th class="font-semibold py-3 text-right">Viajes <i class="fa-solid fa-sort-down text-[9px] ml-1 text-[#FF6B00]"></i></th>
+            <th class="font-semibold py-3 pl-8">Calificación</th>
+            <th class="font-semibold pr-5 py-3 text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#2C2C2C]">
+          <!-- fila -->
+          <tr class="hover:bg-[#232323]">
+            <td class="pl-5 py-3"><div class="h-10 w-10 rounded-full bg-gradient-to-br from-[#4a3a2e] to-[#2e2621] flex items-center justify-center text-xs font-bold">JR</div></td>
+            <td class="py-3"><p class="font-semibold">José Ramírez</p><p class="text-[11px] text-[#A0A0A0]">Desde mar. 2026</p></td>
+            <td class="py-3 tabular-nums text-[#c8c8c8]">+503 7823-4591</td>
+            <td class="py-3"><p class="font-medium">Camión 1 ton</p><p class="text-[11px] text-[#A0A0A0]">Isuzu · C 482-519</p></td>
+            <td class="py-3"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#FF6B00]/15 text-[#FF6B00]"><span class="h-1.5 w-1.5 rounded-full bg-[#FF6B00]"></span>En viaje</span></td>
+            <td class="py-3 text-right font-semibold tabular-nums">312</td>
+            <td class="py-3 pl-8"><span class="font-semibold"><i class="fa-solid fa-star text-[#FF6B00] text-xs mr-1"></i>4.8</span></td>
+            <td class="pr-5 py-3"><div class="flex items-center justify-end gap-2"><button data-design-id="btn-ver-r1-n1a2b3" type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold flex items-center gap-1.5"><i class="fa-regular fa-eye text-[#A0A0A0]"></i>Ver detalle</button><button data-design-id="btn-susp-r1-n2b3c4" type="button" class="h-8 px-3 rounded-lg text-xs font-semibold text-[#F44336] hover:bg-[#F44336]/10 flex items-center gap-1.5"><i class="fa-solid fa-ban"></i>Suspender</button></div></td>
+          </tr>
+          <tr class="hover:bg-[#232323]">
+            <td class="pl-5 py-3"><div class="h-10 w-10 rounded-full bg-[#2e3a33] flex items-center justify-center text-xs font-bold">KH</div></td>
+            <td class="py-3"><p class="font-semibold">Kevin Hernández</p><p class="text-[11px] text-[#A0A0A0]">Desde ene. 2026</p></td>
+            <td class="py-3 tabular-nums text-[#c8c8c8]">+503 7612-0384</td>
+            <td class="py-3"><p class="font-medium">Camión 2 ton</p><p class="text-[11px] text-[#A0A0A0]">Hino · C 391-207</p></td>
+            <td class="py-3"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#4CAF50]/15 text-[#4CAF50]"><span class="h-1.5 w-1.5 rounded-full bg-[#4CAF50]"></span>Activo</span></td>
+            <td class="py-3 text-right font-semibold tabular-nums">287</td>
+            <td class="py-3 pl-8"><span class="font-semibold"><i class="fa-solid fa-star text-[#FF6B00] text-xs mr-1"></i>4.9</span></td>
+            <td class="pr-5 py-3"><div class="flex items-center justify-end gap-2"><button data-design-id="btn-ver-r2-n3c4d5" type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold flex items-center gap-1.5"><i class="fa-regular fa-eye text-[#A0A0A0]"></i>Ver detalle</button><button data-design-id="btn-susp-r2-n4d5e6" type="button" class="h-8 px-3 rounded-lg text-xs font-semibold text-[#F44336] hover:bg-[#F44336]/10 flex items-center gap-1.5"><i class="fa-solid fa-ban"></i>Suspender</button></div></td>
+          </tr>
+          <tr class="hover:bg-[#232323]">
+            <td class="pl-5 py-3"><div class="h-10 w-10 rounded-full bg-[#33303a] flex items-center justify-center text-xs font-bold">LM</div></td>
+            <td class="py-3"><p class="font-semibold">Luis Mejía</p><p class="text-[11px] text-[#A0A0A0]">Desde feb. 2026</p></td>
+            <td class="py-3 tabular-nums text-[#c8c8c8]">+503 7045-8812</td>
+            <td class="py-3"><p class="font-medium">Pick-up</p><p class="text-[11px] text-[#A0A0A0]">Toyota Hilux · P 715-640</p></td>
+            <td class="py-3"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#4CAF50]/15 text-[#4CAF50]"><span class="h-1.5 w-1.5 rounded-full bg-[#4CAF50]"></span>Activo</span></td>
+            <td class="py-3 text-right font-semibold tabular-nums">241</td>
+            <td class="py-3 pl-8"><span class="font-semibold"><i class="fa-solid fa-star text-[#FF6B00] text-xs mr-1"></i>4.7</span></td>
+            <td class="pr-5 py-3"><div class="flex items-center justify-end gap-2"><button data-design-id="btn-ver-r3-n5e6f7" type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold flex items-center gap-1.5"><i class="fa-regular fa-eye text-[#A0A0A0]"></i>Ver detalle</button><button data-design-id="btn-susp-r3-n6f7a8" type="button" class="h-8 px-3 rounded-lg text-xs font-semibold text-[#F44336] hover:bg-[#F44336]/10 flex items-center gap-1.5"><i class="fa-solid fa-ban"></i>Suspender</button></div></td>
+          </tr>
+          <tr class="hover:bg-[#232323]">
+            <td class="pl-5 py-3"><div class="h-10 w-10 rounded-full bg-[#3a2e33] flex items-center justify-center text-xs font-bold">AF</div></td>
+            <td class="py-3"><p class="font-semibold">Ana Flores</p><p class="text-[11px] text-[#A0A0A0]">Desde abr. 2026</p></td>
+            <td class="py-3 tabular-nums text-[#c8c8c8]">+503 7930-1176</td>
+            <td class="py-3"><p class="font-medium">Camión 1 ton</p><p class="text-[11px] text-[#A0A0A0]">Kia K2700 · C 228-903</p></td>
+            <td class="py-3"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#4CAF50]/15 text-[#4CAF50]"><span class="h-1.5 w-1.5 rounded-full bg-[#4CAF50]"></span>Activo</span></td>
+            <td class="py-3 text-right font-semibold tabular-nums">198</td>
+            <td class="py-3 pl-8"><span class="font-semibold"><i class="fa-solid fa-star text-[#FF6B00] text-xs mr-1"></i>4.6</span></td>
+            <td class="pr-5 py-3"><div class="flex items-center justify-end gap-2"><button data-design-id="btn-ver-r4-n7a8b9" type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold flex items-center gap-1.5"><i class="fa-regular fa-eye text-[#A0A0A0]"></i>Ver detalle</button><button data-design-id="btn-susp-r4-n8b9c1" type="button" class="h-8 px-3 rounded-lg text-xs font-semibold text-[#F44336] hover:bg-[#F44336]/10 flex items-center gap-1.5"><i class="fa-solid fa-ban"></i>Suspender</button></div></td>
+          </tr>
+          <tr class="hover:bg-[#232323]">
+            <td class="pl-5 py-3"><div class="h-10 w-10 rounded-full bg-[#2e333a] flex items-center justify-center text-xs font-bold">MO</div></td>
+            <td class="py-3"><p class="font-semibold">Mario Ortiz</p><p class="text-[11px] text-[#A0A0A0]">Desde may. 2026</p></td>
+            <td class="py-3 tabular-nums text-[#c8c8c8]">+503 7158-6620</td>
+            <td class="py-3"><p class="font-medium">Pick-up</p><p class="text-[11px] text-[#A0A0A0]">Nissan Frontier · P 604-381</p></td>
+            <td class="py-3"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#A0A0A0]/15 text-[#c8c8c8]"><span class="h-1.5 w-1.5 rounded-full bg-[#A0A0A0]"></span>Inactivo</span></td>
+            <td class="py-3 text-right font-semibold tabular-nums">134</td>
+            <td class="py-3 pl-8"><span class="font-semibold"><i class="fa-solid fa-star text-[#FF6B00] text-xs mr-1"></i>4.5</span></td>
+            <td class="pr-5 py-3"><div class="flex items-center justify-end gap-2"><button data-design-id="btn-ver-r5-n9c1d2" type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold flex items-center gap-1.5"><i class="fa-regular fa-eye text-[#A0A0A0]"></i>Ver detalle</button><button data-design-id="btn-susp-r5-p1d2e3" type="button" class="h-8 px-3 rounded-lg text-xs font-semibold text-[#F44336] hover:bg-[#F44336]/10 flex items-center gap-1.5"><i class="fa-solid fa-ban"></i>Suspender</button></div></td>
+          </tr>
+          <tr class="hover:bg-[#232323]">
+            <td class="pl-5 py-3"><div class="h-10 w-10 rounded-full bg-[#3a3330] flex items-center justify-center text-xs font-bold">CG</div></td>
+            <td class="py-3"><p class="font-semibold">Carlos Guevara</p><p class="text-[11px] text-[#A0A0A0]">Suspendido el 9 nov.</p></td>
+            <td class="py-3 tabular-nums text-[#c8c8c8]">+503 7287-4405</td>
+            <td class="py-3"><p class="font-medium">Camión 2 ton</p><p class="text-[11px] text-[#A0A0A0]">Mitsubishi Canter · C 517-062</p></td>
+            <td class="py-3"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#F44336]/15 text-[#F44336]"><span class="h-1.5 w-1.5 rounded-full bg-[#F44336]"></span>Suspendido</span></td>
+            <td class="py-3 text-right font-semibold tabular-nums">96</td>
+            <td class="py-3 pl-8"><span class="font-semibold"><i class="fa-solid fa-star text-[#FF6B00] text-xs mr-1"></i>3.9</span></td>
+            <td class="pr-5 py-3"><div class="flex items-center justify-end gap-2"><button data-design-id="btn-ver-r6-p2e3f4" type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold flex items-center gap-1.5"><i class="fa-regular fa-eye text-[#A0A0A0]"></i>Ver detalle</button><button data-design-id="btn-reactivar-r6-p3f4a5" type="button" class="h-8 px-3 rounded-lg text-xs font-semibold text-[#4CAF50] hover:bg-[#4CAF50]/10 flex items-center gap-1.5"><i class="fa-solid fa-rotate-left"></i>Reactivar</button></div></td>
+          </tr>
+          <tr class="hover:bg-[#232323]">
+            <td class="pl-5 py-3"><div class="h-10 w-10 rounded-full bg-[#262626] border border-dashed border-[#FF6B00]/60 flex items-center justify-center text-xs font-bold text-[#A0A0A0]">RP</div></td>
+            <td class="py-3"><p class="font-semibold">Roberto Pineda</p><p class="text-[11px] text-[#A0A0A0]">Registrado hace 2 días</p></td>
+            <td class="py-3 tabular-nums text-[#c8c8c8]">+503 7401-9953</td>
+            <td class="py-3"><p class="font-medium">Camión 1 ton</p><p class="text-[11px] text-[#A0A0A0]">Hyundai HD65 · C 663-118</p></td>
+            <td class="py-3"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#FF6B00]/10 text-[#FFA366] border border-[#FF6B00]/30"><i class="fa-regular fa-clock text-[10px]"></i>Pendiente</span></td>
+            <td class="py-3 text-right font-semibold tabular-nums text-[#A0A0A0]">—</td>
+            <td class="py-3 pl-8 text-[#A0A0A0]">Sin viajes</td>
+            <td class="pr-5 py-3"><div class="flex items-center justify-end gap-2"><button data-design-id="btn-revisar-r7-p4a5b6" type="button" class="h-8 px-3 rounded-lg border border-[#FF6B00]/50 text-[#FF6B00] text-xs font-semibold flex items-center gap-1.5"><i class="fa-solid fa-file-circle-check"></i>Revisar documentos</button></div></td>
+          </tr>
+          <tr class="hover:bg-[#232323]">
+            <td class="pl-5 py-3"><div class="h-10 w-10 rounded-full bg-[#262626] border border-dashed border-[#FF6B00]/60 flex items-center justify-center text-xs font-bold text-[#A0A0A0]">DA</div></td>
+            <td class="py-3"><p class="font-semibold">Daniel Aguilar</p><p class="text-[11px] text-[#A0A0A0]">Registrado hace 3 días</p></td>
+            <td class="py-3 tabular-nums text-[#c8c8c8]">+503 7566-2087</td>
+            <td class="py-3"><p class="font-medium">Pick-up</p><p class="text-[11px] text-[#A0A0A0]">Mazda BT-50 · P 382-774</p></td>
+            <td class="py-3"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#FF6B00]/10 text-[#FFA366] border border-[#FF6B00]/30"><i class="fa-regular fa-clock text-[10px]"></i>Pendiente</span></td>
+            <td class="py-3 text-right font-semibold tabular-nums text-[#A0A0A0]">—</td>
+            <td class="py-3 pl-8 text-[#A0A0A0]">Sin viajes</td>
+            <td class="pr-5 py-3"><div class="flex items-center justify-end gap-2"><button data-design-id="btn-revisar-r8-p5b6c7" type="button" class="h-8 px-3 rounded-lg border border-[#FF6B00]/50 text-[#FF6B00] text-xs font-semibold flex items-center gap-1.5"><i class="fa-solid fa-file-circle-check"></i>Revisar documentos</button></div></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <footer data-design-id="paginacion-m2e3f4" class="flex items-center justify-between px-5 py-4 border-t border-[#2C2C2C] text-sm">
+        <p class="text-[#A0A0A0]">Mostrando <span class="text-[#F5F5F5] font-semibold">1–8</span> de <span class="text-[#F5F5F5] font-semibold">52</span> motoristas</p>
+        <div class="flex items-center gap-1.5">
+          <span class="h-8 w-8 rounded-lg border border-[#2C2C2C] flex items-center justify-center text-[#6b6b6b]"><i class="fa-solid fa-chevron-left text-xs"></i></span>
+          <span class="h-8 w-8 rounded-lg bg-[#FF6B00]/15 text-[#FF6B00] font-semibold flex items-center justify-center">1</span>
+          <span class="h-8 w-8 rounded-lg flex items-center justify-center text-[#A0A0A0]">2</span>
+          <span class="h-8 w-8 rounded-lg flex items-center justify-center text-[#A0A0A0]">3</span>
+          <span class="text-[#A0A0A0] px-1">…</span>
+          <span class="h-8 w-8 rounded-lg flex items-center justify-center text-[#A0A0A0]">7</span>
+          <span class="h-8 w-8 rounded-lg border border-[#2C2C2C] flex items-center justify-center text-[#A0A0A0]"><i class="fa-solid fa-chevron-right text-xs"></i></span>
+        </div>
+      </footer>
+    </section>
+  </main>
+</div>
+</div>
+</body>
+</html>

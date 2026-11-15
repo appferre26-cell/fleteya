@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa Admin — Pagos a motoristas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+<style>@keyframes ping2{0%{transform:scale(.6);opacity:.6}100%{transform:scale(2.6);opacity:0}}.pulse{animation:ping2 2s ease-out infinite}</style>
+</head>
+<body class="w-[1440px] bg-[#121212] text-[#F5F5F5] font-sans antialiased">
+<div class="flex">
+
+<!-- SIDEBAR -->
+<aside data-design-id="sidebar-admin-a1b3c5" class="w-64 shrink-0 bg-[#171717] border-r border-[#2C2C2C] min-h-[900px] flex flex-col">
+  <div class="flex items-center gap-2.5 px-6 h-[72px] border-b border-[#2C2C2C]">
+    <div class="h-9 w-9 rounded-[10px] bg-[#FF6B00] flex items-center justify-center"><i class="fa-solid fa-truck-fast text-[#F5F5F5]"></i></div>
+    <div>
+      <p class="text-lg font-extrabold leading-none">Flete<span class="text-[#FF6B00]">Ya</span></p>
+      <p class="text-[10px] text-[#A0A0A0] mt-1 uppercase tracking-wider font-semibold">Panel de propietarios</p>
+    </div>
+  </div>
+  <nav data-design-id="nav-admin-b2c4d6" class="px-3 py-5 flex-1">
+    <p class="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#6b6b6b] mb-2">Operación</p>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-gauge-high w-4"></i>Dashboard</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-route w-4"></i>Viajes<span class="ml-auto text-[10px] font-bold bg-[#FF6B00] text-[#121212] rounded-full px-1.5 py-0.5">3</span></a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-id-card w-4"></i>Motoristas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-users w-4"></i>Clientes</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-map-location-dot w-4"></i>Mapa en vivo</a>
+    <p class="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#6b6b6b] mt-6 mb-2">Negocio</p>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-tags w-4"></i>Tarifas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg bg-[#FF6B00]/12 text-[#FF6B00] font-semibold text-sm bg-[#FF6B00]/10"><i class="fa-solid fa-wallet w-4"></i>Pagos a motoristas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-coins w-4"></i>Créditos y recargas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-qrcode w-4"></i>Puntos QR</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-chart-line w-4"></i>Reportes</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-gear w-4"></i>Configuración</a>
+  </nav>
+  <div class="mx-4 mb-4 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-4">
+    <p class="text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-link text-[#FF6B00]"></i>Link para clientes</p>
+    <p class="text-[11px] text-[#A0A0A0] mt-1">Compártelo en WhatsApp o en la ferretería para recibir pedidos.</p>
+    <div class="flex items-center mt-3 bg-[#121212] border border-[#2C2C2C] rounded-lg h-9 pl-3 pr-1">
+      <span class="text-xs text-[#F5F5F5] flex-1 truncate">fleteya.sv/pedir</span>
+      <button data-design-id="btn-copiar-link-c3d5e7" type="button" class="h-7 px-2.5 rounded-md bg-[#262626] text-[11px] font-semibold text-[#F5F5F5]"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+    </div>
+  </div>
+  <div class="flex items-center gap-3 px-5 py-4 border-t border-[#2C2C2C]">
+    <div class="h-9 w-9 rounded-full bg-[#3a3330] flex items-center justify-center text-xs font-bold">AG</div>
+    <div class="flex-1"><p class="text-sm font-semibold leading-tight">Andrés Guzmán</p><p class="text-[11px] text-[#A0A0A0]">Propietario</p></div>
+    <i class="fa-solid fa-right-from-bracket text-[#A0A0A0] text-sm"></i>
+  </div>
+</aside>
+
+<!-- CONTENIDO -->
+<div class="flex-1 min-w-0">
+  <header class="h-[72px] flex items-center gap-4 px-8 border-b border-[#2C2C2C]">
+    <div class="flex-1"><p class="text-xs text-[#A0A0A0]">FleteYa <span class="mx-1">/</span> <span class="text-[#F5F5F5]">Pagos a motoristas</span></p></div>
+    <div class="flex items-center gap-2.5 w-80 h-10 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] px-3">
+      <i class="fa-solid fa-magnifying-glass text-[#A0A0A0] text-sm"></i>
+      <span class="text-sm text-[#A0A0A0]">Buscar viaje, motorista o cliente…</span>
+    </div>
+    <button type="button" class="relative h-10 w-10 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] flex items-center justify-center"><i class="fa-regular fa-bell text-[#A0A0A0]"></i></button>
+  </header>
+  <main class="px-8 py-7">
+    <div class="flex items-end justify-between mb-6">
+      <div>
+        <h1 class="text-[28px] font-extrabold leading-tight">Pagos a motoristas</h1>
+        <p class="text-sm text-[#A0A0A0] mt-1">Viajes cobrados en línea · Semana del lunes 9 al domingo 15 de noviembre · Se paga el lunes 16</p>
+      </div>
+      <div class="flex items-center gap-2.5"><button type="button" class="h-11 px-4 rounded-3xl border border-[#2C2C2C] text-sm font-semibold flex items-center gap-2"><i class="fa-solid fa-download text-[#A0A0A0]"></i>Exportar</button></div>
+    </div>
+    <section class="grid grid-cols-4 gap-5">
+      <article class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-5">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-[#A0A0A0] font-medium">Total a pagar esta semana</p>
+          <div class="h-9 w-9 rounded-lg flex items-center justify-center" style="background:#FF6B001a"><i class="fa-solid fa-money-bill-transfer" style="color:#FF6B00"></i></div>
+        </div>
+        <p class="text-[30px] font-extrabold mt-2 leading-none tabular-nums">$185.00</p>
+        <p class="text-xs text-[#A0A0A0] mt-2">15 viajes pagados en línea</p>
+      </article>
+      <article class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-5">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-[#A0A0A0] font-medium">Motoristas a pagar</p>
+          <div class="h-9 w-9 rounded-lg flex items-center justify-center" style="background:#4CAF501a"><i class="fa-solid fa-id-card" style="color:#4CAF50"></i></div>
+        </div>
+        <p class="text-[30px] font-extrabold mt-2 leading-none tabular-nums">4</p>
+        <p class="text-xs text-[#A0A0A0] mt-2">3 pendientes · 1 transferido</p>
+      </article>
+      <article class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-5">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-[#A0A0A0] font-medium">Corte</p>
+          <div class="h-9 w-9 rounded-lg flex items-center justify-center" style="background:#FF6B001a"><i class="fa-solid fa-calendar-check" style="color:#FF6B00"></i></div>
+        </div>
+        <p class="text-[30px] font-extrabold mt-2 leading-none tabular-nums">Dom 15</p>
+        <p class="text-xs text-[#A0A0A0] mt-2">Incluye viajes de lunes a domingo</p>
+      </article>
+      <article class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-5">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-[#A0A0A0] font-medium">Fecha de pago</p>
+          <div class="h-9 w-9 rounded-lg flex items-center justify-center" style="background:#4CAF501a"><i class="fa-solid fa-building-columns" style="color:#4CAF50"></i></div>
+        </div>
+        <p class="text-[30px] font-extrabold mt-2 leading-none tabular-nums">Lun 16</p>
+        <p class="text-xs text-[#A0A0A0] mt-2">Transferencia por el monto completo</p>
+      </article>
+    </section>
+    <div class="mt-5 rounded-xl bg-[#262626] border border-[#2C2C2C] px-4 py-3 text-sm text-[#A0A0A0] flex items-center gap-2.5">
+      <i class="fa-solid fa-circle-info text-[#FF6B00]"></i>Los viajes en efectivo no aparecen aquí: el motorista los cobra directamente. La comisión del 10% se descuenta de sus créditos, no de este pago.
+    </div>
+    <section class="mt-5 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4">
+        <h2 class="text-base font-bold">Detalle por motorista</h2>
+        <div class="flex items-center rounded-lg border border-[#2C2C2C] bg-[#121212] p-1 text-xs">
+          <span class="px-3 h-7 flex items-center rounded-md bg-[#F5F5F5] text-[#121212] font-semibold">Esta semana</span>
+          <span class="px-3 h-7 flex items-center text-[#A0A0A0]">Semanas anteriores</span>
+        </div>
+      </div>
+      <table class="w-full text-sm">
+        <thead><tr><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] px-5 pb-3">Motorista</th><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] pb-3">Cuenta de banco</th><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] pb-3 !text-right">Viajes en línea</th><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] pb-3 !text-right">Monto</th><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] pb-3 pl-6">Estado</th><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] pr-5 pb-3 !text-right">Acción</th></tr></thead>
+        <tbody>
+            <tr class="border-t border-[#2C2C2C]">
+              <td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-full bg-[#3a3330] flex items-center justify-center text-xs font-bold shrink-0">JR</div><p class="font-semibold">José Ramírez</p></div></td>
+              <td class="py-3 text-[#A0A0A0]">Banco Agrícola ••• 4821</td>
+              <td class="py-3 text-right tabular-nums">6</td>
+              <td class="py-3 text-right font-bold tabular-nums">$78.40</td>
+              <td class="py-3 pl-6"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1" style="background:#FF6B0022;color:#FF6B00"><span class="h-1.5 w-1.5 rounded-full" style="background:#FF6B00"></span>Pendiente</span></td>
+              <td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#FF6B00]/50 text-[#FF6B00] text-xs font-semibold flex items-center gap-1.5 ml-auto"><i class="fa-solid fa-check"></i>Marcar transferido</button></td>
+            </tr>
+            <tr class="border-t border-[#2C2C2C]">
+              <td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-full bg-[#3a3330] flex items-center justify-center text-xs font-bold shrink-0">KH</div><p class="font-semibold">Kevin Hernández</p></div></td>
+              <td class="py-3 text-[#A0A0A0]">Banco Cuscatlán ••• 1907</td>
+              <td class="py-3 text-right tabular-nums">4</td>
+              <td class="py-3 text-right font-bold tabular-nums">$52.10</td>
+              <td class="py-3 pl-6"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1" style="background:#FF6B0022;color:#FF6B00"><span class="h-1.5 w-1.5 rounded-full" style="background:#FF6B00"></span>Pendiente</span></td>
+              <td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#FF6B00]/50 text-[#FF6B00] text-xs font-semibold flex items-center gap-1.5 ml-auto"><i class="fa-solid fa-check"></i>Marcar transferido</button></td>
+            </tr>
+            <tr class="border-t border-[#2C2C2C]">
+              <td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-full bg-[#3a3330] flex items-center justify-center text-xs font-bold shrink-0">AF</div><p class="font-semibold">Ana Flores</p></div></td>
+              <td class="py-3 text-[#A0A0A0]">Davivienda ••• 3365</td>
+              <td class="py-3 text-right tabular-nums">3</td>
+              <td class="py-3 text-right font-bold tabular-nums">$33.00</td>
+              <td class="py-3 pl-6"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1" style="background:#4CAF5022;color:#4CAF50"><span class="h-1.5 w-1.5 rounded-full" style="background:#4CAF50"></span>Transferido</span></td>
+              <td class="pr-5 py-3 text-right"><span class="text-xs text-[#A0A0A0]">Lun 16 nov · 8:15 a. m.</span></td>
+            </tr>
+            <tr class="border-t border-[#2C2C2C]">
+              <td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-full bg-[#3a3330] flex items-center justify-center text-xs font-bold shrink-0">LM</div><p class="font-semibold">Luis Mejía</p></div></td>
+              <td class="py-3 text-[#A0A0A0]">BAC ••• 7742</td>
+              <td class="py-3 text-right tabular-nums">2</td>
+              <td class="py-3 text-right font-bold tabular-nums">$21.50</td>
+              <td class="py-3 pl-6"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1" style="background:#FF6B0022;color:#FF6B00"><span class="h-1.5 w-1.5 rounded-full" style="background:#FF6B00"></span>Pendiente</span></td>
+              <td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#FF6B00]/50 text-[#FF6B00] text-xs font-semibold flex items-center gap-1.5 ml-auto"><i class="fa-solid fa-check"></i>Marcar transferido</button></td>
+            </tr>
+        </tbody>
+        <tfoot><tr class="border-t border-[#2C2C2C] bg-[#262626]"><td class="px-5 py-3 font-bold" colspan="2">Total</td><td class="py-3 text-right font-bold tabular-nums">15</td><td class="py-3 text-right font-extrabold text-[#FF6B00] tabular-nums">$185.00</td><td colspan="2"></td></tr></tfoot>
+      </table>
+    </section>
+  </main>
+</div>
+</div>
+</body>
+</html>

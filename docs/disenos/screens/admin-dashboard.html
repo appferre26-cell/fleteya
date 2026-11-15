@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa Admin — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+<style>@keyframes ping2{0%{transform:scale(.6);opacity:.6}100%{transform:scale(2.6);opacity:0}}.pulse{animation:ping2 2s ease-out infinite}</style>
+</head>
+<body class="w-[1440px] bg-[#121212] text-[#F5F5F5] font-sans antialiased">
+<div class="flex">
+
+<!-- SIDEBAR -->
+<aside data-design-id="sidebar-admin-a1b3c5" class="w-64 shrink-0 bg-[#171717] border-r border-[#2C2C2C] min-h-[900px] flex flex-col">
+  <div class="flex items-center gap-2.5 px-6 h-[72px] border-b border-[#2C2C2C]">
+    <div class="h-9 w-9 rounded-[10px] bg-[#FF6B00] flex items-center justify-center"><i class="fa-solid fa-truck-fast text-[#F5F5F5]"></i></div>
+    <div>
+      <p class="text-lg font-extrabold leading-none">Flete<span class="text-[#FF6B00]">Ya</span></p>
+      <p class="text-[10px] text-[#A0A0A0] mt-1 uppercase tracking-wider font-semibold">Panel de propietarios</p>
+    </div>
+  </div>
+  <nav data-design-id="nav-admin-b2c4d6" class="px-3 py-5 flex-1">
+    <p class="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#6b6b6b] mb-2">Operación</p>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg bg-[#FF6B00]/12 text-[#FF6B00] font-semibold text-sm bg-[#FF6B00]/10"><i class="fa-solid fa-gauge-high w-4"></i>Dashboard</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-route w-4"></i>Viajes<span class="ml-auto text-[10px] font-bold bg-[#FF6B00] text-[#121212] rounded-full px-1.5 py-0.5">3</span></a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-id-card w-4"></i>Motoristas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-users w-4"></i>Clientes</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-map-location-dot w-4"></i>Mapa en vivo</a>
+    <p class="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#6b6b6b] mt-6 mb-2">Negocio</p>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-tags w-4"></i>Tarifas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-wallet w-4"></i>Pagos a motoristas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-coins w-4"></i>Créditos y recargas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-qrcode w-4"></i>Puntos QR</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-chart-line w-4"></i>Reportes</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-gear w-4"></i>Configuración</a>
+  </nav>
+  <div class="mx-4 mb-4 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-4">
+    <p class="text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-link text-[#FF6B00]"></i>Link para clientes</p>
+    <p class="text-[11px] text-[#A0A0A0] mt-1">Compártelo en WhatsApp o en la ferretería para recibir pedidos.</p>
+    <div class="flex items-center mt-3 bg-[#121212] border border-[#2C2C2C] rounded-lg h-9 pl-3 pr-1">
+      <span class="text-xs text-[#F5F5F5] flex-1 truncate">fleteya.sv/pedir</span>
+      <button data-design-id="btn-copiar-link-c3d5e7" type="button" class="h-7 px-2.5 rounded-md bg-[#262626] text-[11px] font-semibold text-[#F5F5F5]"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+    </div>
+  </div>
+  <div class="flex items-center gap-3 px-5 py-4 border-t border-[#2C2C2C]">
+    <div class="h-9 w-9 rounded-full bg-[#3a3330] flex items-center justify-center text-xs font-bold">AG</div>
+    <div class="flex-1"><p class="text-sm font-semibold leading-tight">Andrés Guzmán</p><p class="text-[11px] text-[#A0A0A0]">Propietario</p></div>
+    <i class="fa-solid fa-right-from-bracket text-[#A0A0A0] text-sm"></i>
+  </div>
+</aside>
+
+<!-- CONTENIDO -->
+<div class="flex-1 min-w-0">
+  <header data-design-id="topbar-admin-d4e6f8" class="h-[72px] flex items-center gap-4 px-8 border-b border-[#2C2C2C]">
+    <div class="flex-1">
+      <p class="text-xs text-[#A0A0A0]">FleteYa <span class="mx-1">/</span> <span class="text-[#F5F5F5]">Dashboard</span></p>
+    </div>
+    <div class="flex items-center gap-2.5 w-80 h-10 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] px-3">
+      <i class="fa-solid fa-magnifying-glass text-[#A0A0A0] text-sm"></i>
+      <span class="text-sm text-[#A0A0A0]">Buscar viaje, motorista o cliente…</span>
+      <span class="ml-auto text-[10px] text-[#A0A0A0] border border-[#2C2C2C] rounded px-1.5">⌘K</span>
+    </div>
+    <button data-design-id="btn-notif-admin-e5f7a9" type="button" class="relative h-10 w-10 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] flex items-center justify-center"><i class="fa-regular fa-bell text-[#A0A0A0]"></i><span class="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-[#FF6B00]"></span></button>
+  </header>
+
+  <main data-design-id="main-admin-f6a8b1" class="px-8 py-7">
+    <div class="flex items-end justify-between mb-6">
+      <div>
+        <h1 class="text-[28px] font-extrabold leading-tight">Dashboard general</h1>
+        <p class="text-sm text-[#A0A0A0] mt-1">Sábado 14 de noviembre · Actualizado hace 12 segundos</p>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <div class="flex items-center rounded-lg border border-[#2C2C2C] bg-[#1E1E1E] p-1 text-sm">
+          <span class="px-3 h-8 flex items-center rounded-md bg-[#F5F5F5] text-[#121212] font-semibold">Hoy</span>
+          <span class="px-3 h-8 flex items-center text-[#A0A0A0]">7 días</span>
+          <span class="px-3 h-8 flex items-center text-[#A0A0A0]">30 días</span>
+        </div>
+        <button data-design-id="btn-exportar-a7b9c2" type="button" class="h-10 px-4 rounded-lg border border-[#2C2C2C] text-sm font-semibold text-[#F5F5F5] flex items-center gap-2"><i class="fa-solid fa-arrow-down-to-line fa-download text-[#A0A0A0]"></i>Exportar</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <section data-design-id="kpi-strip-b8c1d3" class="grid grid-cols-4 gap-5">
+      <article data-design-id="kpi-viajes-c9d2e4" class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-5">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-[#A0A0A0] font-medium">Viajes hoy</p>
+          <div class="h-9 w-9 rounded-lg bg-[#FF6B00]/12 bg-[#FF6B00]/10 flex items-center justify-center"><i class="fa-solid fa-route text-[#FF6B00]"></i></div>
+        </div>
+        <p class="text-[32px] font-extrabold mt-2 leading-none tabular-nums">148</p>
+        <p class="text-xs mt-2"><span class="text-[#4CAF50] font-semibold"><i class="fa-solid fa-arrow-trend-up mr-1"></i>+12.4%</span><span class="text-[#A0A0A0]"> vs. sábado pasado</span></p>
+      </article>
+      <article data-design-id="kpi-motoristas-d1e3f5" class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-5">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-[#A0A0A0] font-medium">Motoristas activos</p>
+          <div class="h-9 w-9 rounded-lg bg-[#4CAF50]/10 flex items-center justify-center"><i class="fa-solid fa-id-card text-[#4CAF50]"></i></div>
+        </div>
+        <p class="text-[32px] font-extrabold mt-2 leading-none tabular-nums">37<span class="text-base text-[#A0A0A0] font-semibold"> / 52</span></p>
+        <p class="text-xs mt-2"><span class="text-[#4CAF50] font-semibold"><i class="fa-solid fa-arrow-trend-up mr-1"></i>+5</span><span class="text-[#A0A0A0]"> · 22 en viaje, 15 libres</span></p>
+      </article>
+      <article data-design-id="kpi-ingresos-e2f4a6" class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-5">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-[#A0A0A0] font-medium">Ingresos del día</p>
+          <div class="h-9 w-9 rounded-lg bg-[#FF6B00]/10 flex items-center justify-center"><i class="fa-solid fa-sack-dollar text-[#FF6B00]"></i></div>
+        </div>
+        <p class="text-[32px] font-extrabold mt-2 leading-none tabular-nums">$1,284.50</p>
+        <p class="text-xs mt-2"><span class="text-[#4CAF50] font-semibold"><i class="fa-solid fa-arrow-trend-up mr-1"></i>+8.1%</span><span class="text-[#A0A0A0]"> · comisión 10% (de créditos): $128.45</span></p>
+      </article>
+      <article data-design-id="kpi-cancelados-f3a5b7" class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-5">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-[#A0A0A0] font-medium">Viajes cancelados</p>
+          <div class="h-9 w-9 rounded-lg bg-[#F44336]/10 flex items-center justify-center"><i class="fa-solid fa-ban text-[#F44336]"></i></div>
+        </div>
+        <p class="text-[32px] font-extrabold mt-2 leading-none tabular-nums">9</p>
+        <p class="text-xs mt-2"><span class="text-[#F44336] font-semibold"><i class="fa-solid fa-arrow-trend-up mr-1"></i>+2</span><span class="text-[#A0A0A0]"> · 6.1% del total</span></p>
+      </article>
+    </section>
+
+    <!-- Tabla + Mapa -->
+    <div class="grid grid-cols-12 gap-5 mt-5">
+      <section data-design-id="tabla-viajes-a4b6c8" class="col-span-7 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] overflow-hidden">
+        <div class="flex items-center justify-between px-5 h-16 border-b border-[#2C2C2C]">
+          <div>
+            <h2 class="text-base font-bold">Viajes recientes</h2>
+            <p class="text-xs text-[#A0A0A0]">Últimos 7 de 148 viajes de hoy</p>
+          </div>
+          <a href="#" class="text-sm font-semibold text-[#FF6B00]">Ver todos <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>
+        </div>
+        <table class="w-full text-sm whitespace-nowrap">
+          <thead>
+            <tr class="text-left text-[11px] uppercase tracking-wider text-[#A0A0A0] border-b border-[#2C2C2C]">
+              <th class="font-semibold px-5 py-3">Viaje</th>
+              <th class="font-semibold py-3">Ruta</th>
+              <th class="font-semibold py-3">Motorista</th>
+              <th class="font-semibold py-3 text-right">Monto</th>
+              <th class="font-semibold px-5 py-3 text-right">Estado</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#2C2C2C]">
+            <tr><td class="px-5 py-3"><p class="font-semibold">#FY-2487</p><p class="text-[11px] text-[#A0A0A0]">10:41 a. m.</p></td><td class="py-3"><p class="truncate max-w-[150px]">Freund → Ilopango</p><p class="text-[11px] text-[#A0A0A0]">11.4 km</p></td><td class="py-3">José Ramírez</td><td class="py-3 text-right font-semibold tabular-nums">$12.50</td><td class="px-5 py-3 text-right"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#FF6B00]/15 text-[#FF6B00]"><span class="h-1.5 w-1.5 rounded-full bg-[#FF6B00]"></span>En curso</span></td></tr>
+            <tr><td class="px-5 py-3"><p class="font-semibold">#FY-2486</p><p class="text-[11px] text-[#A0A0A0]">10:38 a. m.</p></td><td class="py-3"><p class="truncate max-w-[150px]">EPA Sta. Tecla → Las Delicias</p><p class="text-[11px] text-[#A0A0A0]">6.4 km</p></td><td class="py-3 text-[#A0A0A0] italic">Buscando…</td><td class="py-3 text-right font-semibold tabular-nums">$8.50</td><td class="px-5 py-3 text-right"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#A0A0A0]/15 text-[#c8c8c8]"><span class="h-1.5 w-1.5 rounded-full bg-[#A0A0A0]"></span>Pendiente</span></td></tr>
+            <tr><td class="px-5 py-3"><p class="font-semibold">#FY-2485</p><p class="text-[11px] text-[#A0A0A0]">10:22 a. m.</p></td><td class="py-3"><p class="truncate max-w-[150px]">Vidrí → Soyapango</p><p class="text-[11px] text-[#A0A0A0]">7.8 km</p></td><td class="py-3">Kevin Hernández</td><td class="py-3 text-right font-semibold tabular-nums">$10.00</td><td class="px-5 py-3 text-right"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#4CAF50]/15 text-[#4CAF50]"><span class="h-1.5 w-1.5 rounded-full bg-[#4CAF50]"></span>Completado</span></td></tr>
+            <tr><td class="px-5 py-3"><p class="font-semibold">#FY-2484</p><p class="text-[11px] text-[#A0A0A0]">10:15 a. m.</p></td><td class="py-3"><p class="truncate max-w-[150px]">Metrocentro → Miramonte</p><p class="text-[11px] text-[#A0A0A0]">4.2 km</p></td><td class="py-3">Luis Mejía</td><td class="py-3 text-right font-semibold tabular-nums">$7.50</td><td class="px-5 py-3 text-right"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#4CAF50]/15 text-[#4CAF50]"><span class="h-1.5 w-1.5 rounded-full bg-[#4CAF50]"></span>Completado</span></td></tr>
+            <tr><td class="px-5 py-3"><p class="font-semibold">#FY-2483</p><p class="text-[11px] text-[#A0A0A0]">10:02 a. m.</p></td><td class="py-3"><p class="truncate max-w-[150px]">Mejicanos → Santa Tecla</p><p class="text-[11px] text-[#A0A0A0]">12.1 km</p></td><td class="py-3">Ana Flores</td><td class="py-3 text-right font-semibold tabular-nums text-[#6b6b6b]" title="Sin cargo por cancelación">—</td><td class="px-5 py-3 text-right"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#F44336]/15 text-[#F44336]"><span class="h-1.5 w-1.5 rounded-full bg-[#F44336]"></span>Cancelado</span></td></tr>
+            <tr><td class="px-5 py-3"><p class="font-semibold">#FY-2482</p><p class="text-[11px] text-[#A0A0A0]">9:48 a. m.</p></td><td class="py-3"><p class="truncate max-w-[150px]">Freund Escalón → San Benito</p><p class="text-[11px] text-[#A0A0A0]">3.6 km</p></td><td class="py-3">Mario Ortiz</td><td class="py-3 text-right font-semibold tabular-nums">$6.00</td><td class="px-5 py-3 text-right"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#4CAF50]/15 text-[#4CAF50]"><span class="h-1.5 w-1.5 rounded-full bg-[#4CAF50]"></span>Completado</span></td></tr>
+            <tr><td class="px-5 py-3"><p class="font-semibold">#FY-2481</p><p class="text-[11px] text-[#A0A0A0]">9:30 a. m.</p></td><td class="py-3"><p class="truncate max-w-[150px]">Apopa → Ciudad Delgado</p><p class="text-[11px] text-[#A0A0A0]">9.0 km</p></td><td class="py-3">Kevin Hernández</td><td class="py-3 text-right font-semibold tabular-nums">$11.00</td><td class="px-5 py-3 text-right"><span class="inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2 py-1 bg-[#4CAF50]/15 text-[#4CAF50]"><span class="h-1.5 w-1.5 rounded-full bg-[#4CAF50]"></span>Completado</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section data-design-id="mapa-vivo-b5c7d9" class="col-span-5 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] overflow-hidden flex flex-col">
+        <div class="flex items-center justify-between px-5 h-16 border-b border-[#2C2C2C]">
+          <div>
+            <h2 class="text-base font-bold flex items-center gap-2">Mapa en vivo <span class="inline-flex items-center gap-1 text-[10px] font-bold text-[#F44336] bg-[#F44336]/10 rounded px-1.5 py-0.5"><span class="h-1.5 w-1.5 rounded-full bg-[#F44336]"></span>EN VIVO</span></h2>
+            <p class="text-xs text-[#A0A0A0]">Área Metropolitana de San Salvador</p>
+          </div>
+          <div class="flex flex-col items-end gap-1 text-[11px] text-[#A0A0A0]">
+            <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-[#FF6B00]"></span>En viaje (22)</span>
+            <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full border-2 border-[#FF6B00]"></span>Libre (15)</span>
+          </div>
+        </div>
+        <div class="relative flex-1 min-h-[440px] bg-[#17191c]">
+          <svg viewBox="0 0 560 470" preserveAspectRatio="xMidYMid slice" class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <rect width="560" height="470" fill="#17191c"/>
+            <path d="M380 330 C430 300 520 320 560 360 L560 470 L360 470 C350 420 350 360 380 330Z" fill="#15202a"/>
+            <rect x="60" y="60" width="110" height="70" rx="6" fill="#1a231d"/>
+            <rect x="300" y="170" width="80" height="60" rx="6" fill="#1a231d"/>
+            <g stroke="#22262b" stroke-width="5" fill="none">
+              <path d="M0 100 H560"/><path d="M0 200 H560"/><path d="M0 300 H560"/><path d="M0 400 H560"/>
+              <path d="M80 0 V470"/><path d="M190 0 V470"/><path d="M290 0 V470"/><path d="M410 0 V470"/><path d="M500 0 V470"/>
+            </g>
+            <g stroke="#2e333a" stroke-width="11" fill="none" stroke-linecap="round">
+              <path d="M-10 380 C120 300 220 260 570 150"/>
+              <path d="M230 -10 C250 150 200 300 260 480"/>
+            </g>
+            <g fill="#5a5f66" font-family="Inter, sans-serif" font-size="10" font-weight="500">
+              <text x="70" y="150">Santa Tecla</text>
+              <text x="200" y="230">San Salvador</text>
+              <text x="420" y="130">Soyapango</text>
+              <text x="440" y="420">Lago de Ilopango</text>
+              <text x="250" y="40">Mejicanos</text>
+              <text x="470" y="260">Ilopango</text>
+            </g>
+            <path d="M210 250 L290 200 L410 160" stroke="#FF6B00" stroke-width="3" fill="none" stroke-opacity=".7" stroke-linecap="round"/>
+            <path d="M120 180 L190 200 L240 290" stroke="#FF6B00" stroke-width="3" fill="none" stroke-opacity=".7" stroke-linecap="round"/>
+            <g fill="#FF6B00" stroke="#121212" stroke-width="2.5">
+              <circle cx="350" cy="180" r="7"/><circle cx="215" cy="262" r="7"/><circle cx="470" cy="210" r="7"/><circle cx="130" cy="90" r="7"/><circle cx="300" cy="340" r="7"/><circle cx="420" cy="90" r="7"/><circle cx="260" cy="60" r="7"/><circle cx="95" cy="260" r="7"/><circle cx="520" cy="300" r="7"/>
+            </g>
+            <g fill="#17191c" stroke="#FF6B00" stroke-width="2.5">
+              <circle cx="175" cy="330" r="6"/><circle cx="390" cy="260" r="6"/><circle cx="330" cy="110" r="6"/><circle cx="60" cy="200" r="6"/><circle cx="250" cy="420" r="6"/><circle cx="450" cy="40" r="6"/>
+            </g>
+          </svg>
+          <!-- seleccionado -->
+          <div class="absolute" style="left:46%;top:51%">
+            <span class="pulse absolute inset-0 rounded-full bg-[#FF6B00]"></span>
+            <div class="relative h-5 w-5 rounded-full bg-[#FF6B00] border-[3px] border-[#F5F5F5]"></div>
+          </div>
+          <div class="absolute left-[34%] top-[30%] bg-[#1E1E1E] border border-[#2C2C2C] rounded-xl p-3 w-56 shadow-[0_12px_32px_rgba(0,0,0,0.45)]">
+            <div class="flex items-center gap-2.5">
+              <div class="h-8 w-8 rounded-full bg-[#3a3330] flex items-center justify-center text-[11px] font-bold">JR</div>
+              <div class="flex-1"><p class="text-sm font-semibold leading-tight">José Ramírez</p><p class="text-[11px] text-[#A0A0A0]">C 482-519 · 1 ton</p></div>
+            </div>
+            <p class="text-[11px] text-[#A0A0A0] mt-2">#FY-2487 · llega a recogida en <span class="text-[#FF6B00] font-semibold">6 min</span></p>
+          </div>
+          <div class="absolute right-4 top-4 flex flex-col rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] overflow-hidden">
+            <span class="h-8 w-8 flex items-center justify-center text-[#A0A0A0] border-b border-[#2C2C2C]"><i class="fa-solid fa-plus text-xs"></i></span>
+            <span class="h-8 w-8 flex items-center justify-center text-[#A0A0A0]"><i class="fa-solid fa-minus text-xs"></i></span>
+          </div>
+          <div class="absolute left-4 bottom-4 flex items-center gap-2 rounded-lg bg-[#1E1E1E]/95 border border-[#2C2C2C] px-3 py-2 text-xs">
+            <i class="fa-solid fa-clock text-[#FF6B00]"></i><span>3 solicitudes esperando motorista</span><button data-design-id="btn-asignar-d8e1f3" type="button" class="ml-2 h-7 px-3 rounded-md bg-[#FF6B00] hover:bg-[#E65C00] text-[#121212] text-xs font-bold">Ver y asignar</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</div>
+</body>
+</html>

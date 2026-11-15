@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa Motorista — Recibo de recarga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+</head>
+<body class="w-[390px] bg-[#121212] text-[#F5F5F5] font-sans antialiased">
+
+<header class="flex items-center gap-3 px-5 pt-5 pb-4">
+  <button type="button" class="h-10 w-10 rounded-full bg-[#1E1E1E] border border-[#2C2C2C] flex items-center justify-center" aria-label="Volver"><i class="fa-solid fa-arrow-left text-[#A0A0A0]"></i></button>
+  <h1 class="text-lg font-extrabold flex-1">Recibo de recarga</h1>
+</header>
+<main data-design-id="main-recibo-f6a7b8" class="px-5 pb-8">
+  <article class="rounded-2xl bg-[#F5F5F5] text-[#121212] overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.45)]">
+    <div class="px-5 pt-5 pb-4 border-b border-dashed border-[#c9c9c9]">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2"><div class="h-8 w-8 rounded-lg bg-[#FF6B00] flex items-center justify-center"><i class="fa-solid fa-truck-fast text-[#F5F5F5] text-xs"></i></div><span class="text-lg font-extrabold">Flete<span class="text-[#FF6B00]">Ya</span></span></div>
+        <span class="text-[11px] font-bold text-[#2e7d32] bg-[#4CAF50]/20 rounded-full px-2 py-0.5">PAGADO</span>
+      </div>
+      <p class="text-[11px] text-[#555] mt-3 leading-relaxed">[Nombre del socio inscrito] · NIT [pendiente]<br>[Dirección] · Lourdes, Colón, La Libertad</p>
+    </div>
+    <div class="px-5 py-4 text-sm">
+      <div class="flex items-end justify-between">
+        <div><p class="text-[11px] uppercase tracking-wider font-semibold text-[#777]">Recibo N.º</p><p class="text-base font-extrabold tabular-nums">REC-000123</p></div>
+        <div class="text-right"><p class="text-[11px] uppercase tracking-wider font-semibold text-[#777]">Fecha</p><p class="font-semibold">9 nov 2026 · 7:12 a. m.</p></div>
+      </div>
+      <div class="mt-4 divide-y divide-[#e2e2e2]">
+        <div class="flex items-center justify-between py-2"><span class="text-[#A0A0A0]">Motorista</span><span class="font-semibold tabular-nums ">José Ramírez</span></div>
+        <div class="flex items-center justify-between py-2"><span class="text-[#A0A0A0]">Plan</span><span class="font-semibold tabular-nums ">Semanal</span></div>
+        <div class="flex items-center justify-between py-2"><span class="text-[#A0A0A0]">Pago en línea · ref.</span><span class="font-semibold tabular-nums ">TX-58Q2-91K7</span></div>
+      </div>
+      <div class="mt-3 rounded-xl bg-[#ececec] px-3.5 py-1 divide-y divide-[#dcdcdc]">
+        <div class="flex items-center justify-between py-2"><span class="text-[#A0A0A0]">Monto recargado</span><span class="font-semibold tabular-nums ">$20.00</span></div>
+        <div class="flex items-center justify-between py-2"><span class="text-[#A0A0A0]">Saldo anterior</span><span class="font-semibold tabular-nums text-[#c62828]">-$0.20</span></div>
+        <div class="flex items-center justify-between py-2"><span class="text-[#A0A0A0]">Deuda descontada</span><span class="font-semibold tabular-nums text-[#c62828]">-$0.20</span></div>
+        <div class="flex items-center justify-between py-2.5"><span class="font-bold">Saldo nuevo</span><span class="text-xl font-extrabold text-[#FF6B00] tabular-nums">$19.80</span></div>
+      </div>
+      <p class="text-[10px] text-[#777] mt-4 leading-relaxed">Los créditos se usan para recibir viajes en FleteYa. Por cada viaje completado se descuenta el 10% del valor del viaje.</p>
+    </div>
+  </article>
+  <div class="grid grid-cols-2 gap-2.5 mt-5">
+    <button data-design-id="btn-pdf-a7b8c9" type="button" class="h-12 rounded-3xl bg-gradient-to-b from-[#FF7A1A] to-[#FF6B00] text-[#121212] font-extrabold flex items-center justify-center gap-2"><i class="fa-solid fa-file-arrow-down"></i>Descargar PDF</button>
+    <button data-design-id="btn-compartir-b8c9d1" type="button" class="h-12 rounded-3xl border border-[#2C2C2C] bg-[#1E1E1E] font-semibold flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-[#4CAF50] text-lg"></i>Compartir</button>
+  </div>
+  <p class="text-xs text-[#A0A0A0] text-center mt-4"><i class="fa-regular fa-envelope mr-1"></i>Enviado también a jose.r••••@gmail.com</p>
+</main>
+</body>
+</html>

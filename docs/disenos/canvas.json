@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "screens": [
+    {
+      "screen_id": "cliente-solicitar",
+      "frame_kind": "phone",
+      "label": "C1 · Cliente — Solicitar viaje"
+    },
+    {
+      "screen_id": "cliente-viaje",
+      "frame_kind": "phone",
+      "label": "C2 · Cliente — Viaje en curso"
+    },
+    {
+      "screen_id": "motorista-login",
+      "frame_kind": "phone",
+      "label": "M0 · Motorista — Iniciar sesión"
+    },
+    {
+      "screen_id": "motorista-dashboard",
+      "frame_kind": "phone",
+      "label": "M1 · Motorista — En línea"
+    },
+    {
+      "screen_id": "motorista-solicitud",
+      "frame_kind": "phone",
+      "label": "M2 · Motorista — Solicitud entrante"
+    },
+    {
+      "screen_id": "admin-login-movil",
+      "frame_kind": "phone",
+      "label": "A0m · Propietarios — Acceso (celular)"
+    },
+    {
+      "screen_id": "admin-dashboard-movil",
+      "frame_kind": "phone",
+      "label": "A1m · Propietarios — Panel (celular)"
+    },
+    {
+      "screen_id": "admin-login",
+      "frame_kind": "desktop",
+      "label": "A0 · Admin — Acceso de propietarios"
+    },
+    {
+      "screen_id": "admin-dashboard",
+      "frame_kind": "desktop",
+      "label": "A1 · Admin — Dashboard general"
+    },
+    {
+      "screen_id": "admin-motoristas",
+      "frame_kind": "desktop",
+      "label": "A2 · Admin — Gestión de motoristas"
+    },
+    {
+      "screen_id": "motorista-terminos",
+      "frame_kind": "phone",
+      "label": "M0b · Motorista — Aceptar términos (primer ingreso)"
+    },
+    {
+      "screen_id": "motorista-creditos",
+      "frame_kind": "phone",
+      "label": "M3 · Motorista — Mis créditos"
+    },
+    {
+      "screen_id": "motorista-recibo",
+      "frame_kind": "phone",
+      "label": "M4 · Motorista — Recibo de recarga"
+    },
+    {
+      "screen_id": "admin-creditos",
+      "frame_kind": "desktop",
+      "label": "A3 · Admin — Créditos y recargas"
+    },
+    {
+      "screen_id": "admin-pagos-motoristas",
+      "frame_kind": "desktop",
+      "label": "A4 · Admin — Pagos a motoristas"
+    },
+    {
+      "screen_id": "admin-puntos-qr",
+      "frame_kind": "desktop",
+      "label": "A5 · Admin — Puntos QR"
+    },
+    {
+      "screen_id": "admin-catalogo-materiales",
+      "frame_kind": "desktop",
+      "label": "A6 · Admin — Catálogo de materiales"
+    }
+  ]
+}

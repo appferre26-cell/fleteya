@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa Propietarios — Acceso (celular)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+</head>
+<body class="w-[390px] min-h-[844px] bg-[#121212] text-[#F5F5F5] font-sans antialiased flex flex-col">
+
+<header data-design-id="adm-m-login-header-1a2b" class="px-5 pt-14 pb-6">
+  <div class="flex items-center gap-3">
+    <div class="h-12 w-12 rounded-[14px] bg-[#FF6B00] flex items-center justify-center"><i class="fa-solid fa-truck-fast text-xl text-[#F5F5F5]"></i></div>
+    <div>
+      <p class="text-2xl font-extrabold leading-none">Flete<span class="text-[#FF6B00]">Ya</span></p>
+      <p class="text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] mt-1">Panel de propietarios</p>
+    </div>
+  </div>
+  <span class="mt-8 inline-flex items-center gap-2 rounded-full bg-[#FF6B00]/15 text-[#FF6B00] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5"><i class="fa-solid fa-shield-halved"></i>Solo propietarios</span>
+  <h1 class="mt-4 text-[26px] font-extrabold leading-tight">Acceso de propietarios</h1>
+  <p class="mt-1.5 text-sm text-[#A0A0A0]">Administra FleteYa desde tu celular con tu cuenta de propietario.</p>
+</header>
+
+<main data-design-id="adm-m-login-main-2b3c" class="flex-1 px-5">
+  <form class="space-y-4">
+    <div>
+      <label for="email" class="block text-xs font-semibold text-[#A0A0A0] mb-1.5">Correo electrónico</label>
+      <div class="flex items-center h-[52px] rounded-lg bg-[#1E1E1E] border border-[#FF6B00] ring-4 ring-[#FF6B00]/10 px-3.5 gap-3">
+        <i class="fa-regular fa-envelope text-[#FF6B00] text-sm"></i>
+        <input id="email" type="email" value="gerencia@fleteya.sv" class="flex-1 bg-transparent text-base outline-none">
+      </div>
+    </div>
+    <div>
+      <label for="pwd" class="block text-xs font-semibold text-[#A0A0A0] mb-1.5">Contraseña</label>
+      <div class="flex items-center h-[52px] rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] px-3.5 gap-3">
+        <i class="fa-solid fa-lock text-[#A0A0A0] text-sm"></i>
+        <input id="pwd" type="password" placeholder="Tu contraseña" class="flex-1 bg-transparent text-base outline-none placeholder:text-[#6b6b6b]">
+        <button type="button" aria-label="Mostrar contraseña" class="h-9 w-9 -mr-1.5 flex items-center justify-center text-[#A0A0A0]"><i class="fa-regular fa-eye"></i></button>
+      </div>
+    </div>
+
+    <button data-design-id="adm-m-login-submit-3c4d" type="button" class="w-full h-14 rounded-3xl bg-gradient-to-b from-[#FF7A1A] to-[#FF6B00] text-[#121212] text-base font-extrabold flex items-center justify-center gap-2.5 shadow-[0_8px_24px_rgba(255,107,0,0.22)] !mt-6">
+      Entrar al panel <i class="fa-solid fa-arrow-right"></i>
+    </button>
+
+    <button type="button" class="w-full h-12 rounded-3xl border border-[#2C2C2C] bg-[#1E1E1E] text-sm font-semibold flex items-center justify-center gap-2.5">
+      <i class="fa-solid fa-fingerprint text-[#FF6B00] text-lg"></i>Entrar con huella o rostro
+    </button>
+
+    <p class="text-center text-sm pt-1"><a href="#" class="font-semibold text-[#FF6B00]">¿Olvidaste tu contraseña?</a></p>
+  </form>
+
+  <section data-design-id="adm-m-login-install-4d5e" class="mt-7 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-4 flex gap-3.5">
+    <div class="h-10 w-10 shrink-0 rounded-lg bg-[#262626] flex items-center justify-center"><i class="fa-solid fa-mobile-screen-button text-[#A0A0A0]"></i></div>
+    <div>
+      <p class="text-sm font-semibold">Instálalo en tu pantalla de inicio</p>
+      <p class="text-xs text-[#A0A0A0] mt-1 leading-relaxed">Ábrelo como una app y recibe avisos de viajes sin motorista o motoristas por aprobar. No necesitas Play Store.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="px-5 pt-6 pb-8 text-center">
+  <p class="text-[11px] text-[#A0A0A0] leading-relaxed">No hay registro público.<br>¿Eres motorista? Entra desde la app FleteYa Motorista.</p>
+</footer>
+
+</body>
+</html>
