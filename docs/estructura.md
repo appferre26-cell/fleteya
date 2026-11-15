@@ -51,7 +51,7 @@ El cliente **no descarga ninguna app**. Recibe o busca el link de FleteYa y desd
 - Punto de recogida (mapa o dirección escrita)
 - Punto de destino (mapa o dirección escrita)
 
-**Paso 3 — ¿Qué vas a llevar? (lista detallada) — PROPUESTA, por confirmar**
+**Paso 3 — ¿Qué vas a llevar? (lista detallada)**
 
 El cliente arma una lista de lo que lleva, eligiendo de un catálogo de materiales comunes y poniendo la cantidad. **La app suma el peso sola** y calcula el precio. El cliente no tiene que adivinar cuántos kilos lleva.
 
@@ -238,15 +238,26 @@ SOLICITADO → EN BÚSQUEDA DE MOTORISTA → MOTORISTA ASIGNADO
 | **Tarifa mínima** | **$10.00** (los motoristas no hacen viajes por menos) |
 | Distancia adicional | Negociable entre motorista y cliente (ver abajo) |
 
-**Ejemplos (dentro de los 5 km):**
+**Ejemplos (dentro de los 5 km, cobro proporcional):**
 - 300 kg → paga $10.00 (se aplica la tarifa mínima)
 - 1 tonelada → paga $10.00
+- 1.3 toneladas → paga $13.00
 - 2 toneladas → paga $20.00
 
 ### Cómo se calcula el peso
 El peso sale de la lista detallada del cliente (ver sección 3, paso 3). El motorista ve esa misma lista en la solicitud, así sabe qué va a cargar antes de aceptar.
 
-> **Por definir:** si el peso da, por ejemplo, 1.3 ton, ¿se cobran $13 (proporcional) o $20 (se redondea a la tonelada completa)?
+### Cobro proporcional al peso
+El precio es **proporcional al peso**: $10 por tonelada, sin redondear a la tonelada completa, y siempre con el **mínimo de $10**.
+
+| Peso de la lista | Cálculo | Precio |
+|------------------|---------|--------|
+| 400 kg | 0.4 × $10 = $4 → aplica mínimo | **$10.00** |
+| 1 ton | 1 × $10 | **$10.00** |
+| 1.3 ton | 1.3 × $10 | **$13.00** |
+| 2.75 ton | 2.75 × $10 | **$27.50** |
+
+*(Precios dentro de los 5 km incluidos. El resultado se redondea al centavo.)*
 
 ### Distancia mayor a 5 km — Modelo InDrive
 
