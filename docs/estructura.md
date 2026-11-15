@@ -560,3 +560,13 @@ Una sección sencilla **"Puntos QR"**:
 ---
 
 *Documento elaborado como base de definición de producto — sujeto a revisiones del equipo FleteYa.*
+
+---
+
+## 16. Parte Técnica y Costos
+
+Ver el detalle en `docs/tecnico-y-costos.md`. Resumen:
+- Piloto como app web instalable (PWA) para las 3 puertas; app nativa de Android en fase 2.
+- Herramientas: Next.js, Supabase (base de datos y tiempo real), Google Maps, Wompi (pagos en línea, 3.5% + IVA por transacción, requiere cuenta de Banco Agrícola).
+- Costo mensual estimado del piloto: $0 – $20; al crecer ~$45 – $90.
+- Decisión pendiente: quién paga la comisión de Wompi en los pagos en línea.
