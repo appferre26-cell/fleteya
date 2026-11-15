@@ -486,9 +486,19 @@ Una sección sencilla **"Puntos QR"**:
 
 ## 15. Parte Legal y de Marca
 
-### Registro de la empresa
-- FleteYa **se registrará como empresa** (decisión tomada). El trámite se inicia por separado del desarrollo.
-- Mientras tanto se puede seguir con el diseño y la programación. Lo único que **espera al registro** es abrir la cuenta con el proveedor de pagos en línea, porque casi todos lo piden.
+### Registro ante Hacienda
+- **Listo:** la inscripción está a nombre de **uno de los socios**, que ya tiene registrado en el Ministerio de Hacienda el rubro de **transporte de carga**.
+- Con ese registro ya se puede **solicitar la cuenta con el proveedor de pagos en línea** (cuando se elija el proveedor).
+- **Por confirmar con un contador:**
+  - Si el rubro de transporte de carga cubre también los ingresos de FleteYa como plataforma (las recargas de créditos y la comisión del 10%) o si conviene agregar otra actividad económica.
+  - Cómo se emiten los comprobantes por las recargas de los motoristas.
+- Los datos de ese socio (nombre o razón social, NIT y dirección) son los que van en la parte **"Responsable"** de los Términos y del Aviso de Privacidad.
+
+### Registro de la marca (pendiente)
+- Falta registrar la marca **"FleteYa"** y su logo en el **CNR** (Registro de la Propiedad Intelectual).
+- Antes de solicitarla, conviene buscar en el CNR si ya existe una marca igual o parecida.
+- Sugerencia, a confirmar en el CNR: registrarla en las clases de **transporte (clase 39)** y de **software o app (clases 9 y/o 42)**.
+- Mientras sale el registro, se puede seguir diseñando y programando con el nombre FleteYa.
 
 ### Daños a la carga
 - **El motorista se hace responsable** de los daños o pérdidas de la carga mientras está bajo su cuidado, es decir, desde que la recibe hasta que la entrega.
