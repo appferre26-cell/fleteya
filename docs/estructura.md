@@ -158,6 +158,12 @@ Peso estimado:            1,109 kg (≈ 1.1 ton)
 - Desglose por viaje
 - *(Comisión de FleteYa descontada automáticamente)*
 
+**Mis créditos**
+- Saldo actual (en rojo si está en negativo)
+- Botón **Recargar** (plan semanal $20 o mensual $60, pago en línea)
+- Movimientos: recargas y descuentos del 10% por viaje
+- **Historial de recargas con recibos:** ver, descargar en PDF o compartir (ver sección 8)
+
 ---
 
 ## 5. Flujo del Propietario / Admin (Panel en computadora y celular)
@@ -212,7 +218,20 @@ El panel de propietarios funciona **en computadora y en el celular**:
 - Comisiones cobradas
 - Pagos a motoristas pendientes
 
+**Créditos y recargas**
+- Saldo de créditos de cada motorista (incluye los que están en negativo)
+- Historial de todas las recargas con su recibo: descargar o volver a enviar
+
+**Pagos a motoristas**
+- Pagos semanales de los viajes cobrados en línea (corte el domingo, pago el lunes)
+- Marcar cada pago como transferido
+
+**Puntos QR**
+- Ferreterías con QR (código, dirección de recogida, viajes generados)
+- Descargar o imprimir el QR de cada punto
+
 **Configuración**
+- Catálogo de materiales: nombre y peso aproximado por unidad (lo usa la lista detallada del cliente)
 - Zonas de operación (definir en qué municipios/departamentos opera FleteYa)
 - Notificaciones del sistema
 - Gestión de administradores adicionales
@@ -329,6 +348,27 @@ Si al motorista le quedan pocos créditos y el 10% del viaje es mayor que su sal
 - En la siguiente recarga se descuenta primero la deuda. Ejemplo: recarga $20 → queda con $19.80.
 
 El motorista ve en su app, en todo momento, cuántos créditos le quedan.
+
+#### Recibos de las recargas
+Cada recarga genera un **recibo automático**. El motorista lo puede ver de dos formas:
+
+1. **En la app (principal):** en la sección **"Mis créditos → Historial de recargas"** ve todas sus recargas. En cada una puede:
+   - **Ver el recibo** en pantalla.
+   - **Descargarlo en PDF**.
+   - **Compartirlo** por WhatsApp.
+2. **Por correo (opcional):** si el motorista tiene correo, el recibo también le llega por correo al momento de recargar.
+   - El correo es un dato **opcional** que el propietario anota al crear la cuenta. No es un documento más: los documentos siguen siendo solo DUI, licencia y tarjeta de circulación.
+
+**Qué dice el recibo:**
+- Número correlativo (ej. **REC-000123**), fecha y hora.
+- Datos de FleteYa: nombre del socio inscrito, NIT y dirección.
+- Nombre del motorista.
+- Plan recargado (semanal $20 o mensual $60) y referencia del pago en línea.
+- Saldo anterior, deuda descontada (si estaba en negativo) y saldo nuevo.
+
+**En el panel de propietarios:** en **Créditos y recargas** se ven todas las recargas, y desde ahí se puede volver a enviar o descargar cualquier recibo.
+
+> **Por confirmar con el contador:** si además del recibo de la app hay que emitir **factura electrónica (DTE)** de Hacienda por cada recarga. Si es así, la app guarda y muestra también ese documento junto al recibo, sin cambiar la pantalla.
 
 ### Pagos en línea del cliente → pago semanal al motorista
 
@@ -489,9 +529,8 @@ Una sección sencilla **"Puntos QR"**:
 ### Registro ante Hacienda
 - **Listo:** la inscripción está a nombre de **uno de los socios**, que ya tiene registrado en el Ministerio de Hacienda el rubro de **transporte de carga**.
 - Con ese registro ya se puede **solicitar la cuenta con el proveedor de pagos en línea** (cuando se elija el proveedor).
-- **Por confirmar con un contador:**
-  - Si el rubro de transporte de carga cubre también los ingresos de FleteYa como plataforma (las recargas de créditos y la comisión del 10%) o si conviene agregar otra actividad económica.
-  - Cómo se emiten los comprobantes por las recargas de los motoristas.
+- **Confirmado con el contador:** el giro de transporte de carga **sí cubre** las comisiones por viaje y las recargas de créditos. Si más adelante surge algún cambio, se ajusta en ese momento.
+- Recibos de las recargas: en la app y por correo opcional (ver sección 8, "Recibos de las recargas").
 - Los datos de ese socio (nombre o razón social, NIT y dirección) son los que van en la parte **"Responsable"** de los Términos y del Aviso de Privacidad.
 
 ### Registro de la marca (pendiente)

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa Motorista — Solicitud entrante</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+<style>@keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,107,0,.35)}100%{box-shadow:0 0 0 18px rgba(255,107,0,0)}}.ring-pulse{animation:ring 1.4s ease-out infinite}</style>
+</head>
+<body class="w-[390px] bg-[#121212] text-[#F5F5F5] font-sans antialiased">
+
+<div class="relative h-[844px] overflow-hidden">
+  <!-- Mapa de fondo -->
+  <svg viewBox="0 0 390 844" class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="844" fill="#17191c"/>
+    <rect x="40" y="520" width="120" height="90" rx="6" fill="#1a231d"/>
+    <g stroke="#24282d" stroke-width="6" fill="none">
+      <path d="M0 90 H390"/><path d="M0 200 H390"/><path d="M0 320 H390"/><path d="M0 450 H390"/><path d="M0 640 H390"/><path d="M0 760 H390"/>
+      <path d="M50 0 V844"/><path d="M140 0 V844"/><path d="M240 0 V844"/><path d="M330 0 V844"/>
+    </g>
+    <g stroke="#2e333a" stroke-width="12" fill="none" stroke-linecap="round">
+      <path d="M-10 700 L200 420 L400 260"/>
+    </g>
+    <path d="M190 430 L240 380 L240 200 L330 200 L330 90" stroke="#FF6B00" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 10"/>
+    <circle cx="190" cy="430" r="9" fill="#FF6B00" stroke="#F5F5F5" stroke-width="3"/>
+    <circle cx="330" cy="90" r="8" fill="#F5F5F5" stroke="#FF6B00" stroke-width="4"/>
+  </svg>
+
+  <!-- Header atenuado -->
+  <header data-design-id="header-m2-a4b6c8" class="absolute top-0 inset-x-0 flex items-center gap-3 px-5 pt-5">
+    <div class="h-11 w-11 rounded-full bg-gradient-to-br from-[#4a3a2e] to-[#2e2621] flex items-center justify-center font-bold text-sm ring-2 ring-[#4CAF50]">JR</div>
+    <p class="flex-1 text-base font-bold">José Ramírez</p>
+    <span class="inline-flex items-center gap-1.5 bg-[#4CAF50]/15 text-[#4CAF50] text-[11px] font-bold tracking-wider rounded-full px-2.5 py-1"><span class="h-1.5 w-1.5 rounded-full bg-[#4CAF50]"></span>EN LÍNEA</span>
+  </header>
+
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-[#0d0d0d]/75 backdrop-blur-[2px]"></div>
+
+  <!-- Tarjeta solicitud -->
+  <section data-design-id="modal-solicitud-b5c7d9" class="absolute left-4 right-4 top-1/2 -translate-y-1/2 rounded-2xl bg-[#1E1E1E] border border-[#2C2C2C] shadow-[0_24px_60px_rgba(0,0,0,0.55)] overflow-hidden">
+    <!-- top -->
+    <div class="flex items-center justify-between px-5 pt-5">
+      <div>
+        <span class="inline-flex items-center gap-1.5 bg-[#FF6B00]/15 text-[#FF6B00] text-[11px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1"><i class="fa-solid fa-bolt text-[10px]"></i>Nueva solicitud</span>
+        <p class="text-xs text-[#A0A0A0] mt-2">A 1.2 km de ti · 4 min para recoger</p>
+      </div>
+      <!-- countdown -->
+      <div class="relative h-[72px] w-[72px] rounded-full ring-pulse">
+        <svg viewBox="0 0 72 72" class="absolute inset-0 -rotate-90">
+          <circle cx="36" cy="36" r="31" stroke="#2C2C2C" stroke-width="6" fill="none"/>
+          <circle cx="36" cy="36" r="31" stroke="#FF6B00" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="194.8" stroke-dashoffset="31"/>
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <span class="text-2xl font-extrabold leading-none">21</span>
+          <span class="text-[9px] text-[#A0A0A0] font-semibold uppercase mt-0.5">seg</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- precio -->
+    <div class="px-5 mt-4">
+      <p class="text-xs font-semibold uppercase tracking-wider text-[#A0A0A0]">Precio del viaje</p>
+      <p class="text-[48px] font-extrabold text-[#FF6B00] leading-none mt-1 tracking-tight tabular-nums">$11.09</p>
+      <p class="text-xs text-[#A0A0A0] mt-1.5"><i class="fa-solid fa-money-bill-wave text-[#4CAF50] mr-1"></i>Efectivo · se descuentan $1.11 (10%) de tus créditos</p>
+    </div>
+
+    <!-- cliente -->
+    <div class="mx-5 mt-4 flex items-center gap-3 rounded-xl bg-[#262626] border border-[#2C2C2C] p-3">
+      <div class="h-10 w-10 rounded-full bg-[#3a3330] flex items-center justify-center text-sm font-bold">MC</div>
+      <div class="flex-1">
+        <p class="text-sm font-semibold">María Castillo</p>
+        <p class="text-xs text-[#A0A0A0]"><i class="fa-solid fa-star text-[#FF6B00] text-[10px] mr-0.5"></i>4.9 · Cliente frecuente</p>
+      </div>
+      <span class="text-[11px] font-medium text-[#A0A0A0] border border-[#2C2C2C] rounded-full px-2 py-0.5">Tu camión: 3 ton</span>
+    </div>
+
+    <!-- ruta -->
+    <div class="px-5 mt-4">
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center pt-1.5">
+          <span class="h-3 w-3 rounded-full bg-[#FF6B00]"></span>
+          <span class="w-px flex-1 border-l-2 border-dashed border-[#3a3a3a] my-1"></span>
+          <span class="h-3 w-3 rounded-sm bg-[#F5F5F5]"></span>
+        </div>
+        <div class="flex-1 space-y-4">
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0]">Origen</p>
+            <p class="text-sm font-semibold">Ferretería El Constructor, Lourdes</p>
+          </div>
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0]">Destino</p>
+            <p class="text-sm font-semibold">Col. Las Brisas, Pje. 4 #12</p>
+          </div>
+        </div>
+        <div class="self-center text-right">
+          <p class="text-lg font-extrabold leading-none">3.2</p>
+          <p class="text-[10px] text-[#A0A0A0] font-semibold uppercase">km</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- carga -->
+    <div data-design-id="lista-carga-m2-e1f2a3" class="mx-5 mt-4 rounded-xl border border-[#2C2C2C] overflow-hidden">
+      <div class="flex items-center justify-between px-3.5 py-2.5 bg-[#262626]">
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0]"><i class="fa-solid fa-list-check text-[#FF6B00] mr-1.5"></i>Lo que vas a llevar</p>
+        <p class="text-xs font-bold tabular-nums">1,109 kg · 1.11 ton</p>
+      </div>
+      <div class="divide-y divide-[#2C2C2C] text-sm">
+        <div class="flex items-center justify-between px-3.5 py-2"><span><span class="font-bold tabular-nums">10 ×</span> Bolsa de cemento</span><span class="text-xs text-[#A0A0A0] tabular-nums">425 kg</span></div>
+        <div class="flex items-center justify-between px-3.5 py-2"><span><span class="font-bold tabular-nums">50 ×</span> Bloque 15 cm</span><span class="text-xs text-[#A0A0A0] tabular-nums">650 kg</span></div>
+        <div class="flex items-center justify-between px-3.5 py-2"><span><span class="font-bold tabular-nums">10 ×</span> Varilla 3/8" (6 m)</span><span class="text-xs text-[#A0A0A0] tabular-nums">34 kg</span></div>
+      </div>
+    </div>
+    <p class="mx-5 mt-2.5 text-xs text-[#A0A0A0]"><i class="fa-regular fa-comment mr-1"></i>"Las varillas van largas, por favor amarrarlas bien"</p>
+
+    <!-- botones -->
+    <div class="grid grid-cols-5 gap-2.5 p-5 mt-1">
+      <button data-design-id="btn-rechazar-c6d8e1" type="button" class="col-span-2 h-14 rounded-3xl border-2 border-[#F44336] text-[#F44336] font-extrabold tracking-wide">RECHAZAR</button>
+      <button data-design-id="btn-aceptar-d7e9f2" type="button" class="col-span-3 h-14 rounded-3xl bg-gradient-to-b from-[#FF7A1A] to-[#FF6B00] hover:to-[#E65C00] text-[#121212] font-extrabold tracking-wide flex items-center justify-center gap-2 shadow-[0_8px_24px_rgba(255,107,0,0.3)]"><i class="fa-solid fa-check"></i>ACEPTAR</button>
+    </div>
+  </section>
+
+  <p class="absolute bottom-8 inset-x-0 text-center text-xs text-[#A0A0A0]">Si no respondes, la solicitud pasa al siguiente motorista.</p>
+</div>
+
+</body>
+</html>

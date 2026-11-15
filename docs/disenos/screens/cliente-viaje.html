@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa — Viaje en curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+<style>@keyframes ping2{0%{transform:scale(.6);opacity:.7}100%{transform:scale(2.2);opacity:0}}.pulse{animation:ping2 1.8s ease-out infinite}</style>
+</head>
+<body class="w-[390px] bg-[#121212] text-[#F5F5F5] font-sans antialiased">
+
+<!-- MAPA -->
+<section data-design-id="map-viaje-a2b4c6" class="relative h-[430px] overflow-hidden bg-[#17191c]">
+  <svg viewBox="0 0 390 430" class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="430" fill="#17191c"/>
+    <rect x="230" y="40" width="120" height="90" rx="6" fill="#1a231d"/>
+    <rect x="20" y="300" width="90" height="70" rx="6" fill="#1a231d"/>
+    <g stroke="#24282d" stroke-width="6" fill="none">
+      <path d="M0 70 H390"/><path d="M0 160 H390"/><path d="M0 250 H390"/><path d="M0 340 H390"/>
+      <path d="M60 0 V430"/><path d="M150 0 V430"/><path d="M220 0 V430"/><path d="M300 0 V430"/>
+    </g>
+    <g stroke="#2e333a" stroke-width="12" fill="none" stroke-linecap="round">
+      <path d="M-10 400 L180 210 L400 120"/>
+      <path d="M100 -10 C120 120 90 260 130 440"/>
+    </g>
+    <g fill="#5a5f66" font-family="Inter, sans-serif" font-size="9" font-weight="500">
+      <text x="236" y="148" transform="rotate(-22 236 148)">Carretera Panamericana</text>
+      <text x="250" y="90">Lourdes Centro</text>
+      <text x="158" y="330" transform="rotate(90 158 330)">Calle principal</text>
+      <text x="30" y="390">Col. Las Brisas</text>
+    </g>
+    <!-- ruta -->
+    <path d="M300 110 L300 160 L220 160 L180 210 L150 250 L150 300" stroke="#FF6B00" stroke-opacity=".25" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M300 110 L300 160 L220 160 L180 210 L150 250 L150 300" stroke="#FF6B00" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+
+  <!-- motorista (camión) -->
+  <div class="absolute" style="left:282px;top:92px">
+    <div class="h-9 w-9 rounded-full bg-[#FF6B00] border-[3px] border-[#121212] flex items-center justify-center shadow-[0_4px_14px_rgba(255,107,0,.5)]"><i class="fa-solid fa-truck text-[#121212] text-xs"></i></div>
+  </div>
+  <!-- recogida -->
+  <div class="absolute" style="left:136px;top:286px">
+    <span class="pulse absolute inset-0 rounded-full bg-[#FF6B00]"></span>
+    <div class="relative h-7 w-7 rounded-full bg-[#F5F5F5] border-4 border-[#FF6B00]"></div>
+  </div>
+  <div class="absolute left-[172px] top-[282px] bg-[#1E1E1E] border border-[#2C2C2C] rounded-lg px-2.5 py-1.5 shadow-lg">
+    <p class="text-[10px] text-[#A0A0A0] leading-none">Recogida</p>
+    <p class="text-xs font-semibold mt-0.5">Ferretería El Constructor</p>
+  </div>
+
+  <!-- top bar flotante -->
+  <header data-design-id="header-viaje-b3c5d7" class="absolute top-4 left-4 right-4 flex items-center justify-between">
+    <div class="flex items-center gap-2 bg-[#1E1E1E]/95 border border-[#2C2C2C] rounded-full pl-1.5 pr-3.5 py-1.5">
+      <div class="h-7 w-7 rounded-lg bg-[#FF6B00] flex items-center justify-center"><i class="fa-solid fa-truck-fast text-[#F5F5F5] text-xs"></i></div>
+      <span class="text-sm font-extrabold">Flete<span class="text-[#FF6B00]">Ya</span></span>
+    </div>
+    <button data-design-id="btn-compartir-c4d6e8" type="button" class="h-10 w-10 rounded-full bg-[#1E1E1E]/95 border border-[#2C2C2C] flex items-center justify-center"><i class="fa-solid fa-share-nodes text-[#A0A0A0]"></i></button>
+  </header>
+
+  <!-- ETA chip -->
+  <div class="absolute right-4 bottom-10 bg-[#1E1E1E] border border-[#2C2C2C] rounded-xl px-3.5 py-2.5 text-right shadow-lg">
+    <p class="text-[10px] uppercase tracking-wider font-semibold text-[#A0A0A0]">Llega en</p>
+    <p class="text-2xl font-extrabold text-[#FF6B00] leading-tight">6 <span class="text-sm font-bold">min</span></p>
+    <p class="text-[11px] text-[#A0A0A0]">1.4 km · 10:42 a. m.</p>
+  </div>
+</section>
+
+<!-- HOJA INFERIOR -->
+<main data-design-id="sheet-viaje-d5e7f9" class="relative -mt-6 rounded-t-3xl bg-[#1E1E1E] border-t border-[#2C2C2C] px-5 pt-3 pb-6">
+  <div class="mx-auto h-1 w-10 rounded-full bg-[#3a3a3a] mb-4"></div>
+
+  <!-- estado -->
+  <div class="flex items-center justify-between">
+    <span class="inline-flex items-center gap-2 bg-[#FF6B00]/15 text-[#FF6B00] text-sm font-semibold rounded-full px-3 py-1.5">
+      <i class="fa-solid fa-truck text-xs"></i> En camino a tu ubicación
+    </span>
+    <span class="text-xs text-[#A0A0A0]">Pedido #FY-2481</span>
+  </div>
+
+  <!-- progreso -->
+  <div class="flex items-center gap-1.5 mt-4">
+    <span class="h-1.5 flex-1 rounded-full bg-[#FF6B00]"></span>
+    <span class="h-1.5 flex-1 rounded-full bg-[#FF6B00]/40"></span>
+    <span class="h-1.5 flex-1 rounded-full bg-[#2C2C2C]"></span>
+    <span class="h-1.5 flex-1 rounded-full bg-[#2C2C2C]"></span>
+  </div>
+  <div class="grid grid-cols-4 text-[10px] text-[#A0A0A0] mt-1.5">
+    <span class="text-[#F5F5F5] font-medium">Asignado</span><span class="text-[#FF6B00] font-medium">En camino</span><span>Cargando</span><span class="text-right">Entregado</span>
+  </div>
+
+  <!-- motorista -->
+  <article data-design-id="card-motorista-e6f8a1" class="mt-5 rounded-xl bg-[#262626] border border-[#2C2C2C] p-4">
+    <div class="flex items-center gap-3.5">
+      <div class="relative">
+        <div class="h-14 w-14 rounded-full bg-gradient-to-br from-[#4a3a2e] to-[#2e2621] flex items-center justify-center text-lg font-bold text-[#F5F5F5] ring-2 ring-[#FF6B00]">JR</div>
+        <span class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-[#4CAF50] border-2 border-[#262626] flex items-center justify-center"><i class="fa-solid fa-check text-[8px] text-[#121212]"></i></span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-base font-bold">José Ramírez</p>
+        <div class="flex items-center gap-1 mt-0.5">
+          <i class="fa-solid fa-star text-[#FF6B00] text-[11px]"></i><i class="fa-solid fa-star text-[#FF6B00] text-[11px]"></i><i class="fa-solid fa-star text-[#FF6B00] text-[11px]"></i><i class="fa-solid fa-star text-[#FF6B00] text-[11px]"></i><i class="fa-solid fa-star-half-stroke text-[#FF6B00] text-[11px]"></i>
+          <span class="text-xs font-semibold ml-1">4.8</span><span class="text-xs text-[#A0A0A0]">· 312 viajes</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5 mt-4">
+      <div class="rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] px-3 py-2.5">
+        <p class="text-[10px] uppercase tracking-wider font-semibold text-[#A0A0A0]">Placa</p>
+        <p class="text-sm font-bold tracking-wider mt-0.5">C 482-519</p>
+      </div>
+      <div class="rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] px-3 py-2.5">
+        <p class="text-[10px] uppercase tracking-wider font-semibold text-[#A0A0A0]">Vehículo</p>
+        <p class="text-sm font-bold mt-0.5">Isuzu 3 ton · Blanco</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- acciones -->
+  <div class="flex gap-2.5 mt-4">
+    <button data-design-id="btn-llamar-f7a9b2" type="button" class="flex-1 h-14 rounded-3xl bg-[#FF6B00] hover:bg-[#E65C00] text-[#121212] font-extrabold flex items-center justify-center gap-2 shadow-[0_8px_24px_rgba(255,107,0,0.22)]">
+      <i class="fa-solid fa-phone"></i> Llamar al motorista
+    </button>
+    <button data-design-id="btn-whatsapp-a8b1c3" type="button" class="h-14 w-14 rounded-3xl border border-[#2C2C2C] bg-[#262626] flex items-center justify-center" aria-label="Escribir por WhatsApp"><i class="fa-brands fa-whatsapp text-[#4CAF50] text-xl"></i></button>
+  </div>
+
+  <!-- resumen -->
+  <section data-design-id="sec-resumen-b9c2d4" class="mt-6">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-[#A0A0A0] mb-3">Detalle del viaje</h2>
+    <div class="rounded-xl border border-[#2C2C2C] divide-y divide-[#2C2C2C]">
+      <div class="flex gap-3 p-3.5">
+        <div class="flex flex-col items-center pt-1">
+          <span class="h-2.5 w-2.5 rounded-full bg-[#FF6B00]"></span>
+          <span class="w-px flex-1 bg-[#3a3a3a] my-1"></span>
+          <span class="h-2.5 w-2.5 rounded-sm bg-[#F5F5F5]"></span>
+        </div>
+        <div class="flex-1 space-y-3">
+          <div><p class="text-sm font-medium">Ferretería El Constructor</p><p class="text-xs text-[#A0A0A0]">Lourdes, Colón</p></div>
+          <div><p class="text-sm font-medium">Col. Las Brisas, Pje. 4 #12</p><p class="text-xs text-[#A0A0A0]">Lourdes, Colón · 3.2 km</p></div>
+        </div>
+      </div>
+      <div class="flex items-center justify-between p-3.5">
+        <div class="flex items-center gap-2.5 text-sm"><i class="fa-solid fa-list-check text-[#A0A0A0] w-4"></i>3 materiales · 1,109 kg</div>
+        <span class="text-xs text-[#A0A0A0]">Cemento, bloques, varillas</span>
+      </div>
+      <div class="flex items-center justify-between p-3.5">
+        <div class="flex items-center gap-2.5 text-sm"><i class="fa-solid fa-money-bill-wave text-[#4CAF50] w-4"></i>Efectivo al entregar</div>
+        <span class="text-lg font-extrabold text-[#FF6B00]">$11.09</span>
+      </div>
+    </div>
+  </section>
+
+  <footer data-design-id="footer-viaje-c1d3e5" class="mt-5 flex items-center justify-between">
+    <a href="#" class="text-sm font-medium text-[#F44336]">Cancelar viaje</a>
+    <a href="#" class="text-sm text-[#A0A0A0]"><i class="fa-regular fa-circle-question mr-1"></i>Necesito ayuda</a>
+  </footer>
+</main>
+
+</body>
+</html>

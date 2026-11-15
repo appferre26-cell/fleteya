@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa Motorista — Iniciar sesión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+</head>
+<body class="w-[390px] min-h-[844px] bg-[#121212] text-[#F5F5F5] font-sans antialiased flex flex-col">
+
+<!-- Encabezado con marca -->
+<header data-design-id="login-mot-header-a1c3e5" class="relative px-5 pt-14 pb-8 overflow-hidden">
+  <svg viewBox="0 0 390 220" class="absolute inset-0 w-full h-full opacity-60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g stroke="#1c1f23" stroke-width="5" fill="none">
+      <path d="M0 60 H390"/><path d="M0 150 H390"/><path d="M90 0 V220"/><path d="M230 0 V220"/><path d="M330 0 V220"/>
+    </g>
+    <path d="M-10 200 C 120 160, 200 120, 400 40" stroke="#FF6B00" stroke-opacity=".18" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="2 12"/>
+  </svg>
+  <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-[#121212]"></div>
+
+  <div class="relative flex flex-col items-center text-center">
+    <div class="h-[72px] w-[72px] rounded-[20px] bg-[#FF6B00] flex items-center justify-center shadow-[0_10px_30px_rgba(255,107,0,0.25)]">
+      <i class="fa-solid fa-truck-fast text-[30px] text-[#F5F5F5]"></i>
+    </div>
+    <p class="mt-4 text-[28px] font-extrabold leading-none">Flete<span class="text-[#FF6B00]">Ya</span></p>
+    <span class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#1E1E1E] border border-[#2C2C2C] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0]">
+      <i class="fa-solid fa-id-card text-[#FF6B00]"></i>App para motoristas
+    </span>
+  </div>
+</header>
+
+<main data-design-id="login-mot-main-b2d4f6" class="flex-1 px-5">
+  <h1 class="text-[22px] font-extrabold">Inicia sesión</h1>
+  <p class="text-sm text-[#A0A0A0] mt-1">Entra con el teléfono y la contraseña que te entregó FleteYa.</p>
+
+  <form data-design-id="login-mot-form-c3e5a7" class="mt-6 space-y-4">
+    <div>
+      <label for="tel" class="block text-xs font-semibold text-[#A0A0A0] mb-1.5">Número de teléfono</label>
+      <div class="flex h-[52px] rounded-lg bg-[#1E1E1E] border border-[#FF6B00] ring-4 ring-[#FF6B00]/10 overflow-hidden">
+        <span class="flex items-center gap-2 px-3.5 border-r border-[#2C2C2C] text-sm font-semibold text-[#F5F5F5]">🇸🇻 +503</span>
+        <input id="tel" type="tel" inputmode="numeric" value="7845 2210" class="flex-1 bg-transparent px-3.5 text-base font-medium tracking-wide outline-none placeholder:text-[#6b6b6b]" placeholder="0000 0000">
+      </div>
+    </div>
+
+    <div>
+      <div class="flex items-baseline justify-between mb-1.5">
+        <label for="pass" class="block text-xs font-semibold text-[#A0A0A0]">Contraseña</label>
+      </div>
+      <div class="flex items-center h-[52px] rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] px-3.5 gap-3">
+        <i class="fa-solid fa-lock text-[#A0A0A0] text-sm"></i>
+        <input id="pass" type="password" placeholder="Tu contraseña" class="flex-1 bg-transparent text-base outline-none placeholder:text-[#6b6b6b]">
+        <button type="button" aria-label="Mostrar contraseña" class="h-9 w-9 -mr-1.5 flex items-center justify-center rounded-md text-[#A0A0A0]"><i class="fa-regular fa-eye"></i></button>
+      </div>
+    </div>
+
+    <label class="flex items-center gap-3 pt-1 cursor-pointer select-none">
+      <span class="h-5 w-5 rounded-md bg-[#FF6B00] flex items-center justify-center"><i class="fa-solid fa-check text-[11px] text-[#121212]"></i></span>
+      <span class="text-sm text-[#F5F5F5]">Mantener sesión iniciada en este teléfono</span>
+    </label>
+
+    <button data-design-id="login-mot-submit-d4f6b8" type="button" class="w-full h-14 rounded-3xl bg-gradient-to-b from-[#FF7A1A] to-[#FF6B00] text-[#121212] text-base font-extrabold flex items-center justify-center gap-2.5 shadow-[0_8px_24px_rgba(255,107,0,0.22)] mt-2">
+      Iniciar sesión <i class="fa-solid fa-arrow-right"></i>
+    </button>
+
+    <p class="text-center text-sm">
+      <a href="#" class="font-semibold text-[#FF6B00]">¿Olvidaste tu contraseña?</a>
+    </p>
+  </form>
+
+  <!-- Sin registro libre -->
+  <section data-design-id="login-mot-alta-e5a7c9" class="mt-7 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-4 flex gap-3.5">
+    <div class="h-10 w-10 shrink-0 rounded-lg bg-[#262626] flex items-center justify-center"><i class="fa-solid fa-user-plus text-[#A0A0A0]"></i></div>
+    <div>
+      <p class="text-sm font-semibold">¿Quieres manejar con FleteYa?</p>
+      <p class="text-xs text-[#A0A0A0] mt-1 leading-relaxed">Las cuentas de motorista las crea el equipo de FleteYa después de revisar tu DUI, licencia y tarjeta de circulación.</p>
+      <a href="#" class="inline-flex items-center gap-1.5 mt-2.5 text-xs font-semibold text-[#FF6B00]"><i class="fa-brands fa-whatsapp text-sm"></i>Solicitar alta por WhatsApp</a>
+    </div>
+  </section>
+</main>
+
+<footer data-design-id="login-mot-footer-f6b8d1" class="px-5 pt-6 pb-8 text-center">
+  <p class="text-[11px] text-[#A0A0A0] leading-relaxed">Acceso exclusivo para motoristas.<br>Los propietarios entran desde el panel de administración.</p>
+</footer>
+
+</body>
+</html>

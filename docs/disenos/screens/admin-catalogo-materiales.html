@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa Admin — Catálogo de materiales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+<style>@keyframes ping2{0%{transform:scale(.6);opacity:.6}100%{transform:scale(2.6);opacity:0}}.pulse{animation:ping2 2s ease-out infinite}</style>
+</head>
+<body class="w-[1440px] bg-[#121212] text-[#F5F5F5] font-sans antialiased">
+<div class="flex">
+
+<!-- SIDEBAR -->
+<aside data-design-id="sidebar-admin-a1b3c5" class="w-64 shrink-0 bg-[#171717] border-r border-[#2C2C2C] min-h-[900px] flex flex-col">
+  <div class="flex items-center gap-2.5 px-6 h-[72px] border-b border-[#2C2C2C]">
+    <div class="h-9 w-9 rounded-[10px] bg-[#FF6B00] flex items-center justify-center"><i class="fa-solid fa-truck-fast text-[#F5F5F5]"></i></div>
+    <div>
+      <p class="text-lg font-extrabold leading-none">Flete<span class="text-[#FF6B00]">Ya</span></p>
+      <p class="text-[10px] text-[#A0A0A0] mt-1 uppercase tracking-wider font-semibold">Panel de propietarios</p>
+    </div>
+  </div>
+  <nav data-design-id="nav-admin-b2c4d6" class="px-3 py-5 flex-1">
+    <p class="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#6b6b6b] mb-2">Operación</p>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-gauge-high w-4"></i>Dashboard</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-route w-4"></i>Viajes<span class="ml-auto text-[10px] font-bold bg-[#FF6B00] text-[#121212] rounded-full px-1.5 py-0.5">3</span></a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-id-card w-4"></i>Motoristas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-users w-4"></i>Clientes</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-map-location-dot w-4"></i>Mapa en vivo</a>
+    <p class="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#6b6b6b] mt-6 mb-2">Negocio</p>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-tags w-4"></i>Tarifas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-wallet w-4"></i>Pagos a motoristas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-coins w-4"></i>Créditos y recargas</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-qrcode w-4"></i>Puntos QR</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg text-[#A0A0A0] hover:bg-[#1E1E1E] text-sm font-medium"><i class="fa-solid fa-chart-line w-4"></i>Reportes</a>
+    <a href="#" class="flex items-center gap-3 px-3 h-10 rounded-lg bg-[#FF6B00]/12 text-[#FF6B00] font-semibold text-sm bg-[#FF6B00]/10"><i class="fa-solid fa-gear w-4"></i>Configuración</a>
+  </nav>
+  <div class="mx-4 mb-4 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-4">
+    <p class="text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-link text-[#FF6B00]"></i>Link para clientes</p>
+    <p class="text-[11px] text-[#A0A0A0] mt-1">Compártelo en WhatsApp o en la ferretería para recibir pedidos.</p>
+    <div class="flex items-center mt-3 bg-[#121212] border border-[#2C2C2C] rounded-lg h-9 pl-3 pr-1">
+      <span class="text-xs text-[#F5F5F5] flex-1 truncate">fleteya.sv/pedir</span>
+      <button data-design-id="btn-copiar-link-c3d5e7" type="button" class="h-7 px-2.5 rounded-md bg-[#262626] text-[11px] font-semibold text-[#F5F5F5]"><i class="fa-regular fa-copy mr-1"></i>Copiar</button>
+    </div>
+  </div>
+  <div class="flex items-center gap-3 px-5 py-4 border-t border-[#2C2C2C]">
+    <div class="h-9 w-9 rounded-full bg-[#3a3330] flex items-center justify-center text-xs font-bold">AG</div>
+    <div class="flex-1"><p class="text-sm font-semibold leading-tight">Andrés Guzmán</p><p class="text-[11px] text-[#A0A0A0]">Propietario</p></div>
+    <i class="fa-solid fa-right-from-bracket text-[#A0A0A0] text-sm"></i>
+  </div>
+</aside>
+
+<!-- CONTENIDO -->
+<div class="flex-1 min-w-0">
+  <header class="h-[72px] flex items-center gap-4 px-8 border-b border-[#2C2C2C]">
+    <div class="flex-1"><p class="text-xs text-[#A0A0A0]">FleteYa <span class="mx-1">/</span> Configuración <span class="mx-1">/</span> <span class="text-[#F5F5F5]">Catálogo de materiales</span></p></div>
+    <div class="flex items-center gap-2.5 w-80 h-10 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] px-3">
+      <i class="fa-solid fa-magnifying-glass text-[#A0A0A0] text-sm"></i>
+      <span class="text-sm text-[#A0A0A0]">Buscar viaje, motorista o cliente…</span>
+    </div>
+    <button type="button" class="relative h-10 w-10 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] flex items-center justify-center"><i class="fa-regular fa-bell text-[#A0A0A0]"></i></button>
+  </header>
+  <main class="px-8 py-7">
+    <div class="flex items-end justify-between mb-6">
+      <div>
+        <h1 class="text-[28px] font-extrabold leading-tight">Catálogo de materiales</h1>
+        <p class="text-sm text-[#A0A0A0] mt-1">Configuración · Lo que el cliente elige en "¿Qué vas a llevar?". La app suma estos pesos para calcular el precio.</p>
+      </div>
+      <div class="flex items-center gap-2.5"><button type="button" class="h-11 px-5 rounded-3xl bg-gradient-to-b from-[#FF7A1A] to-[#FF6B00] text-[#121212] text-sm font-extrabold flex items-center gap-2 shadow-[0_6px_18px_rgba(255,107,0,0.25)]"><i class="fa-solid fa-plus"></i>Agregar material</button></div>
+    </div>
+    <div class="grid grid-cols-12 gap-5">
+      <section class="col-span-8 rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-4">
+          <h2 class="text-base font-bold">Materiales <span class="text-[#A0A0A0] font-medium">· 7 visibles</span></h2>
+          <div class="flex items-center gap-2 w-64 h-9 rounded-lg bg-[#121212] border border-[#2C2C2C] px-3"><i class="fa-solid fa-magnifying-glass text-[#A0A0A0] text-xs"></i><span class="text-xs text-[#A0A0A0]">Buscar material</span></div>
+        </div>
+        <table class="w-full text-sm">
+          <thead><tr><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] px-5 pb-3">Material</th><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] pb-3">Unidad</th><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] pb-3">Peso aprox. por unidad</th><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] pb-3 !text-right">Visible</th><th class="text-left text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] pr-5 pb-3 !text-right"></th></tr></thead>
+          <tbody>
+            <tr class="border-t border-[#2C2C2C]"><td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center"><i class="fa-solid fa-sack-xmark text-[#FF6B00] text-sm"></i></div><p class="font-semibold">Bolsa de cemento</p></div></td><td class="py-3 text-[#A0A0A0]">Bolsa</td><td class="py-3"><span class="inline-flex items-center h-9 px-3 rounded-lg bg-[#121212] border border-[#2C2C2C] font-semibold tabular-nums">42.5 kg</span></td><td class="py-3"><div class="w-11 h-6 rounded-full bg-[#FF6B00] relative ml-auto"><span class="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-[#F5F5F5]"></span></div></td><td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold"><i class="fa-solid fa-pen text-[#A0A0A0] mr-1"></i>Editar</button></td></tr>
+            <tr class="border-t border-[#2C2C2C]"><td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center"><i class="fa-solid fa-cubes-stacked text-[#FF6B00] text-sm"></i></div><p class="font-semibold">Bloque de concreto 15 cm</p></div></td><td class="py-3 text-[#A0A0A0]">Unidad</td><td class="py-3"><span class="inline-flex items-center h-9 px-3 rounded-lg bg-[#121212] border border-[#2C2C2C] font-semibold tabular-nums">13 kg</span></td><td class="py-3"><div class="w-11 h-6 rounded-full bg-[#FF6B00] relative ml-auto"><span class="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-[#F5F5F5]"></span></div></td><td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold"><i class="fa-solid fa-pen text-[#A0A0A0] mr-1"></i>Editar</button></td></tr>
+            <tr class="border-t border-[#2C2C2C]"><td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center"><i class="fa-solid fa-grip-lines text-[#FF6B00] text-sm"></i></div><p class="font-semibold">Varilla de hierro 3/8" (6 m)</p></div></td><td class="py-3 text-[#A0A0A0]">Unidad</td><td class="py-3"><span class="inline-flex items-center h-9 px-3 rounded-lg bg-[#121212] border border-[#2C2C2C] font-semibold tabular-nums">3.4 kg</span></td><td class="py-3"><div class="w-11 h-6 rounded-full bg-[#FF6B00] relative ml-auto"><span class="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-[#F5F5F5]"></span></div></td><td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold"><i class="fa-solid fa-pen text-[#A0A0A0] mr-1"></i>Editar</button></td></tr>
+            <tr class="border-t border-[#2C2C2C]"><td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center"><i class="fa-solid fa-grip-lines text-[#FF6B00] text-sm"></i></div><p class="font-semibold">Varilla de hierro 1/2" (6 m)</p></div></td><td class="py-3 text-[#A0A0A0]">Unidad</td><td class="py-3"><span class="inline-flex items-center h-9 px-3 rounded-lg bg-[#121212] border border-[#2C2C2C] font-semibold tabular-nums">6 kg</span></td><td class="py-3"><div class="w-11 h-6 rounded-full bg-[#FF6B00] relative ml-auto"><span class="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-[#F5F5F5]"></span></div></td><td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold"><i class="fa-solid fa-pen text-[#A0A0A0] mr-1"></i>Editar</button></td></tr>
+            <tr class="border-t border-[#2C2C2C]"><td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center"><i class="fa-solid fa-mound text-[#FF6B00] text-sm"></i></div><p class="font-semibold">Arena</p></div></td><td class="py-3 text-[#A0A0A0]">Metro cúbico</td><td class="py-3"><span class="inline-flex items-center h-9 px-3 rounded-lg bg-[#121212] border border-[#2C2C2C] font-semibold tabular-nums">1,500 kg</span></td><td class="py-3"><div class="w-11 h-6 rounded-full bg-[#FF6B00] relative ml-auto"><span class="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-[#F5F5F5]"></span></div></td><td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold"><i class="fa-solid fa-pen text-[#A0A0A0] mr-1"></i>Editar</button></td></tr>
+            <tr class="border-t border-[#2C2C2C]"><td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center"><i class="fa-solid fa-mound text-[#FF6B00] text-sm"></i></div><p class="font-semibold">Grava</p></div></td><td class="py-3 text-[#A0A0A0]">Metro cúbico</td><td class="py-3"><span class="inline-flex items-center h-9 px-3 rounded-lg bg-[#121212] border border-[#2C2C2C] font-semibold tabular-nums">1,600 kg</span></td><td class="py-3"><div class="w-11 h-6 rounded-full bg-[#FF6B00] relative ml-auto"><span class="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-[#F5F5F5]"></span></div></td><td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold"><i class="fa-solid fa-pen text-[#A0A0A0] mr-1"></i>Editar</button></td></tr>
+            <tr class="border-t border-[#2C2C2C]"><td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center"><i class="fa-solid fa-layer-group text-[#FF6B00] text-sm"></i></div><p class="font-semibold">Lámina de zinc</p></div></td><td class="py-3 text-[#A0A0A0]">Unidad</td><td class="py-3"><span class="inline-flex items-center h-9 px-3 rounded-lg bg-[#121212] border border-[#2C2C2C] font-semibold tabular-nums">6 kg</span></td><td class="py-3"><div class="w-11 h-6 rounded-full bg-[#FF6B00] relative ml-auto"><span class="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-[#F5F5F5]"></span></div></td><td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold"><i class="fa-solid fa-pen text-[#A0A0A0] mr-1"></i>Editar</button></td></tr>
+            <tr class="border-t border-[#2C2C2C]"><td class="px-5 py-3"><div class="flex items-center gap-3"><div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center"><i class="fa-solid fa-sack-xmark text-[#FF6B00] text-sm"></i></div><p class="font-semibold">Saco de cal</p></div></td><td class="py-3 text-[#A0A0A0]">Bolsa</td><td class="py-3"><span class="inline-flex items-center h-9 px-3 rounded-lg bg-[#121212] border border-[#2C2C2C] font-semibold tabular-nums">25 kg</span></td><td class="py-3"><div class="w-11 h-6 rounded-full bg-[#3a3a3a] relative ml-auto"><span class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-[#A0A0A0]"></span></div></td><td class="pr-5 py-3 text-right"><button type="button" class="h-8 px-3 rounded-lg border border-[#2C2C2C] text-xs font-semibold"><i class="fa-solid fa-pen text-[#A0A0A0] mr-1"></i>Editar</button></td></tr>
+          </tbody>
+        </table>
+      </section>
+      <aside class="col-span-4 space-y-5">
+        <div class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-5">
+          <h3 class="text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-calculator text-[#FF6B00]"></i>Así calcula la app</h3>
+          <div class="mt-3 rounded-lg bg-[#121212] border border-[#2C2C2C] p-3 text-xs font-mono leading-6 tabular-nums">
+            10 × Cemento ........ 425 kg<br>50 × Bloque 15 cm ... 650 kg<br>10 × Varilla 3/8" ..  34 kg<br><span class="text-[#A0A0A0]">─────────────────────────</span><br>Total ........ 1,109 kg<br><span class="text-[#FF6B00] font-bold">1.109 ton × $10 = $11.09</span>
+          </div>
+          <p class="text-xs text-[#A0A0A0] mt-3">Mínimo $10 · incluye 5 km · proporcional al peso.</p>
+        </div>
+        <div class="rounded-xl bg-[#262626] border border-[#2C2C2C] p-5 text-sm text-[#A0A0A0] space-y-2">
+          <p><i class="fa-solid fa-circle-info text-[#FF6B00] mr-1.5"></i>Los pesos son aproximados. Conviene revisarlos con una ferretería.</p>
+          <p><i class="fa-solid fa-pen mr-1.5"></i>Si un material no está, el cliente usa <span class="text-[#F5F5F5] font-semibold">"Otro"</span> y escribe su peso.</p>
+          <p><i class="fa-solid fa-eye-slash mr-1.5"></i>Desactivar un material lo oculta sin borrarlo.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+</div>
+</body>
+</html>

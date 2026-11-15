@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleteYa — Solicitar viaje</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}}</script>
+</head>
+<body class="w-[390px] bg-[#121212] text-[#F5F5F5] font-sans antialiased">
+
+<header data-design-id="header-cliente-a1c9e2" class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[#2C2C2C]">
+  <div class="flex items-center gap-2.5">
+    <div class="h-9 w-9 rounded-[10px] bg-[#FF6B00] flex items-center justify-center">
+      <i class="fa-solid fa-truck-fast text-[#F5F5F5] text-base"></i>
+    </div>
+    <span class="text-xl font-extrabold tracking-tight">Flete<span class="text-[#FF6B00]">Ya</span></span>
+  </div>
+  <button data-design-id="btn-ayuda-b2d4f1" type="button" class="flex items-center gap-1.5 text-xs font-medium text-[#A0A0A0] border border-[#2C2C2C] rounded-full px-3 py-1.5">
+    <i class="fa-brands fa-whatsapp text-[#4CAF50] text-sm"></i> Ayuda
+  </button>
+</header>
+
+<main data-design-id="main-solicitar-c3e5a7" class="px-5 pt-5 pb-8">
+  <div class="mb-5">
+    <h1 class="text-[26px] leading-tight font-extrabold">¿Qué llevamos hoy?</h1>
+    <p class="text-sm text-[#A0A0A0] mt-1">Pide tu flete en 1 minuto. Sin descargar ninguna app.</p>
+  </div>
+
+  <form data-design-id="form-solicitud-d4f6b8" action="#" class="space-y-6">
+
+    <!-- Ubicaciones -->
+    <section data-design-id="sec-ubicaciones-e5a7c9" class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] p-4">
+      <div class="relative">
+        <div class="absolute left-[15px] top-[38px] bottom-[38px] border-l-2 border-dashed border-[#3a3a3a]"></div>
+        <label class="block">
+          <span class="flex items-center justify-between ml-11">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0]">Recogida</span>
+            <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#4CAF50] bg-[#4CAF50]/12 rounded-full px-2 py-0.5"><i class="fa-solid fa-qrcode text-[9px]"></i>Desde QR</span>
+          </span>
+          <div class="flex items-center gap-3 mt-1">
+            <div class="h-8 w-8 rounded-full bg-[#FF6B00]/15 flex items-center justify-center shrink-0"><i class="fa-solid fa-store text-[#FF6B00] text-sm"></i></div>
+            <div class="flex-1 flex items-center bg-[#262626] border border-[#FF6B00] rounded-lg h-11 px-3">
+              <span class="text-sm text-[#F5F5F5] flex-1 truncate">Ferretería El Constructor · Lourdes</span>
+              <i class="fa-solid fa-lock text-[#A0A0A0] text-xs"></i>
+            </div>
+          </div>
+        </label>
+        <label class="block mt-4">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0] ml-11">Destino</span>
+          <div class="flex items-center gap-3 mt-1">
+            <div class="h-8 w-8 rounded-full bg-[#FF6B00]/15 flex items-center justify-center shrink-0"><i class="fa-solid fa-flag-checkered text-[#FF6B00] text-sm"></i></div>
+            <div class="flex-1 flex items-center bg-[#262626] border border-[#2C2C2C] rounded-lg h-11 px-3">
+              <span class="text-sm text-[#F5F5F5] flex-1 truncate">Col. Las Brisas, Lourdes, Colón</span>
+              <span class="text-xs text-[#A0A0A0]">3.2 km</span>
+            </div>
+          </div>
+        </label>
+      </div>
+      <p class="text-xs text-[#A0A0A0] mt-3 ml-11"><i class="fa-regular fa-lightbulb text-[#FF6B00] mr-1"></i>Agrega un punto de referencia: "frente a la iglesia", "portón negro".</p>
+    </section>
+
+    <!-- Lista de materiales -->
+    <section data-design-id="sec-lista-carga-a3b5c7">
+      <div class="flex items-end justify-between mb-3">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-[#A0A0A0]">¿Qué vas a llevar?</h2>
+        <span class="text-[11px] text-[#A0A0A0]">3 materiales</span>
+      </div>
+      <div class="rounded-xl bg-[#1E1E1E] border border-[#2C2C2C] divide-y divide-[#2C2C2C]">
+        <div data-design-id="item-cemento-b4c6d8" class="flex items-center gap-3 p-3">
+          <div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center shrink-0"><i class="fa-solid fa-sack-xmark text-[#FF6B00] text-sm"></i></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold">Bolsa de cemento</p>
+            <p class="text-[11px] text-[#A0A0A0]">42.5 kg c/u · 425 kg</p>
+          </div>
+          <div class="flex items-center rounded-full border border-[#2C2C2C] bg-[#262626]">
+            <button type="button" class="h-8 w-8 flex items-center justify-center text-[#A0A0A0]" aria-label="Menos"><i class="fa-solid fa-minus text-xs"></i></button>
+            <span class="w-7 text-center text-sm font-bold tabular-nums">10</span>
+            <button type="button" class="h-8 w-8 flex items-center justify-center text-[#FF6B00]" aria-label="Más"><i class="fa-solid fa-plus text-xs"></i></button>
+          </div>
+        </div>
+        <div data-design-id="item-bloque-c5d7e9" class="flex items-center gap-3 p-3">
+          <div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center shrink-0"><i class="fa-solid fa-cubes-stacked text-[#FF6B00] text-sm"></i></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold">Bloque de concreto 15 cm</p>
+            <p class="text-[11px] text-[#A0A0A0]">13 kg c/u · 650 kg</p>
+          </div>
+          <div class="flex items-center rounded-full border border-[#2C2C2C] bg-[#262626]">
+            <button type="button" class="h-8 w-8 flex items-center justify-center text-[#A0A0A0]" aria-label="Menos"><i class="fa-solid fa-minus text-xs"></i></button>
+            <span class="w-7 text-center text-sm font-bold tabular-nums">50</span>
+            <button type="button" class="h-8 w-8 flex items-center justify-center text-[#FF6B00]" aria-label="Más"><i class="fa-solid fa-plus text-xs"></i></button>
+          </div>
+        </div>
+        <div data-design-id="item-varilla-d6e8f1" class="flex items-center gap-3 p-3">
+          <div class="h-9 w-9 rounded-lg bg-[#262626] flex items-center justify-center shrink-0"><i class="fa-solid fa-grip-lines text-[#FF6B00] text-sm"></i></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold">Varilla de hierro 3/8" (6 m)</p>
+            <p class="text-[11px] text-[#A0A0A0]">3.4 kg c/u · 34 kg</p>
+          </div>
+          <div class="flex items-center rounded-full border border-[#2C2C2C] bg-[#262626]">
+            <button type="button" class="h-8 w-8 flex items-center justify-center text-[#A0A0A0]" aria-label="Menos"><i class="fa-solid fa-minus text-xs"></i></button>
+            <span class="w-7 text-center text-sm font-bold tabular-nums">10</span>
+            <button type="button" class="h-8 w-8 flex items-center justify-center text-[#FF6B00]" aria-label="Más"><i class="fa-solid fa-plus text-xs"></i></button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 divide-x divide-[#2C2C2C]">
+          <button data-design-id="btn-agregar-material-e7f9a2" type="button" class="h-12 flex items-center justify-center gap-2 text-sm font-semibold text-[#FF6B00]"><i class="fa-solid fa-magnifying-glass text-xs"></i>Agregar material</button>
+          <button data-design-id="btn-otro-material-f8a1b3" type="button" class="h-12 flex items-center justify-center gap-2 text-sm font-medium text-[#A0A0A0]"><i class="fa-solid fa-pen text-xs"></i>Otro (escribir)</button>
+        </div>
+      </div>
+      <div class="mt-2.5 flex items-center gap-3 bg-[#1E1E1E] border border-[#2C2C2C] rounded-lg h-11 px-3.5">
+        <i class="fa-regular fa-comment text-[#A0A0A0] text-sm"></i>
+        <span class="text-sm text-[#A0A0A0]">Nota para el motorista (opcional)</span>
+      </div>
+    </section>
+
+    <!-- Peso y precio -->
+    <section data-design-id="sec-precio-a9b2c4" class="rounded-xl bg-[#FF6B00]/10 border border-[#FF6B00]/40 p-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0]">Peso estimado</p>
+          <p class="text-xl font-extrabold mt-0.5 tabular-nums">1,109 kg <span class="text-sm font-semibold text-[#A0A0A0]">≈ 1.11 ton</span></p>
+        </div>
+        <div class="text-right">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-[#A0A0A0]">Precio</p>
+          <p class="text-[32px] font-extrabold text-[#FF6B00] leading-none mt-0.5 tabular-nums">$11.09</p>
+        </div>
+      </div>
+      <p class="text-xs text-[#A0A0A0] mt-3 leading-relaxed">$10 por tonelada · mínimo $10 · incluye hasta 5 km. Solo te llegan motoristas cuyo vehículo aguanta este peso.</p>
+    </section>
+
+    <!-- Pago -->
+    <section data-design-id="sec-pago-b1c3d5">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-[#A0A0A0] mb-3">¿Cómo vas a pagar?</h2>
+      <div class="grid grid-cols-2 gap-2.5">
+        <button data-design-id="pago-efectivo-c2d4e6" type="button" class="h-12 rounded-lg bg-[#FF6B00]/15 border border-[#FF6B00] text-[#FF6B00] text-sm font-semibold flex items-center justify-center gap-2"><i class="fa-solid fa-money-bill-wave"></i>Efectivo</button>
+        <button data-design-id="pago-linea-d3e5f7" type="button" class="h-12 rounded-lg bg-[#1E1E1E] border border-[#2C2C2C] text-sm font-medium flex items-center justify-center gap-2"><i class="fa-regular fa-credit-card text-[#A0A0A0]"></i>Pago en línea</button>
+      </div>
+    </section>
+
+    <!-- Datos de contacto -->
+    <section data-design-id="sec-contacto-d7f9b2">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-[#A0A0A0] mb-3">Tus datos de contacto</h2>
+      <div class="space-y-2.5">
+        <div class="flex items-center gap-3 bg-[#1E1E1E] border border-[#2C2C2C] rounded-lg h-12 px-3.5">
+          <i class="fa-regular fa-user text-[#A0A0A0] text-sm w-4"></i>
+          <span class="text-sm text-[#F5F5F5]">Carlos Martínez</span>
+        </div>
+        <div class="flex items-center gap-3 bg-[#1E1E1E] border border-[#2C2C2C] rounded-lg h-12 px-3.5">
+          <i class="fa-solid fa-phone text-[#A0A0A0] text-sm w-4"></i>
+          <span class="text-sm text-[#A0A0A0] border-r border-[#2C2C2C] pr-3">+503</span>
+          <span class="text-sm text-[#F5F5F5]">7823-4591</span>
+        </div>
+        <p class="text-xs text-[#A0A0A0]">No necesitas crear cuenta. El motorista te llamará a este número al llegar.</p>
+      </div>
+    </section>
+
+    <!-- Términos -->
+    <label data-design-id="chk-terminos-e4f6a8" class="flex items-start gap-3 cursor-pointer">
+      <span class="mt-0.5 h-5 w-5 rounded-md bg-[#FF6B00] flex items-center justify-center shrink-0"><i class="fa-solid fa-check text-[#121212] text-[11px]"></i></span>
+      <span class="text-xs text-[#A0A0A0] leading-relaxed">Acepto los <a href="#" class="text-[#F5F5F5] underline">Términos del Servicio</a> y el <a href="#" class="text-[#F5F5F5] underline">Aviso de Privacidad</a>.</span>
+    </label>
+
+    <!-- CTA -->
+    <div>
+      <button data-design-id="btn-solicitar-e8a1c3" type="button" class="w-full h-14 rounded-3xl bg-gradient-to-b from-[#FF7A1A] to-[#FF6B00] hover:to-[#E65C00] text-[#121212] text-base font-extrabold flex items-center justify-center gap-2 shadow-[0_8px_24px_rgba(255,107,0,0.25)]">
+        Solicitar FleteYa · $11.09 <i class="fa-solid fa-arrow-right"></i>
+      </button>
+      <div class="flex items-center justify-center gap-4 mt-4 text-xs text-[#A0A0A0]">
+        <span><i class="fa-solid fa-shield-halved text-[#4CAF50] mr-1"></i>Motoristas verificados</span>
+        <span class="h-3 w-px bg-[#2C2C2C]"></span>
+        <span><i class="fa-solid fa-scale-balanced text-[#4CAF50] mr-1"></i>Precio por peso</span>
+      </div>
+    </div>
+  </form>
+</main>
+
+<footer data-design-id="footer-cliente-f9b2d4" class="px-5 py-5 border-t border-[#2C2C2C] text-center">
+  <p class="text-[11px] text-[#A0A0A0]">FleteYa · Lourdes, Colón, La Libertad · <a href="#" class="underline">Términos</a> · <a href="#" class="underline">Privacidad</a></p>
+</footer>
+
+</body>
+</html>
