@@ -83,6 +83,7 @@ Peso estimado:            1,109 kg (≈ 1.1 ton)
 **Paso 4 — Cotización estimada**
 - Precio calculado automáticamente: $10 por tonelada, mínimo $10, dentro de 5 km. *(Más de 5 km: el motorista puede ofrecer otro precio, ver sección 7.)*
 - Tiempo estimado de llegada del motorista
+- Casilla: *"Acepto los Términos del Servicio y el Aviso de Privacidad"* (con enlaces para leerlos). Sin registro: solo se marca la casilla.
 - Botón: **"Solicitar FleteYa"**
 
 **Paso 5 — En espera de motorista**
@@ -115,6 +116,11 @@ Peso estimado:            1,109 kg (≈ 1.1 ton)
 **Inicio de sesión**
 - Teléfono + contraseña
 - *(El admin crea la cuenta; el motorista solo recibe sus credenciales)*
+
+**Aceptación de términos (primer ingreso)**
+- La primera vez que el motorista entra, ve los **Términos para Motoristas** y el **Aviso de Privacidad**.
+- Debe marcar "He leído y acepto" para poder usar la app. Si no acepta, no puede recibir viajes.
+- Se guarda la fecha, la hora y la versión aceptada. Si los términos cambian, se le piden de nuevo al entrar.
 
 **Dashboard principal**
 - Botón ON/OFF: Activar disponibilidad
@@ -463,7 +469,7 @@ Una sección sencilla **"Puntos QR"**:
 - No es una mudanza completa con empaque incluido *(a menos que se agregue después)*
 - No garantiza vehículos refrigerados
 - No hace envíos interdepartamentales de larga distancia en Fase 1
-- No ofrece seguro de carga en Fase 1
+- No ofrece seguro de carga en Fase 1: **el motorista responde por los daños o pérdidas de la carga durante el transporte** (ver sección 15)
 
 ---
 
@@ -475,6 +481,32 @@ Una sección sencilla **"Puntos QR"**:
 | Link web (cliente) | Página web responsive (PWA) | Cliente |
 | Link web con QR (ferretería) | Página web responsive, sin registro | Cliente desde ferretería |
 | Panel admin | Web app adaptable a celular, instalable (PWA) | Propietario |
+
+---
+
+## 15. Parte Legal y de Marca
+
+### Registro de la empresa
+- FleteYa **se registrará como empresa** (decisión tomada). El trámite se inicia por separado del desarrollo.
+- Mientras tanto se puede seguir con el diseño y la programación. Lo único que **espera al registro** es abrir la cuenta con el proveedor de pagos en línea, porque casi todos lo piden.
+
+### Daños a la carga
+- **El motorista se hace responsable** de los daños o pérdidas de la carga mientras está bajo su cuidado, es decir, desde que la recibe hasta que la entrega.
+- El motorista debe manejar la carga con cuidado y asegurarla bien en el vehículo.
+- Esto queda escrito en los Términos para Motoristas y en los Términos del Servicio para clientes.
+
+### Términos y privacidad (borradores)
+| Documento | Quién lo acepta | Cuándo |
+|-----------|-----------------|--------|
+| [Términos para Motoristas](legal/terminos-motoristas.md) | Motorista | Primer ingreso a la app (casilla obligatoria) |
+| [Términos del Servicio](legal/terminos-clientes.md) | Cliente | Al solicitar un viaje (casilla, sin registro) |
+| [Aviso de Privacidad](legal/aviso-privacidad.md) | Todos | Junto con los términos |
+
+> Son **borradores** y deben ser revisados por un abogado salvadoreño antes de publicarse.
+
+### Dominio
+- **Piloto:** se puede usar la dirección gratuita que da la plataforma donde se publique la app.
+- **Recomendación:** comprar el dominio propio (fleteya.sv o fleteya.com) **antes de imprimir los QR**. El link va dentro del QR; si después cambia, hay que reimprimirlos todos.
 
 ---
 
