@@ -276,9 +276,41 @@ Motorista recarga ($20 semana o $60 mes)
 
 > Los créditos **no son dinero para los clientes**: son la forma en que el motorista paga su acceso y la comisión de FleteYa. El cliente paga aparte (efectivo o en línea).
 
-#### Preguntas pendientes sobre créditos
-- ¿Qué pasa si el motorista tiene $0.80 en créditos y llega un viaje de $10 (que descontaría $1.00)? ¿Se bloquea antes de aceptar ese viaje?
-- ¿El motorista puede ver en su app cuántos créditos le quedan en tiempo real? *(recomendado: sí)*
+#### Créditos insuficientes (saldo negativo)
+
+Si al motorista le quedan pocos créditos y el 10% del viaje es mayor que su saldo:
+
+- La app **le deja terminar el viaje** igual.
+- Al aceptar o terminar el viaje, en su pantalla aparece un aviso claro, por ejemplo:
+  > "Te quedan $0.80 en créditos. Este viaje descuenta $1.00. Los $0.20 restantes se descontarán de tu siguiente recarga."
+- Su saldo queda en negativo (ej. **-$0.20**) y ya **no puede recibir viajes nuevos** hasta recargar.
+- En la siguiente recarga se descuenta primero la deuda. Ejemplo: recarga $20 → queda con $19.80.
+
+El motorista ve en su app, en todo momento, cuántos créditos le quedan.
+
+### Pagos en línea del cliente → pago semanal al motorista
+
+```
+Cliente paga en línea desde el link web
+        ↓
+  El dinero llega primero a la cuenta de FleteYa
+        ↓
+  Se acumula a favor del motorista que hizo el viaje
+        ↓
+  Cada semana FleteYa transfiere al motorista
+  el total de sus viajes pagados en línea (a su cuenta de banco)
+```
+
+- Los viajes en **efectivo** los cobra el motorista directamente; no pasan por FleteYa.
+- En el panel de propietarios habrá una sección **"Pagos a motoristas"** con:
+  - Cuánto se le debe a cada motorista esa semana (solo viajes pagados en línea)
+  - Botón para marcar como pagado, con fecha y número de transferencia
+  - Historial de pagos
+- El motorista ve en su app cuánto tiene acumulado para su próximo pago semanal.
+
+#### Preguntas pendientes
+- ¿Qué día de la semana se paga a los motoristas? *(ej. todos los lunes, con el corte del domingo)*
+- Al pagar los viajes en línea, ¿se transfiere el monto completo? *(recomendado: sí, porque el 10% ya se descuenta de los créditos)*
 
 ---
 
