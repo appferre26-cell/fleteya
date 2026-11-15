@@ -83,6 +83,7 @@ Peso estimado:            1,109 kg (≈ 1.1 ton)
 **Paso 4 — Cotización estimada**
 - Precio calculado automáticamente: $10 por tonelada, mínimo $10, dentro de 5 km. *(Más de 5 km: el motorista puede ofrecer otro precio, ver sección 7.)*
 - Tiempo estimado de llegada del motorista
+- Casilla: *"Acepto los Términos del Servicio y el Aviso de Privacidad"* (con enlaces para leerlos). Sin registro: solo se marca la casilla.
 - Botón: **"Solicitar FleteYa"**
 
 **Paso 5 — En espera de motorista**
@@ -115,6 +116,11 @@ Peso estimado:            1,109 kg (≈ 1.1 ton)
 **Inicio de sesión**
 - Teléfono + contraseña
 - *(El admin crea la cuenta; el motorista solo recibe sus credenciales)*
+
+**Aceptación de términos (primer ingreso)**
+- La primera vez que el motorista entra, ve los **Términos para Motoristas** y el **Aviso de Privacidad**.
+- Debe marcar "He leído y acepto" para poder usar la app. Si no acepta, no puede recibir viajes.
+- Se guarda la fecha, la hora y la versión aceptada. Si los términos cambian, se le piden de nuevo al entrar.
 
 **Dashboard principal**
 - Botón ON/OFF: Activar disponibilidad
@@ -463,7 +469,7 @@ Una sección sencilla **"Puntos QR"**:
 - No es una mudanza completa con empaque incluido *(a menos que se agregue después)*
 - No garantiza vehículos refrigerados
 - No hace envíos interdepartamentales de larga distancia en Fase 1
-- No ofrece seguro de carga en Fase 1
+- No ofrece seguro de carga en Fase 1: **el motorista responde por los daños o pérdidas de la carga durante el transporte** (ver sección 15)
 
 ---
 
@@ -475,6 +481,42 @@ Una sección sencilla **"Puntos QR"**:
 | Link web (cliente) | Página web responsive (PWA) | Cliente |
 | Link web con QR (ferretería) | Página web responsive, sin registro | Cliente desde ferretería |
 | Panel admin | Web app adaptable a celular, instalable (PWA) | Propietario |
+
+---
+
+## 15. Parte Legal y de Marca
+
+### Registro ante Hacienda
+- **Listo:** la inscripción está a nombre de **uno de los socios**, que ya tiene registrado en el Ministerio de Hacienda el rubro de **transporte de carga**.
+- Con ese registro ya se puede **solicitar la cuenta con el proveedor de pagos en línea** (cuando se elija el proveedor).
+- **Por confirmar con un contador:**
+  - Si el rubro de transporte de carga cubre también los ingresos de FleteYa como plataforma (las recargas de créditos y la comisión del 10%) o si conviene agregar otra actividad económica.
+  - Cómo se emiten los comprobantes por las recargas de los motoristas.
+- Los datos de ese socio (nombre o razón social, NIT y dirección) son los que van en la parte **"Responsable"** de los Términos y del Aviso de Privacidad.
+
+### Registro de la marca (pendiente)
+- Falta registrar la marca **"FleteYa"** y su logo en el **CNR** (Registro de la Propiedad Intelectual).
+- Antes de solicitarla, conviene buscar en el CNR si ya existe una marca igual o parecida.
+- Sugerencia, a confirmar en el CNR: registrarla en las clases de **transporte (clase 39)** y de **software o app (clases 9 y/o 42)**.
+- Mientras sale el registro, se puede seguir diseñando y programando con el nombre FleteYa.
+
+### Daños a la carga
+- **El motorista se hace responsable** de los daños o pérdidas de la carga mientras está bajo su cuidado, es decir, desde que la recibe hasta que la entrega.
+- El motorista debe manejar la carga con cuidado y asegurarla bien en el vehículo.
+- Esto queda escrito en los Términos para Motoristas y en los Términos del Servicio para clientes.
+
+### Términos y privacidad (borradores)
+| Documento | Quién lo acepta | Cuándo |
+|-----------|-----------------|--------|
+| [Términos para Motoristas](legal/terminos-motoristas.md) | Motorista | Primer ingreso a la app (casilla obligatoria) |
+| [Términos del Servicio](legal/terminos-clientes.md) | Cliente | Al solicitar un viaje (casilla, sin registro) |
+| [Aviso de Privacidad](legal/aviso-privacidad.md) | Todos | Junto con los términos |
+
+> Son **borradores** y deben ser revisados por un abogado salvadoreño antes de publicarse.
+
+### Dominio
+- **Piloto:** se puede usar la dirección gratuita que da la plataforma donde se publique la app.
+- **Recomendación:** comprar el dominio propio (fleteya.sv o fleteya.com) **antes de imprimir los QR**. El link va dentro del QR; si después cambia, hay que reimprimirlos todos.
 
 ---
 
