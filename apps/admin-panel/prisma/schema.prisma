@@ -26,6 +26,7 @@ model Propietario {
   recargasRegistradas Recarga[]           @relation("RecargasRegistradas")
   recargasAnuladas    Recarga[]           @relation("RecargasAnuladas")
   clientesBloqueados  ClienteBloqueado[]  @relation("ClientesBloqueados")
+  gastos              Gasto[]             @relation("GastosRegistrados")
 }
 
 enum EstadoMotorista {
@@ -374,4 +375,18 @@ model ClienteBloqueado {
   bloqueadoPorId  String
   bloqueadoPor    Propietario @relation("ClientesBloqueados", fields: [bloqueadoPorId], references: [id])
   creadoEn        DateTime    @default(now())
+}
+
+// Parte 7: gastos de FleteYa (publicidad, carteles, teléfono...) para calcular la ganancia neta en Reportes.
+model Gasto {
+  id              String      @id @default(cuid())
+  fecha           DateTime    @db.Date
+  categoria       String      // ver CATEGORIAS_GASTO en src/lib/reportes.ts
+  concepto        String
+  monto           Decimal     @db.Decimal(10, 2)
+  registradoPorId String
+  registradoPor   Propietario @relation("GastosRegistrados", fields: [registradoPorId], references: [id])
+  creadoEn        DateTime    @default(now())
+
+  @@index([fecha])
 }

@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { FORMAS_PAGO, PLANES, numeroRecibo } from "@/lib/recibo";
 import { propietarioActual } from "@/lib/sesion";
+import { fechaHoraCsv, respuestaCsv } from "@/lib/csv";
 
 // Exportar recargas a CSV (se abre en Excel). ?desde=AAAA-MM-DD&hasta=AAAA-MM-DD opcionales.
 export async function GET(req: Request) {
@@ -13,12 +14,7 @@ export async function GET(req: Request) {
     orderBy: { numero: "asc" },
     include: { motorista: { select: { nombre: true, telefono: true, dui: true } }, registradoPor: { select: { nombre: true } } },
   });
-  const c = (v: unknown) => {
-    const s = String(v ?? "");
-    const seguro = /^[=+\-@]/.test(s) && !/^-?\d+(\.\d+)?$/.test(s) ? `'${s}` : s; // evita fórmulas al abrir en Excel
-    return /[",;\n]/.test(seguro) ? `"${seguro.replace(/"/g, '""')}"` : seguro;
-  };
-  const fh = (d: Date) => d.toLocaleString("sv-SE", { timeZone: "America/El_Salvador" });
+  const fh = fechaHoraCsv;
   const filas = [
     ["Recibo", "Fecha", "Motorista", "Teléfono", "DUI", "Plan", "Monto", "Forma de pago", "Referencia", "Saldo anterior", "Deuda descontada", "Saldo nuevo", "Registrado por", "Estado", "Motivo anulación"],
     ...recargas.map((r) => [
@@ -27,12 +23,5 @@ export async function GET(req: Request) {
       r.registradoPor.nombre, r.anuladaEn ? "Anulada" : "Pagada", r.motivoAnulacion,
     ]),
   ];
-  const csv = "\ufeff" + filas.map((f) => f.map(c).join(",")).join("\r\n");
-  return new Response(csv, {
-    headers: {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="recargas-fleteya.csv"`,
-      "Cache-Control": "private, no-store",
-    },
-  });
+  return respuestaCsv(filas, "recargas-fleteya.csv");
 }

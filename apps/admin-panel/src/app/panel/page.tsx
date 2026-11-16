@@ -3,11 +3,19 @@ import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
 import { diasParaVencer, fechaCorta, fechaHora } from "@/lib/validacion";
 import { textoAccion } from "@/lib/historial";
+import { obtenerConfig } from "@/lib/config";
+import { datosEnVivo } from "@/lib/en-vivo";
+import { periodo } from "@/lib/periodos";
+import { resumenPeriodo } from "@/lib/reportes";
+import { dinero } from "@/lib/tarifa";
+import { EnVivo } from "./EnVivo";
 
 export const metadata = { title: "Inicio — FleteYa" };
 
 export default async function InicioPanel() {
   const yo = await exigirPropietario();
+  const periodos = [periodo("hoy"), periodo("semana"), periodo("mes")];
+  const [cfg, vivo, resumenes] = await Promise.all([obtenerConfig(), datosEnVivo(), Promise.all(periodos.map(resumenPeriodo))]);
   const [grupos, pendientes, licencias, recientes, buscando] = await Promise.all([
     db.motorista.groupBy({ by: ["estado"], _count: true }),
     db.motorista.findMany({ where: { estado: "PENDIENTE" }, orderBy: { creadoEn: "asc" }, take: 5,
@@ -26,9 +34,35 @@ export default async function InicioPanel() {
   return (
     <>
       <h1 className="text-[26px] leading-tight font-extrabold lg:text-[28px]">Hola, {yo.nombre.split(" ")[0]}</h1>
-      <p className="mt-1 text-sm text-suave">Resumen de tus motoristas en Lourdes, Colón.</p>
+      <p className="mt-1 text-sm text-suave">Así va FleteYa en {cfg.zonaNombre || "tu zona"}.</p>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <EnVivo inicial={vivo} zona={{ lat: cfg.zonaLat, lng: cfg.zonaLng, radioKm: cfg.zonaRadioKm }} />
+
+      <section className="tarjeta mt-4 overflow-hidden" data-testid="ingresos">
+        <div className="flex items-center justify-between gap-2 border-b border-borde px-5 py-4">
+          <h2 className="flex items-center gap-2 font-bold"><i className="fa-solid fa-chart-column text-naranja" />Viajes e ingresos</h2>
+          <Link href="/panel/reportes" className="text-sm font-semibold text-naranja">Ver reportes <i className="fa-solid fa-arrow-right ml-1 text-xs" /></Link>
+        </div>
+        <div className="grid grid-cols-3 divide-x divide-borde">
+          {periodos.map((p, i) => {
+            const r = resumenes[i];
+            return (
+              <Link key={p.clave} href={`/panel/reportes?periodo=${p.clave}`} className="px-3 py-4 hover:bg-[#232323] sm:px-5" data-testid={`ingresos-${p.clave}`}>
+                <p className="seccion-titulo">{p.nombre}</p>
+                <p className="mt-1.5 text-2xl font-extrabold tabular-nums">{r.entregados} <span className="text-xs font-semibold text-suave">{r.entregados === 1 ? "viaje" : "viajes"}</span></p>
+                <dl className="mt-2 space-y-0.5 text-xs text-suave">
+                  <div className="flex flex-wrap justify-between gap-x-2"><dt>Cobrado</dt><dd className="font-semibold text-texto tabular-nums">{dinero(r.cobrado)}</dd></div>
+                  <div className="flex flex-wrap justify-between gap-x-2"><dt>Comisión</dt><dd className="font-semibold text-amarillo tabular-nums">{dinero(r.comision)}</dd></div>
+                  <div className="flex flex-wrap justify-between gap-x-2"><dt>Recargas</dt><dd className="font-semibold text-exito tabular-nums">{dinero(r.recargado)}</dd></div>
+                </dl>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <h2 className="mt-6 mb-3 flex items-center gap-2 font-bold"><i className="fa-solid fa-id-card text-naranja" />Motoristas</h2>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
           ["Motoristas", total, "fa-id-card", "text-texto"],
           ["Activos", n("ACTIVO"), "fa-circle-check", "text-exito"],
