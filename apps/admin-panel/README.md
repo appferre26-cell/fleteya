@@ -23,7 +23,7 @@ Una sola aplicación web con dos zonas separadas:
 ### Parte 2 — Link del cliente
 
 - **`/pedir`** (la dirección principal `/` lleva aquí): el cliente marca recogida y destino en el mapa
-  (OpenStreetMap, gratis), elige materiales del catálogo o escribe «Otro» con su peso, y ve al instante el peso y el precio:
+  (Google Maps si hay clave; si no, OpenStreetMap), elige materiales del catálogo o escribe «Otro» con su peso, y ve al instante el peso y el precio:
   **$10 por tonelada, mínimo $10, incluye 5 km** (se cambian en Tarifas). Más lejos de los km incluidos se le avisa
   que el motorista puede ofrecer otro precio. Pago **solo en efectivo**. Acepta Términos y Aviso de Privacidad y envía.
   - Con QR: `/pedir?f=FER001` llena la recogida con la ferretería.
@@ -98,4 +98,6 @@ computadora y celular (carpeta `capturas/`, o la que digas en `CAPTURAS`).
 - Al entrar se bloquea 15 minutos después de 5 intentos fallidos.
 - Los QR usan la dirección con la que se abre el panel (o `PUBLIC_URL` si se define). Imprime los definitivos
   cuando la app esté publicada.
+- **Mapa de Google:** define `NEXT_PUBLIC_GOOGLE_MAPS_KEY` (clave de «Maps JavaScript API», limitada al dominio de la app)
+  y vuelve a construir (`npm run build`). Sin clave, o si Google rechaza la clave, se usa OpenStreetMap automáticamente.
 - `npm run build` y `npm run dev` copian `docs/legal/*.md` a `legal/` (carpeta generada, no se sube).

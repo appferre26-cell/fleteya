@@ -65,3 +65,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   body { background: #fff !important; }
   main { padding: 0 !important; max-width: none !important; }
 }
+
+/* Google Maps: que el estilo base de imágenes no deforme el mapa */
+.gm-style img { max-width: none; }
