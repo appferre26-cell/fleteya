@@ -7,6 +7,8 @@ import { exigirPropietario } from "@/lib/sesion";
 import { DOCUMENTOS, TIPOS_VEHICULO, diasParaVencer, fechaCorta, fechaHora, formatoTelefono } from "@/lib/validacion";
 import { Estado, Iniciales } from "../piezas";
 import { AccionesMotorista } from "./AccionesMotorista";
+import { promedioMotorista } from "@/lib/calificaciones";
+import { EstrellasFijas, Promedio } from "@/components/Estrellas";
 
 export const metadata = { title: "Motorista — FleteYa" };
 
@@ -23,10 +25,12 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
     },
   });
   if (!m) notFound();
-  const [entregados, movimientos, enCurso] = await Promise.all([
+  const [entregados, movimientos, enCurso, calif, opiniones] = await Promise.all([
     db.viaje.aggregate({ where: { motoristaId: m.id, estado: "ENTREGADO" }, _count: true, _sum: { comision: true } }),
     db.movimientoCredito.findMany({ where: { motoristaId: m.id }, orderBy: { creadoEn: "desc" }, take: 8, include: { recarga: { select: { numero: true } } } }),
     db.viaje.findFirst({ where: { motoristaId: m.id, estado: { in: ["ASIGNADO", "EN_CAMINO", "CARGANDO", "EN_RUTA"] } }, select: { id: true, numero: true } }),
+    promedioMotorista(m.id),
+    db.viaje.findMany({ where: { motoristaId: m.id, estrellasMotorista: { not: null } }, orderBy: { motoristaCalificadoEn: "desc" }, take: 6, select: { id: true, numero: true, clienteNombre: true, estrellasMotorista: true, comentarioMotorista: true, motoristaCalificadoEn: true } }),
   ]);
   const saldo = Number(m.saldoCreditos);
   const enLinea = m.disponible && m.vistoEn && Date.now() - m.vistoEn.getTime() < 2 * 60_000;
@@ -139,6 +143,23 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
                 ))}
               </ul>
             )}
+          </section>
+
+          <section className="tarjeta p-5" data-testid="calificacion-motorista">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="seccion-titulo">Calificación de los clientes</h2>
+              <span className="text-sm"><Promedio {...calif} /></span>
+            </div>
+            {opiniones.length > 0 ? (
+              <ul className="mt-3 divide-y divide-borde text-sm">
+                {opiniones.map((o) => (
+                  <li key={o.id} className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 py-2">
+                    <span><EstrellasFijas n={o.estrellasMotorista!} /> <span className="text-suave">{o.clienteNombre}{o.comentarioMotorista ? ` — «${o.comentarioMotorista}»` : ""}</span></span>
+                    <Link href={`/panel/viajes/${o.id}`} className="text-xs text-naranja">{numeroViaje(o.numero)} · {fechaCorta(o.motoristaCalificadoEn!)}</Link>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="mt-2 text-sm text-suave">Los clientes califican al motorista al terminar cada viaje.</p>}
           </section>
 
           <section className="tarjeta p-5">

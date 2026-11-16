@@ -7,6 +7,7 @@ import { centavos, distanciaKm, kg, precioPorPeso } from "@/lib/tarifa";
 import { RANGOS, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import { normalizarTelefono, type ErroresCampos } from "@/lib/validacion";
 import { asignar, ErrorViaje } from "@/lib/viajes-motorista";
+import { clienteBloqueado, leerCalificacion } from "@/lib/calificaciones";
 
 const punto = z.object({
   lat: z.number().min(-90).max(90),
@@ -106,6 +107,11 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
     return { errores: { items: `Son ${kg(pesoKg)} y el vehículo más grande disponible lleva ${kg(maxKg)}. Divide la carga en dos pedidos.` } };
   }
 
+  // Parte 6: celular bloqueado por el propietario (no se dice el motivo al cliente)
+  if (await clienteBloqueado(d.telefono)) {
+    return { errores: { telefono: `Este número no puede pedir fletes por ahora.${cfg.whatsappAyuda ? " Escríbenos por WhatsApp si crees que es un error." : ""}` } };
+  }
+
   const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
   const abiertos = await db.viaje.count({ where: { clienteTelefono: d.telefono, estado: "BUSCANDO" } });
   if (abiertos >= 2 || demasiados(ip)) {
@@ -172,5 +178,18 @@ export async function rechazarOferta(codigo: string, ofertaId: string) {
   const v = await db.viaje.findUnique({ where: { codigo } });
   if (!v) return { error: "Esta oferta ya no existe." };
   await db.ofertaPrecio.updateMany({ where: { id: ofertaId, viajeId: v.id, estado: "PENDIENTE" }, data: { estado: "RECHAZADA", respondidaEn: new Date() } });
+  return { ok: true };
+}
+
+
+/** Parte 6: el cliente califica al motorista una sola vez, después de la entrega. */
+export async function calificarMotorista(codigo: string, estrellas: number, comentario: string) {
+  const c = leerCalificacion(estrellas, comentario);
+  if ("error" in c) return { error: c.error };
+  const r = await db.viaje.updateMany({
+    where: { codigo, estado: "ENTREGADO", motoristaId: { not: null }, motoristaCalificadoEn: null },
+    data: { estrellasMotorista: c.estrellas, comentarioMotorista: c.comentario, motoristaCalificadoEn: new Date() },
+  });
+  if (r.count === 0) return { error: "Este viaje ya fue calificado o todavía no se ha entregado." };
   return { ok: true };
 }

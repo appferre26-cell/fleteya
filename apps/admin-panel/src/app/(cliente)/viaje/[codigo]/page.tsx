@@ -8,6 +8,14 @@ import { ESTADOS_VIAJE, centavos, dinero, distanciaKm, kg, numeroViaje } from "@
 import { TIPOS_VEHICULO, fechaHora, formatoTelefono } from "@/lib/validacion";
 import { AccionesViaje } from "./AccionesViaje";
 import { Ofertas } from "./Ofertas";
+import { CalificarMotorista } from "./CalificarMotorista";
+import { promedioMotorista } from "@/lib/calificaciones";
+import { EstrellasFijas, Promedio } from "@/components/Estrellas";
+
+const duracion = (desde: Date, hasta: Date) => {
+  const min = Math.max(1, Math.round((hasta.getTime() - desde.getTime()) / 60_000));
+  return min < 60 ? `${min} min` : `${Math.floor(min / 60)} h ${min % 60} min`;
+};
 
 const PASOS = [
   ["ASIGNADO", "Aceptado", "asignadoEn"],
@@ -34,6 +42,7 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
   });
   if (!v) notFound();
   const contraoferta = (await obtenerConfig()).contraofertaEnRango;
+  const calif = v.motoristaId ? await promedioMotorista(v.motoristaId) : null;
   const e = ESTADOS_VIAJE[v.estado];
   const activo = v.estado !== "CANCELADO" && v.estado !== "ENTREGADO";
   const m = v.motorista;
@@ -84,6 +93,7 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
               <div className="min-w-0 flex-1">
                 <p className="font-bold" data-testid="nombre-motorista">{m.nombre}</p>
                 <p className="text-xs text-suave">{TIPOS_VEHICULO[m.tipoVehiculo].nombre} · {m.marca} {m.modelo}</p>
+                {calif && <p className="mt-0.5 text-xs"><Promedio {...calif} testid="calificacion-motorista" /></p>}
               </div>
               <span className="rounded-md border border-borde bg-fondo px-2 py-1 font-mono text-sm font-bold" data-testid="placa">{m.placa}</span>
             </div>
@@ -111,6 +121,27 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
           )}
           {activo && <Mapa centro={verUbicacion ? { lat: m.lat!, lng: m.lng! } : { lat: v.origenLat, lng: v.origenLng }} puntos={puntos} className="mt-3 h-52" etiqueta="Mapa del viaje" />}
           {activo && (v.estado === "ASIGNADO" || v.estado === "EN_CAMINO") && !verUbicacion && <p className="mt-2 text-xs text-suave">La ubicación del motorista aparece cuando su teléfono la comparte.</p>}
+        </section>
+      )}
+
+      {v.estado === "ENTREGADO" && m && (
+        <section className="mt-6 space-y-3" data-testid="resumen-viaje">
+          <h2 className="seccion-titulo">Resumen del viaje</h2>
+          <dl className="tarjeta grid grid-cols-3 divide-x divide-borde text-center">
+            <div className="p-3"><dt className="text-[11px] text-suave">Distancia</dt><dd className="mt-0.5 font-bold tabular-nums">{Number(v.distanciaKm).toFixed(1)} km</dd></div>
+            <div className="p-3"><dt className="text-[11px] text-suave">Duración</dt><dd className="mt-0.5 font-bold tabular-nums" data-testid="duracion">{v.asignadoEn && v.entregadoEn ? duracion(v.asignadoEn, v.entregadoEn) : "—"}</dd></div>
+            <div className="p-3"><dt className="text-[11px] text-suave">Pagaste</dt><dd className="mt-0.5 font-bold text-naranja tabular-nums" data-testid="precio-final">{dinero(precio)}</dd></div>
+          </dl>
+          <p className="text-center text-xs text-suave"><i className="fa-solid fa-money-bill-wave mr-1.5 text-exito" />Pago en efectivo al motorista</p>
+          {v.motoristaCalificadoEn
+            ? (
+              <div className="tarjeta p-4 text-sm" data-testid="ya-calificado">
+                <p className="font-bold text-exito"><i className="fa-solid fa-circle-check mr-1.5" />¡Gracias por calificar!</p>
+                {v.estrellasMotorista && <EstrellasFijas n={v.estrellasMotorista} className="mt-2 text-lg" />}
+                {v.comentarioMotorista && <p className="mt-1 text-suave">«{v.comentarioMotorista}»</p>}
+              </div>
+            )
+            : <CalificarMotorista codigo={v.codigo} nombre={m.nombre.split(" ")[0]} />}
         </section>
       )}
 

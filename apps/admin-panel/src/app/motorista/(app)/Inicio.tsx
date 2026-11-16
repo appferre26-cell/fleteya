@@ -3,7 +3,8 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Mapa, type PuntoMapa } from "@/components/Mapa";
 import type { DatosInicio } from "@/lib/inicio-motorista";
 import { dinero, kg, numeroViaje } from "@/lib/tarifa";
-import { avanzarViaje, cambiarDisponible, soltarViaje, type Resultado } from "../acciones";
+import { avanzarViaje, calificarCliente, cambiarDisponible, soltarViaje, type Resultado } from "../acciones";
+import { Calificar } from "@/components/Calificar";
 import { notificar, pantallaEncendida, prepararSonido, sonarAlerta } from "./alerta";
 import { ListaCarga, Ruta, TarjetaSolicitud, type Sol } from "./Solicitud";
 
@@ -164,6 +165,15 @@ export function Inicio({ inicial }: { inicial: DatosInicio }) {
         <ViajeActivo a={a} ocupado={ocupado} iniciar={iniciar} setAviso={setAviso} refrescar={refrescar} alTerminar={() => { terminePorMi.current = true; }} />
       ) : (
         <>
+          {d.porCalificar && (
+            <div className="mt-4" key={d.porCalificar.id}>
+              <Calificar testid="calificar-cliente" titulo={`¿Qué tal ${d.porCalificar.clienteNombre}? · ${numeroViaje(d.porCalificar.numero)}`}
+                ayuda="Solo FleteYa ve tu calificación. Sirve para cuidar a los motoristas de clientes problemáticos."
+                placeholder="Comentario (opcional): pagó a tiempo, ayudó a cargar…"
+                enviar={async (n, c) => { const r = await calificarCliente(d.porCalificar!.id, n, c); if (!r.error) { setAviso({ texto: "¡Gracias! Calificación guardada.", tipo: "ok" }); await refrescar(); } return r; }}
+                omitir={async () => { const r = await calificarCliente(d.porCalificar!.id, null); if (!r.error) await refrescar(); return r; }} />
+            </div>
+          )}
           <div className="relative mt-4">
             <Mapa centro={yo ?? d.zona} zoom={13} puntos={puntos} className="h-48" etiqueta="Mapa de solicitudes cercanas" />
             <span className="pointer-events-none absolute top-3 left-3 z-[400] rounded-full bg-fondo/85 px-3 py-1 text-xs font-medium"><i className="fa-solid fa-location-crosshairs mr-1.5 text-naranja" />{d.zona.nombre}</span>

@@ -6,6 +6,7 @@ import { obtenerConfig } from "@/lib/config";
 import { exigirMotorista, iniciarSesionMotorista, motoristaActual, VERSION_TERMINOS } from "@/lib/sesion-motorista";
 import { centavos, dinero } from "@/lib/tarifa";
 import { normalizarTelefono } from "@/lib/validacion";
+import { leerCalificacion } from "@/lib/calificaciones";
 import { asignar, avanzar, comisionDe, ErrorViaje, puedeRecibir, SIGUIENTE, soltar } from "@/lib/viajes-motorista";
 
 export type Resultado = { error?: string; ok?: boolean; aviso?: string };
@@ -168,4 +169,22 @@ export async function soltarViaje(viajeId: string): Promise<Resultado> {
   } catch (e) {
     return { error: textoError(e) };
   }
+}
+
+
+// ───── Parte 6: calificar al cliente al terminar ─────
+export async function calificarCliente(viajeId: string, estrellas: number | null, comentario = ""): Promise<Resultado> {
+  const m = await exigirMotorista({ permitirPendientes: true });
+  let datos: { estrellasCliente: number | null; comentarioCliente: string | null } = { estrellasCliente: null, comentarioCliente: null };
+  if (estrellas !== null) {
+    const c = leerCalificacion(estrellas, comentario);
+    if ("error" in c) return { error: c.error };
+    datos = { estrellasCliente: c.estrellas, comentarioCliente: c.comentario };
+  }
+  const r = await db.viaje.updateMany({
+    where: { id: viajeId, motoristaId: m.id, estado: "ENTREGADO", clienteCalificadoEn: null },
+    data: { ...datos, clienteCalificadoEn: new Date() },
+  });
+  if (r.count === 0) return { error: "Este viaje ya fue calificado." };
+  return { ok: true };
 }

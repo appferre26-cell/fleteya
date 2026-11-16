@@ -22,11 +22,16 @@ export async function datosInicio(m: MotoristaSesion) {
 
   const sol = puede.ok && fila.disponible && !activo ? await solicitudesPara(fila) : [];
   const desde = inicioDelDia();
-  const [hoy, recientes] = await Promise.all([
+  const [hoy, recientes, porCalificar] = await Promise.all([
     db.viaje.aggregate({ where: { motoristaId: m.id, estado: "ENTREGADO", entregadoEn: { gte: desde } }, _count: true, _sum: { precioFinal: true, comision: true } }),
     db.viaje.findMany({
       where: { motoristaId: m.id, estado: "ENTREGADO" }, orderBy: { entregadoEn: "desc" }, take: 3,
       select: { id: true, numero: true, origenDireccion: true, destinoDireccion: true, precioFinal: true, entregadoEn: true, distanciaKm: true, pesoKg: true },
+    }),
+    // Parte 6: su última entrega (últimas 24 h) sin calificar al cliente
+    activo ? null : db.viaje.findFirst({
+      where: { motoristaId: m.id, estado: "ENTREGADO", clienteCalificadoEn: null, entregadoEn: { gte: new Date(Date.now() - 24 * 3600_000) } },
+      orderBy: { entregadoEn: "desc" }, select: { id: true, numero: true, clienteNombre: true, precioFinal: true },
     }),
   ]);
 
@@ -56,6 +61,7 @@ export async function datosInicio(m: MotoristaSesion) {
       precioBase: Number(v.precioBase), fueraDeRango: v.fueraDeRango, items: items(v.items), rangoTon: v.rangoTon,
       miOferta: v.miOferta && { precio: Number(v.miOferta.precio), estado: v.miOferta.estado },
     })),
+    porCalificar: porCalificar && { id: porCalificar.id, numero: porCalificar.numero, clienteNombre: porCalificar.clienteNombre.split(" ")[0], precio: Number(porCalificar.precioFinal ?? 0) },
     hoy: { viajes: hoy._count, ganancias: Number(hoy._sum.precioFinal ?? 0), comision: Number(hoy._sum.comision ?? 0) },
     recientes: recientes.map((r) => ({
       id: r.id, numero: r.numero, origen: r.origenDireccion, destino: r.destinoDireccion,
