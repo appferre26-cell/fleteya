@@ -1,0 +1,103 @@
+// Base de datos de FleteYa.
+// Propietarios y motoristas son tablas separadas: una cuenta de un tipo nunca sirve para entrar al otro.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Propietario {
+  id           String    @id @default(cuid())
+  nombre       String
+  correo       String    @unique
+  passwordHash String
+  activo       Boolean   @default(true)
+  ultimoAcceso DateTime?
+  creadoEn     DateTime  @default(now())
+  creadoPorId  String?
+
+  motoristasCreados  Motorista[]          @relation("CreadoPor")
+  motoristasAprobados Motorista[]         @relation("AprobadoPor")
+  historial          HistorialMotorista[]
+}
+
+enum EstadoMotorista {
+  PENDIENTE  // registrado, falta revisar documentos
+  ACTIVO     // aprobado, puede recibir viajes
+  SUSPENDIDO // no puede recibir viajes
+}
+
+enum TipoVehiculo {
+  PICKUP
+  CAMION_LIVIANO
+  CAMION_MEDIANO_GRANDE
+}
+
+model Motorista {
+  id                   String          @id @default(cuid())
+  nombre               String
+  telefono             String          @unique // 8 dígitos; es su usuario en la app del motorista
+  correo               String?
+  passwordHash         String
+  debeCambiarPassword  Boolean         @default(true)
+
+  // Documentos (únicamente DUI, licencia y tarjeta de circulación)
+  dui                  String          @unique // formato 00000000-0
+  licenciaNumero       String
+  licenciaVence        DateTime        @db.Date
+
+  // Vehículo (sale de la tarjeta de circulación)
+  placa                String          @unique
+  marca                String
+  modelo               String
+  tipoVehiculo         TipoVehiculo
+  capacidadTon         Decimal         @db.Decimal(4, 1)
+
+  estado               EstadoMotorista @default(PENDIENTE)
+  motivoSuspension     String?
+  aprobadoEn           DateTime?
+  aprobadoPorId        String?
+  aprobadoPor          Propietario?    @relation("AprobadoPor", fields: [aprobadoPorId], references: [id])
+  creadoPorId          String
+  creadoPor            Propietario     @relation("CreadoPor", fields: [creadoPorId], references: [id])
+  creadoEn             DateTime        @default(now())
+  actualizadoEn        DateTime        @updatedAt
+
+  documentos           Documento[]
+  historial            HistorialMotorista[]
+}
+
+enum TipoDocumento {
+  DUI
+  LICENCIA
+  TARJETA_CIRCULACION
+}
+
+model Documento {
+  id           String        @id @default(cuid())
+  motoristaId  String
+  motorista    Motorista     @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  tipo         TipoDocumento
+  mime         String
+  datos        Bytes
+  subidoEn     DateTime      @default(now())
+
+  @@unique([motoristaId, tipo])
+}
+
+model HistorialMotorista {
+  id            String      @id @default(cuid())
+  motoristaId   String
+  motorista     Motorista   @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  propietarioId String
+  propietario   Propietario @relation(fields: [propietarioId], references: [id])
+  accion        String      // CREADO, APROBADO, SUSPENDIDO, REACTIVADO, EDITADO, CONTRASENA_RESTABLECIDA, DOCUMENTO_ACTUALIZADO
+  detalle       String?
+  fecha         DateTime    @default(now())
+
+  @@index([motoristaId, fecha])
+}

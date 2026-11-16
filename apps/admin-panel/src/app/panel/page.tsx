@@ -1,0 +1,110 @@
+import Link from "next/link";
+import { db } from "@/lib/db";
+import { exigirPropietario } from "@/lib/sesion";
+import { diasParaVencer, fechaCorta, fechaHora } from "@/lib/validacion";
+import { textoAccion } from "@/lib/historial";
+
+export const metadata = { title: "Inicio — FleteYa" };
+
+export default async function InicioPanel() {
+  const yo = await exigirPropietario();
+  const [grupos, pendientes, licencias, recientes] = await Promise.all([
+    db.motorista.groupBy({ by: ["estado"], _count: true }),
+    db.motorista.findMany({ where: { estado: "PENDIENTE" }, orderBy: { creadoEn: "asc" }, take: 5,
+      select: { id: true, nombre: true, creadoEn: true, _count: { select: { documentos: true } } } }),
+    db.motorista.findMany({
+      where: { estado: { not: "SUSPENDIDO" }, licenciaVence: { lte: new Date(Date.now() + 30 * 86400000) } },
+      orderBy: { licenciaVence: "asc" }, select: { id: true, nombre: true, licenciaVence: true },
+    }),
+    db.historialMotorista.findMany({ orderBy: { fecha: "desc" }, take: 6,
+      include: { motorista: { select: { id: true, nombre: true } }, propietario: { select: { nombre: true } } } }),
+  ]);
+  const n = (e: string) => grupos.find((g) => g.estado === e)?._count ?? 0;
+  const total = grupos.reduce((s, g) => s + g._count, 0);
+
+  return (
+    <>
+      <h1 className="text-[26px] leading-tight font-extrabold lg:text-[28px]">Hola, {yo.nombre.split(" ")[0]}</h1>
+      <p className="mt-1 text-sm text-suave">Resumen de tus motoristas en Lourdes, Colón.</p>
+
+      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          ["Motoristas", total, "fa-id-card", "text-texto"],
+          ["Activos", n("ACTIVO"), "fa-circle-check", "text-exito"],
+          ["Pendientes", n("PENDIENTE"), "fa-clock", "text-naranja"],
+          ["Suspendidos", n("SUSPENDIDO"), "fa-ban", "text-error"],
+        ].map(([t, v, i, c]) => (
+          <div key={t as string} className="tarjeta p-4">
+            <p className="seccion-titulo flex items-center gap-2"><i className={`fa-solid ${i} ${c}`} />{t}</p>
+            <p className={`mt-2 text-3xl font-extrabold tabular-nums ${c}`}>{v}</p>
+          </div>
+        ))}
+      </div>
+
+      {total === 0 && (
+        <div className="tarjeta mt-6 flex flex-col items-start gap-3 p-6 sm:flex-row sm:items-center">
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-naranja/15"><i className="fa-solid fa-user-plus text-naranja" /></div>
+          <div className="flex-1">
+            <p className="font-semibold">Todavía no hay motoristas</p>
+            <p className="text-sm text-suave">Empieza registrando a tu primer motorista con su DUI, licencia y tarjeta de circulación.</p>
+          </div>
+          <Link href="/panel/motoristas/nuevo" className="btn-primario">Agregar motorista</Link>
+        </div>
+      )}
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <section className="tarjeta p-5">
+          <h2 className="flex items-center gap-2 font-bold"><i className="fa-solid fa-file-circle-check text-naranja" />Esperan aprobación</h2>
+          {pendientes.length === 0 ? <p className="mt-3 text-sm text-suave">No hay motoristas pendientes.</p> : (
+            <ul className="mt-3 divide-y divide-borde">
+              {pendientes.map((m) => (
+                <li key={m.id}>
+                  <Link href={`/panel/motoristas/${m.id}`} className="flex items-center justify-between gap-3 py-3 text-sm">
+                    <span><span className="font-semibold">{m.nombre}</span><span className="block text-xs text-suave">Registrado el {fechaCorta(m.creadoEn)} · {m._count.documentos}/3 documentos</span></span>
+                    <span className="text-xs font-semibold text-naranja">Revisar <i className="fa-solid fa-arrow-right ml-1" /></span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="tarjeta p-5">
+          <h2 className="flex items-center gap-2 font-bold"><i className="fa-solid fa-id-badge text-naranja" />Licencias por vencer (30 días)</h2>
+          {licencias.length === 0 ? <p className="mt-3 text-sm text-suave">Ninguna licencia vence pronto.</p> : (
+            <ul className="mt-3 divide-y divide-borde">
+              {licencias.map((m) => {
+                const d = diasParaVencer(m.licenciaVence);
+                return (
+                  <li key={m.id}>
+                    <Link href={`/panel/motoristas/${m.id}`} className="flex items-center justify-between gap-3 py-3 text-sm">
+                      <span className="font-semibold">{m.nombre}</span>
+                      <span className={`text-xs font-semibold ${d < 0 ? "text-error" : "text-naranja"}`}>
+                        {d < 0 ? `Vencida hace ${-d} días` : d === 0 ? "Vence hoy" : `Vence en ${d} días`}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      </div>
+
+      <section className="tarjeta mt-4 p-5">
+        <h2 className="flex items-center gap-2 font-bold"><i className="fa-solid fa-clock-rotate-left text-naranja" />Últimos movimientos</h2>
+        {recientes.length === 0 ? <p className="mt-3 text-sm text-suave">Aún no hay movimientos.</p> : (
+          <ul className="mt-3 divide-y divide-borde text-sm">
+            {recientes.map((h) => (
+              <li key={h.id} className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 py-3">
+                <span><Link href={`/panel/motoristas/${h.motorista.id}`} className="font-semibold hover:text-naranja">{h.motorista.nombre}</Link>{" "}
+                  <span className="text-suave">— {textoAccion(h.accion)} por {h.propietario.nombre}</span></span>
+                <span className="text-xs text-suave">{fechaHora(h.fecha)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </>
+  );
+}

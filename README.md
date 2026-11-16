@@ -14,17 +14,15 @@ FleteYa conecta a personas que necesitan transportar materiales (por ejemplo, al
 
 > Propietarios y motoristas tienen perfiles e inicios de sesión separados. El cliente no crea cuenta.
 
-## 🛠️ Tecnologías (propuestas)
+## 🛠️ Tecnologías
 
-- **App motorista:** React Native / Expo
-- **Link web del cliente:** Next.js (web responsive / PWA)
-- **Panel de administración:** Next.js
-- **Backend / API:** Node.js
-- **Base de datos:** PostgreSQL
-- **Tiempo real:** WebSockets / notificaciones push
-- **Mapas:** Google Maps API
+- **Piloto:** apps web instalables (PWA) para las 3 puertas; app nativa de Android en una fase 2
+- **Panel de propietarios:** Next.js 15 + TypeScript + Tailwind
+- **Base de datos:** PostgreSQL (con Prisma)
+- **Link web del cliente y app del motorista:** Next.js (PWA), en las próximas partes
+- **Tiempo real y mapas:** WebSockets / notificaciones push y Google Maps, en las próximas partes
 
-> Fase actual: definición y estructura. Aún no hay código.
+> Avance: **Parte 1 — Panel del propietario** (login de propietarios, alta de motoristas con DUI, licencia y tarjeta de circulación, aprobar/suspender). Ver [apps/admin-panel/README.md](apps/admin-panel/README.md). Aún no está publicado.
 
 ## 📁 Estructura de carpetas
 
@@ -33,7 +31,7 @@ fleteya/
 ├── apps/
 │   ├── motorista/      # App móvil para motoristas
 │   ├── cliente-web/    # Link web para que el cliente pida el viaje
-│   └── admin-panel/    # Panel de administración (propietarios)
+│   └── admin-panel/    # Panel de propietarios (Parte 1, ya con código)
 ├── docs/
 │   └── estructura.md   # Planificación completa del proyecto
 └── README.md
