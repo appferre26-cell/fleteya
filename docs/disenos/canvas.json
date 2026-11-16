@@ -74,7 +74,7 @@
     {
       "screen_id": "admin-pagos-motoristas",
       "frame_kind": "desktop",
-      "label": "A4 · Admin — Pagos a motoristas"
+      "label": "A4 · Admin — Pagos a motoristas (fase futura, solo con pagos en línea)"
     },
     {
       "screen_id": "admin-puntos-qr",

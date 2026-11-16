@@ -21,9 +21,7 @@ FleteYa conecta a personas que necesitan transportar carga con motoristas indepe
 3.2. Para distancias mayores a 5 km, el motorista puede proponer otro precio. Usted decide si lo acepta. El viaje solo se confirma si los dos están de acuerdo.
 
 ## 4. Pago
-Puede pagar:
-- **En efectivo** al motorista al terminar el viaje, o
-- **En línea** desde el link de FleteYa.
+El viaje se paga **en efectivo** directamente al motorista al terminar el viaje. Por ahora no se aceptan pagos con tarjeta ni en línea.
 
 ## 5. Carga y descarga
 La carga del material normalmente la hace el personal de la ferretería. FleteYa no ofrece servicio de ayudantes para cargar.

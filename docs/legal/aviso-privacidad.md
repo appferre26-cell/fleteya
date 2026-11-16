@@ -15,7 +15,7 @@
 | **Motoristas** | Nombre, teléfono, DUI, licencia de conducir, tarjeta de circulación (placa y datos del vehículo), datos de la cuenta bancaria, ubicación mientras está conectado, historial de viajes, créditos y pagos |
 | **Propietarios** | Nombre, correo o teléfono de acceso |
 
-Cuando el cliente paga en línea, los datos de la tarjeta los procesa el proveedor de pagos. **FleteYa no guarda números de tarjeta.**
+Por ahora los viajes se pagan **solo en efectivo**, así que FleteYa **no recibe ni guarda datos de tarjetas**.
 
 ## 2. Para qué los usamos
 - Conectar a clientes con motoristas y realizar los viajes.
