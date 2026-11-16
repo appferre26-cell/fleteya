@@ -1,4 +1,4 @@
-# FleteYa — panel de propietarios, link del cliente y app del motorista (Partes 1 a 4)
+# FleteYa — panel de propietarios, link del cliente y app del motorista (Partes 1 a 6)
 
 Una sola aplicación web con tres zonas separadas:
 
@@ -114,6 +114,21 @@ Una sola aplicación web con tres zonas separadas:
 - El motorista y el panel ven «1 a 2 toneladas» en lugar de la lista de materiales cuando el cliente pidió por rango.
 - Pruebas: `tests/rangos.spec.ts`. Capturas: `node tests/capturas-rangos.mjs`.
 
+### Parte 6 — Calificaciones y clientes
+
+- **Cliente**: al entregarse el viaje, su link muestra el **resumen** (distancia, duración, cuánto pagó, pago en efectivo)
+  y le pide **calificar al motorista** de 1 a 5 estrellas con comentario opcional. Solo se puede calificar una vez.
+  El promedio del motorista aparece en la tarjeta «Te atendió».
+- **Motorista**: después de entregar, en Inicio le sale «¿Qué tal …?» para calificar al cliente (o **Omitir**). Solo lo ve
+  FleteYa. En **Perfil** ve su promedio y los últimos comentarios.
+- **Panel**: nueva sección **Clientes** (se agrupan por celular, porque los clientes no tienen cuenta): búsqueda, filtros
+  «Frecuentes (3+ viajes)» y «Bloqueados», y una ficha por cliente con pedidos, entregados, cancelados, total gastado,
+  calificación que le dan los motoristas y su lista de pedidos. Desde la ficha se puede **bloquear** (con motivo) y
+  **desbloquear**. Un número bloqueado no puede pedir fletes y sus pedidos que esperaban motorista se cancelan.
+  Las calificaciones también se ven en el detalle de cada viaje y de cada motorista.
+- Base de datos: correr `npm run db:migrar` (agrega las calificaciones al viaje y la tabla de clientes bloqueados).
+- Pruebas: `tests/calificaciones.spec.ts`. Capturas: `node tests/capturas-calificaciones.mjs`.
+
 ## Cómo correrlo (desarrollo)
 
 Necesitas Node 20+ y PostgreSQL.
@@ -165,7 +180,9 @@ ingreso (contraseña y términos), cuentas en revisión/suspendidas, viaje compl
 cancelación del cliente, soltar un viaje y perfil. Parte 4 (`tests/creditos.spec.ts`): transferencia sin referencia
 o sin revisar, deuda descontada en el recibo, referencia repetida, PDF, efectivo mensual, búsqueda y CSV, lo que ve el
 motorista (saldo, historial, recibo, PDF) y que no abre recibos ajenos, acceso sin sesión, anular, datos y planes, y que
-con saldo ya puede ponerse disponible. La prueba del correo solo corre con un SMTP de prueba:
+con saldo ya puede ponerse disponible. Parte 6 (`tests/calificaciones.spec.ts`): entrega completa en la app, resumen y
+calificación del cliente (sin estrellas da error, no se califica dos veces), el motorista califica u omite, promedios en
+el perfil y en el panel, y la sección Clientes (búsqueda, ficha, bloquear con motivo, pedido rechazado y desbloquear). La prueba del correo solo corre con un SMTP de prueba:
 `node tests/smtp-falso.mjs` (guarda los correos en `SMTP_BUZON`), el servidor arrancado con
 `SMTP_URL=smtp://localhost:2525` y `SMTP_BUZON=... npx playwright test tests/creditos.spec.ts`. **Usan la base de datos real que configures**, así que crean motoristas y
 propietarios, materiales, puntos QR y viajes de prueba: córrelas solo en una base de pruebas.

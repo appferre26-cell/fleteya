@@ -25,6 +25,7 @@ model Propietario {
   historial          HistorialMotorista[]
   recargasRegistradas Recarga[]           @relation("RecargasRegistradas")
   recargasAnuladas    Recarga[]           @relation("RecargasAnuladas")
+  clientesBloqueados  ClienteBloqueado[]  @relation("ClientesBloqueados")
 }
 
 enum EstadoMotorista {
@@ -226,6 +227,14 @@ model Viaje {
   ofertas           OfertaPrecio[]
   rechazos          RechazoViaje[]
 
+  // Parte 6: calificaciones (1 a 5 estrellas). *CalificadoEn sin estrellas = lo omitió.
+  estrellasMotorista    Int?      // la pone el cliente
+  comentarioMotorista   String?
+  motoristaCalificadoEn DateTime?
+  estrellasCliente      Int?      // la pone el motorista
+  comentarioCliente     String?
+  clienteCalificadoEn   DateTime?
+
   @@index([estado, creadoEn])
   @@index([motoristaId, estado])
   @@index([clienteTelefono])
@@ -352,4 +361,17 @@ model Recarga {
   @@index([motoristaId, creadoEn])
   @@index([creadoEn])
   @@index([referencia])
+}
+
+
+
+// ───────────── Parte 6: clientes ─────────────
+
+// Los clientes no tienen cuenta: se bloquean por su número de celular.
+model ClienteBloqueado {
+  telefono        String      @id // 8 dígitos
+  motivo          String
+  bloqueadoPorId  String
+  bloqueadoPor    Propietario @relation("ClientesBloqueados", fields: [bloqueadoPorId], references: [id])
+  creadoEn        DateTime    @default(now())
 }

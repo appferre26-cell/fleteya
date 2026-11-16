@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { obtenerConfig } from "@/lib/config";
+import { db } from "@/lib/db";
+import { promedioMotorista } from "@/lib/calificaciones";
+import { EstrellasFijas, Promedio } from "@/components/Estrellas";
 import { exigirMotorista, VERSION_TERMINOS } from "@/lib/sesion-motorista";
 import { ESTADOS, TIPOS_VEHICULO, diasParaVencer, fechaCorta, fechaHora, formatoTelefono } from "@/lib/validacion";
 
@@ -8,6 +11,10 @@ export const metadata = { title: "Perfil — FleteYa Motorista" };
 export default async function PerfilMotorista() {
   const m = await exigirMotorista();
   const cfg = await obtenerConfig();
+  const [calif, comentarios] = await Promise.all([
+    promedioMotorista(m.id),
+    db.viaje.findMany({ where: { motoristaId: m.id, comentarioMotorista: { not: null } }, orderBy: { motoristaCalificadoEn: "desc" }, take: 3, select: { id: true, estrellasMotorista: true, comentarioMotorista: true } }),
+  ]);
   const dias = diasParaVencer(m.licenciaVence);
   const filas: [string, string][] = [
     ["Teléfono", formatoTelefono(m.telefono)],
@@ -25,6 +32,18 @@ export default async function PerfilMotorista() {
         <span className="flex h-14 w-14 items-center justify-center rounded-full bg-tarjeta-2 text-lg font-bold"><i className="fa-solid fa-user text-suave" /></span>
         <div><p className="text-lg font-bold">{m.nombre}</p><span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${ESTADOS[m.estado].clase}`}>{ESTADOS[m.estado].nombre}</span></div>
       </div>
+
+      <section className="tarjeta mt-4 p-4 text-sm" data-testid="mi-calificacion">
+        <p className="text-[11px] font-semibold tracking-wider text-suave uppercase">Mi calificación</p>
+        <p className="mt-1 text-lg"><Promedio {...calif} /></p>
+        {comentarios.length > 0 && (
+          <ul className="mt-3 space-y-2 border-t border-borde pt-3">
+            {comentarios.map((c) => (
+              <li key={c.id}><EstrellasFijas n={c.estrellasMotorista!} /> <span className="text-suave">«{c.comentarioMotorista}»</span></li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       {dias <= 30 && (
         <p className={`mt-4 rounded-lg px-3 py-2.5 text-sm ${dias < 0 ? "bg-error/10 text-error" : "bg-naranja/10 text-naranja"}`}>

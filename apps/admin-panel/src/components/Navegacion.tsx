@@ -7,6 +7,7 @@ const LISTOS = [
   { href: "/panel", icono: "fa-gauge-high", nombre: "Inicio", corto: "Inicio" },
   { href: "/panel/viajes", icono: "fa-route", nombre: "Viajes", corto: "Viajes" },
   { href: "/panel/motoristas", icono: "fa-id-card", nombre: "Motoristas", corto: "Motoristas" },
+  { href: "/panel/clientes", icono: "fa-users", nombre: "Clientes", corto: "Clientes" },
   { href: "/panel/puntos-qr", icono: "fa-qrcode", nombre: "Puntos QR", corto: "Puntos QR" },
   { href: "/panel/catalogo", icono: "fa-cubes", nombre: "Catálogo de materiales", corto: "Catálogo" },
   { href: "/panel/creditos", icono: "fa-coins", nombre: "Créditos y recargas", corto: "Créditos" },

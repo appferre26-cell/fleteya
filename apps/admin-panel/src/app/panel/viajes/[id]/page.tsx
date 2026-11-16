@@ -6,6 +6,7 @@ import { textoRango } from "@/lib/rangos";
 import { ESTADOS_VIAJE, dinero, kg, numeroViaje } from "@/lib/tarifa";
 import { fechaHora, formatoTelefono } from "@/lib/validacion";
 import { CancelarViaje } from "./CancelarViaje";
+import { EstrellasFijas } from "@/components/Estrellas";
 
 export const metadata = { title: "Detalle del viaje — FleteYa" };
 
@@ -85,6 +86,7 @@ export default async function DetalleViaje({ params }: { params: Promise<{ id: s
               <a href={`tel:+503${v.clienteTelefono}`} className="btn-secundario h-9 flex-1 text-xs"><i className="fa-solid fa-phone text-suave" />Llamar</a>
               <a href={`https://wa.me/503${v.clienteTelefono}`} target="_blank" rel="noreferrer" className="btn-secundario h-9 flex-1 text-xs"><i className="fa-brands fa-whatsapp text-suave" />WhatsApp</a>
             </div>
+            <Link href={`/panel/clientes/${v.clienteTelefono}`} className="mt-2 inline-block text-xs text-naranja" data-testid="ver-cliente">Historial del cliente <i className="fa-solid fa-arrow-right ml-1" /></Link>
             <p className="mt-3 text-[11px] text-suave">Aceptó términos y privacidad el {fechaHora(v.aceptoTerminosEn)}.</p>
             <a href={`/viaje/${v.codigo}`} target="_blank" className="mt-2 inline-block text-xs text-naranja">Ver lo que ve el cliente <i className="fa-solid fa-arrow-up-right-from-square ml-1" /></a>
           </section>
@@ -100,6 +102,19 @@ export default async function DetalleViaje({ params }: { params: Promise<{ id: s
               </>
             ) : <p className="mt-2 text-suave">{v.estado === "BUSCANDO" ? "Todavía nadie lo ha aceptado." : "Sin motorista."}</p>}
           </section>
+          {v.estado === "ENTREGADO" && (
+            <section className="tarjeta space-y-3 p-5 text-sm" data-testid="calificaciones-viaje">
+              <h2 className="font-bold">Calificaciones</h2>
+              <div>
+                <p className="text-[11px] text-suave">El cliente al motorista</p>
+                {v.estrellasMotorista ? <><EstrellasFijas n={v.estrellasMotorista} />{v.comentarioMotorista && <p className="mt-0.5 text-suave">«{v.comentarioMotorista}»</p>}</> : <p className="text-suave">Todavía no califica.</p>}
+              </div>
+              <div>
+                <p className="text-[11px] text-suave">El motorista al cliente</p>
+                {v.estrellasCliente ? <><EstrellasFijas n={v.estrellasCliente} />{v.comentarioCliente && <p className="mt-0.5 text-suave">«{v.comentarioCliente}»</p>}</> : <p className="text-suave">{v.clienteCalificadoEn ? "Prefirió no calificar." : "Todavía no califica."}</p>}
+              </div>
+            </section>
+          )}
           {v.estado === "CANCELADO" && (
             <section className="rounded-xl border border-error/30 bg-error/10 p-4 text-sm">
               <p className="font-semibold text-error">Cancelado por {v.canceladoPor === "PROPIETARIO" ? "FleteYa" : "el cliente"}{v.canceladoEn ? ` · ${fechaHora(v.canceladoEn)}` : ""}</p>
