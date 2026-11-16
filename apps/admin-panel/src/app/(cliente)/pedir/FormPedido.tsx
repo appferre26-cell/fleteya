@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { Mapa, type PuntoMapa } from "@/components/Mapa";
 import { dinero, distanciaKm, kg, precioPorPeso, type Tarifa } from "@/lib/tarifa";
+import { RANGOS, TON_EXTRA, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import type { ErroresCampos } from "@/lib/validacion";
 import { solicitarViaje } from "./acciones";
 
@@ -16,6 +17,7 @@ type Props = {
   materiales: Material[];
   maxKg: number | null;
   qr: { codigo: string; nombre: string; direccion: string; lat: number; lng: number } | null;
+  contraoferta: boolean;
 };
 
 const GUARDADO = "fy_cliente";
@@ -24,12 +26,15 @@ function Aviso({ m }: { m?: string }) {
   return m ? <p className="mt-2 text-xs text-error"><i className="fa-solid fa-circle-exclamation mr-1" />{m}</p> : null;
 }
 
-export function FormPedido({ tarifa, zona, materiales, maxKg, qr }: Props) {
+export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }: Props) {
   const router = useRouter();
   const [origen, setOrigen] = useState<Punto | null>(qr ? { lat: qr.lat, lng: qr.lng, direccion: `${qr.nombre} · ${qr.direccion}` } : null);
   const [destino, setDestino] = useState<Punto | null>(null);
   const [modo, setModo] = useState<"origen" | "destino">(qr ? "destino" : "origen");
   const [items, setItems] = useState<Item[]>([]);
+  const [modoCarga, setModoCarga] = useState<"toneladas" | "materiales">("toneladas");
+  const [rango, setRango] = useState<IdRango | null>(null);
+  const [tonExtra, setTonExtra] = useState(TON_EXTRA.inicial);
   const [buscando, setBuscando] = useState(false);
   const [filtro, setFiltro] = useState("");
   const [nota, setNota] = useState("");
@@ -73,7 +78,12 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr }: Props) {
 
   const km = origen && destino ? distanciaKm(origen, destino) : null;
   const fueraZona = origen ? distanciaKm(origen, zona) > zona.radioKm : false;
-  const pesoKg = items.reduce((s, i) => s + (Number(i.cantidad) || 0) * (Number(i.pesoKg) || 0), 0);
+  const porToneladas = modoCarga === "toneladas";
+  const pesoKg = porToneladas
+    ? (rango ? toneladasDeRango(rango, tonExtra) * 1000 : 0)
+    : items.reduce((s, i) => s + (Number(i.cantidad) || 0) * (Number(i.pesoKg) || 0), 0);
+  const precioRango = (id: IdRango) => precioPorPeso(toneladasDeRango(id, tonExtra) * 1000, tarifa);
+  const maxTonExtra = maxKg !== null ? Math.min(TON_EXTRA.max, Math.floor(maxKg / 500) / 2) : TON_EXTRA.max;
   const precio = pesoKg > 0 ? precioPorPeso(pesoKg, tarifa) : null;
   const lejos = km !== null && km > tarifa.kmIncluidos;
   const muyPesado = maxKg !== null && pesoKg > maxKg;
@@ -102,7 +112,8 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr }: Props) {
       nombre, telefono, nota, acepto, qr: qr?.codigo,
       origen: origen ? { ...origen, direccion: origen.direccion.trim() } : null,
       destino: destino ? { ...destino, direccion: destino.direccion.trim() } : null,
-      items: items.map((i) => ({
+      rango: porToneladas && rango ? { id: rango, ton: tonExtra } : null,
+      items: porToneladas ? [] : items.map((i) => ({
         materialId: i.materialId, nombre: i.materialId ? undefined : i.nombre,
         pesoKg: i.materialId ? undefined : Number(i.pesoKg) || 0, cantidad: Number(i.cantidad) || 0,
       })),
@@ -188,9 +199,62 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr }: Props) {
       <section>
         <div className="mb-3 flex items-end justify-between">
           <h2 className="seccion-titulo">¿Qué vas a llevar?</h2>
-          <span className="text-[11px] text-suave">{items.length} {items.length === 1 ? "material" : "materiales"}</span>
+          {!porToneladas && <span className="text-[11px] text-suave">{items.length} {items.length === 1 ? "material" : "materiales"}</span>}
         </div>
-        <div className="tarjeta divide-y divide-borde">
+        <div className="mb-3 grid grid-cols-2 gap-2 rounded-xl border border-borde bg-tarjeta p-1" role="tablist" aria-label="Cómo indicar la carga">
+          {([["toneladas", "fa-weight-hanging", "Por toneladas"], ["materiales", "fa-list-check", "Por materiales"]] as const).map(([k, icono, t]) => (
+            <button key={k} type="button" role="tab" aria-selected={modoCarga === k} onClick={() => setModoCarga(k)}
+              className={`flex h-10 items-center justify-center gap-2 rounded-lg text-sm font-semibold ${modoCarga === k ? "bg-naranja text-fondo" : "text-suave"}`}>
+              <i className={`fa-solid ${icono} text-xs`} />{t}
+            </button>
+          ))}
+        </div>
+
+        {porToneladas && (
+          <div data-testid="rangos">
+            <p className="mb-2.5 text-xs text-suave">Toca cuánto pesa más o menos tu carga y te decimos el precio al instante.</p>
+            <div className="grid grid-cols-2 gap-2.5" role="radiogroup" aria-label="Peso aproximado de la carga">
+              {RANGOS.map((r) => {
+                const sel = rango === r.id;
+                const noCabe = maxKg !== null && (r.maxTon ?? TON_EXTRA.min) * 1000 > maxKg;
+                return (
+                  <button key={r.id} type="button" role="radio" aria-checked={sel} disabled={noCabe} onClick={() => setRango(r.id)}
+                    data-testid={`rango-${r.id}`}
+                    className={`flex min-h-[92px] flex-col items-start justify-between rounded-xl border-2 p-3 text-left transition disabled:opacity-40 ${sel ? "border-naranja bg-naranja/10" : "border-borde bg-tarjeta"}`}>
+                    <span className="flex w-full items-center justify-between gap-2 text-sm font-semibold">
+                      {r.nombre}
+                      {sel && <i className="fa-solid fa-circle-check text-naranja" />}
+                    </span>
+                    <span className={`text-2xl font-extrabold tabular-nums ${sel ? "text-naranja" : ""}`}>
+                      {r.maxTon === null && !sel ? <span className="text-sm font-semibold text-suave">desde </span> : null}
+                      {dinero(r.maxTon === null && !sel ? precioPorPeso(TON_EXTRA.min * 1000, tarifa) : precioRango(r.id))}
+                    </span>
+                    {noCabe && <span className="text-[10px] text-suave">Sin vehículo disponible</span>}
+                  </button>
+                );
+              })}
+            </div>
+            {rango === "3+" && (
+              <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-borde bg-tarjeta p-3">
+                <span className="text-sm">¿Cuántas toneladas, más o menos?</span>
+                <div className="flex items-center rounded-full border border-borde bg-tarjeta-2">
+                  <button type="button" aria-label="Menos toneladas" className="flex h-9 w-9 items-center justify-center text-suave disabled:opacity-40"
+                    disabled={tonExtra <= TON_EXTRA.min} onClick={() => setTonExtra((t) => Math.max(TON_EXTRA.min, t - TON_EXTRA.paso))}>
+                    <i className="fa-solid fa-minus text-xs" />
+                  </button>
+                  <span className="w-14 text-center text-sm font-bold tabular-nums" data-testid="ton-extra">{tonExtra} ton</span>
+                  <button type="button" aria-label="Más toneladas" className="flex h-9 w-9 items-center justify-center text-naranja disabled:opacity-40"
+                    disabled={tonExtra + TON_EXTRA.paso > maxTonExtra} onClick={() => setTonExtra((t) => Math.min(maxTonExtra, t + TON_EXTRA.paso))}>
+                    <i className="fa-solid fa-plus text-xs" />
+                  </button>
+                </div>
+              </div>
+            )}
+            <p className="mt-2.5 text-xs text-suave"><i className="fa-regular fa-lightbulb mr-1 text-naranja" />Se cobra el tope del rango: {dinero(tarifa.precioTonelada)} por tonelada. Cuenta en la nota qué es (ej.: 20 bolsas de cemento).</p>
+          </div>
+        )}
+
+        <div className={`tarjeta divide-y divide-borde ${porToneladas ? "hidden" : ""}`}>
           {items.map((i) => (
             <div key={i.clave} className="flex flex-wrap items-center gap-3 p-3" data-testid="item">
               <div className="min-w-0 flex-1">
@@ -252,7 +316,7 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr }: Props) {
         </div>
         <Aviso m={errores.items} />
         <textarea value={nota} onChange={(e) => setNota(e.target.value)} maxLength={300} rows={2} aria-label="Nota para el motorista"
-          placeholder="Nota para el motorista (opcional). Ej.: son varillas largas" className="campo mt-2.5 h-auto py-3" />
+          placeholder={porToneladas ? "¿Qué es? (opcional). Ej.: 20 bolsas de cemento y 10 varillas" : "Nota para el motorista (opcional). Ej.: son varillas largas"} className="campo mt-2.5 h-auto py-3" />
       </section>
 
       {/* 3. Peso y precio */}
@@ -261,7 +325,8 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr }: Props) {
           <div>
             <p className="seccion-titulo">Peso estimado</p>
             <p className="mt-0.5 text-xl font-extrabold tabular-nums" data-testid="peso">
-              {kg(pesoKg)} <span className="text-sm font-semibold text-suave">≈ {(pesoKg / 1000).toFixed(2)} ton</span>
+              {porToneladas && rango ? <>{RANGOS.find((r) => r.id === rango)!.corto}{rango === "3+" && <span className="text-sm font-semibold text-suave"> · {tonExtra} ton</span>}</>
+                : <>{kg(pesoKg)} <span className="text-sm font-semibold text-suave">≈ {(pesoKg / 1000).toFixed(2)} ton</span></>}
             </p>
           </div>
           <div className="text-right">
@@ -275,6 +340,11 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr }: Props) {
         {lejos && (
           <p className="mt-2 rounded-lg bg-fondo/50 px-3 py-2 text-xs text-texto" data-testid="aviso-lejos">
             <i className="fa-solid fa-route mr-1.5 text-naranja" />Tu destino está a más de {tarifa.kmIncluidos} km {qr ? "de la ferretería" : "de donde se carga"}. El motorista te puede ofrecer otro precio y tú decides si lo aceptas.
+          </p>
+        )}
+        {!lejos && contraoferta && precio !== null && (
+          <p className="mt-2 text-xs text-suave" data-testid="aviso-contraoferta">
+            <i className="fa-solid fa-handshake mr-1.5 text-naranja" />Un motorista puede proponerte otro precio. Tú decides: si no aceptas, seguimos buscando con {dinero(precio)}.
           </p>
         )}
         {muyPesado && <Aviso m={`Es más de lo que lleva el vehículo más grande disponible (${kg(maxKg!)}). Divide la carga en dos pedidos.`} />}

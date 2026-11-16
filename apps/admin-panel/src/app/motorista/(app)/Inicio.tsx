@@ -202,7 +202,7 @@ export function Inicio({ inicial }: { inicial: DatosInicio }) {
               {d.solicitudes.length === 0 ? (
                 <p className="tarjeta p-5 text-center text-sm text-suave" data-testid="sin-solicitudes"><i className="fa-solid fa-mug-hot mb-2 block text-2xl" />Por ahora no hay pedidos. Te avisamos con sonido cuando llegue uno.</p>
               ) : (
-                <div className="space-y-4">{d.solicitudes.map((s) => <TarjetaSolicitud key={s.id + (s.miOferta?.estado ?? "")} s={s} comisionPct={d.comisionPct} alListo={alListo} />)}</div>
+                <div className="space-y-4">{d.solicitudes.map((s) => <TarjetaSolicitud key={s.id + (s.miOferta?.estado ?? "")} s={s} comisionPct={d.comisionPct} contraofertaEnRango={d.contraofertaEnRango} alListo={alListo} />)}</div>
               )}
             </section>
           )}
@@ -227,7 +227,7 @@ export function Inicio({ inicial }: { inicial: DatosInicio }) {
       {alerta && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-3 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Nueva solicitud" data-testid="alerta">
           <div className="max-h-[92dvh] w-full max-w-[500px] overflow-y-auto rounded-2xl">
-            <TarjetaSolicitud s={alerta.s} comisionPct={d.comisionPct} alListo={alListo} segundos={segundos} />
+            <TarjetaSolicitud s={alerta.s} comisionPct={d.comisionPct} contraofertaEnRango={d.contraofertaEnRango} alListo={alListo} segundos={segundos} />
             <button type="button" onClick={() => setAlerta(null)} className="mt-2 w-full py-2 text-sm text-suave">Ver después</button>
           </div>
         </div>
@@ -302,7 +302,7 @@ function ViajeActivo({ a, ocupado, iniciar, setAviso, refrescar, alTerminar }: {
 
       <div className="mt-3 space-y-3">
         <Ruta origen={a.origen.direccion} destino={a.destino.direccion} km={a.distanciaKm} />
-        <ListaCarga items={a.items} pesoKg={a.pesoKg} nota={a.nota} />
+        <ListaCarga items={a.items} pesoKg={a.pesoKg} nota={a.nota} rangoTon={a.rangoTon} />
       </div>
 
       <p className="mt-4 text-center text-xs text-suave"><i className="fa-solid fa-money-bill-wave mr-1 text-exito" />El cliente te paga {dinero(a.precio)} en efectivo al terminar.</p>

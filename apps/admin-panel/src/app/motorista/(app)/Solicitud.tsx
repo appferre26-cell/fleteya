@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import type { DatosInicio } from "@/lib/inicio-motorista";
 import { centavos, dinero, kg, numeroViaje } from "@/lib/tarifa";
+import { textoRango } from "@/lib/rangos";
 import { aceptarViaje, ofertarPrecio, rechazarViaje, retirarOferta, type Resultado } from "../acciones";
 
 export type Sol = DatosInicio["solicitudes"][number];
@@ -21,13 +22,20 @@ export function Ruta({ origen, destino, km }: { origen: string; destino: string;
   );
 }
 
-export function ListaCarga({ items, pesoKg, nota }: { items: Sol["items"]; pesoKg: number; nota?: string | null }) {
+export function ListaCarga({ items, pesoKg, nota, rangoTon }: { items: Sol["items"]; pesoKg: number; nota?: string | null; rangoTon?: string | null }) {
+  const rango = textoRango(rangoTon, pesoKg);
   return (
     <div className="overflow-hidden rounded-xl border border-borde bg-tarjeta-2/50">
       <div className="flex items-center justify-between border-b border-borde px-3.5 py-2.5 text-[11px] font-semibold tracking-wider text-suave uppercase">
         <span><i className="fa-solid fa-list-check mr-1.5 text-naranja" />Lo que vas a llevar</span>
-        <span className="text-texto normal-case tracking-normal" data-testid="peso-solicitud">{kg(pesoKg)} · {(pesoKg / 1000).toFixed(2)} ton</span>
+        <span className="text-texto normal-case tracking-normal" data-testid="peso-solicitud">{rango ? "Por toneladas" : `${kg(pesoKg)} · ${(pesoKg / 1000).toFixed(2)} ton`}</span>
       </div>
+      {rango && (
+        <p className="px-3.5 py-2.5 text-sm" data-testid="rango-solicitud">
+          <i className="fa-solid fa-weight-hanging mr-2 text-naranja" /><b>{rango}</b>
+          <span className="mt-0.5 block text-xs text-suave">El cliente eligió el rango. Revisa la carga al llegar.</span>
+        </p>
+      )}
       <ul className="divide-y divide-borde text-sm">
         {items.map((i) => (
           <li key={i.id} className="flex justify-between gap-3 px-3.5 py-2"><span><b>{i.cantidad} ×</b> {i.nombre}</span><span className="text-suave tabular-nums">{kg(i.pesoKg)}</span></li>
@@ -39,9 +47,10 @@ export function ListaCarga({ items, pesoKg, nota }: { items: Sol["items"]; pesoK
 }
 
 /** Tarjeta de una solicitud (en la lista y en el aviso emergente). */
-export function TarjetaSolicitud({ s, comisionPct, alListo, segundos }: {
-  s: Sol; comisionPct: number; alListo: (r: Resultado, tipo: "aceptar" | "rechazar" | "oferta") => void; segundos?: number;
+export function TarjetaSolicitud({ s, comisionPct, contraofertaEnRango, alListo, segundos }: {
+  s: Sol; comisionPct: number; contraofertaEnRango: boolean; alListo: (r: Resultado, tipo: "aceptar" | "rechazar" | "oferta") => void; segundos?: number;
 }) {
+  const puedeOfertar = s.fueraDeRango || contraofertaEnRango;
   const [ocupado, iniciar] = useTransition();
   const [ofertando, setOfertando] = useState(false);
   const [precio, setPrecio] = useState(String(Math.ceil(s.precioBase + 5)));
@@ -84,7 +93,7 @@ export function TarjetaSolicitud({ s, comisionPct, alListo, segundos }: {
       <div className="mt-4 space-y-3">
         <p className="text-sm"><i className="fa-solid fa-user mr-2 text-suave" />{s.clienteNombre}</p>
         <Ruta origen={s.origen.direccion} destino={s.destino.direccion} km={s.distanciaKm} />
-        <ListaCarga items={s.items} pesoKg={s.pesoKg} nota={s.nota} />
+        <ListaCarga items={s.items} pesoKg={s.pesoKg} nota={s.nota} rangoTon={s.rangoTon} />
       </div>
 
       {s.fueraDeRango && (
@@ -121,12 +130,12 @@ export function TarjetaSolicitud({ s, comisionPct, alListo, segundos }: {
           <button type="button" onClick={() => correr("rechazar")} disabled={ocupado} className="h-12 rounded-3xl border-2 border-error/70 text-sm font-extrabold text-error disabled:opacity-60">RECHAZAR</button>
         )}
         <button type="button" onClick={() => correr("aceptar")} disabled={ocupado} className="btn-primario h-12">
-          <i className="fa-solid fa-check" />{s.fueraDeRango ? `ACEPTAR ${dinero(s.precioBase)}` : "ACEPTAR"}
+          <i className="fa-solid fa-check" />{puedeOfertar ? `ACEPTAR ${dinero(s.precioBase)}` : "ACEPTAR"}
         </button>
       </div>
-      {s.fueraDeRango && !ofertando && !pendiente && (
+      {puedeOfertar && !ofertando && !pendiente && (
         <button type="button" onClick={() => setOfertando(true)} className="mt-3 w-full py-1.5 text-sm font-semibold text-naranja">
-          <i className="fa-solid fa-tag mr-1.5" />Ofrecer otro precio
+          <i className="fa-solid fa-tag mr-1.5" />{s.fueraDeRango ? "Ofrecer otro precio" : "Proponer otro precio"}
         </button>
       )}
     </article>

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { obtenerConfig } from "@/lib/config";
 import { Mapa, type PuntoMapa } from "@/components/Mapa";
+import { textoRango } from "@/lib/rangos";
 import { ESTADOS_VIAJE, centavos, dinero, distanciaKm, kg, numeroViaje } from "@/lib/tarifa";
 import { TIPOS_VEHICULO, fechaHora, formatoTelefono } from "@/lib/validacion";
 import { AccionesViaje } from "./AccionesViaje";
@@ -31,6 +33,7 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
     },
   });
   if (!v) notFound();
+  const contraoferta = (await obtenerConfig()).contraofertaEnRango;
   const e = ESTADOS_VIAJE[v.estado];
   const activo = v.estado !== "CANCELADO" && v.estado !== "ENTREGADO";
   const m = v.motorista;
@@ -70,7 +73,7 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
           <p className="mt-2 text-xs text-suave">Puedes cerrar esta página: guarda el enlace para volver.</p>
         </section>
       )}
-      {ofertas.length > 0 && <Ofertas codigo={v.codigo} ofertas={ofertas} precioBase={Number(v.precioBase)} />}
+      {ofertas.length > 0 && <Ofertas codigo={v.codigo} ofertas={ofertas} precioBase={Number(v.precioBase)} lejos={v.fueraDeRango} />}
 
       {m && v.estado !== "CANCELADO" && (
         <section className="mt-6" data-testid="motorista-asignado">
@@ -136,15 +139,17 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
                 <span>{Number(i.cantidad)} × {i.nombre}</span><span className="text-suave tabular-nums">{kg(Number(i.pesoTotalKg))}</span>
               </li>
             ))}
-            <li className="mt-1 flex justify-between border-t border-borde pt-2 font-semibold"><span>Peso estimado</span><span className="tabular-nums">{kg(Number(v.pesoKg))}</span></li>
+            {v.rangoTon
+              ? <li className="flex justify-between font-semibold" data-testid="rango-viaje"><span>Carga por toneladas</span><span>{textoRango(v.rangoTon, Number(v.pesoKg))}</span></li>
+              : <li className="mt-1 flex justify-between border-t border-borde pt-2 font-semibold"><span>Peso estimado</span><span className="tabular-nums">{kg(Number(v.pesoKg))}</span></li>}
           </ul>
           {v.nota && <p className="p-3.5 text-sm"><span className="text-suave">Nota: </span>{v.nota}</p>}
           <div className="flex items-center justify-between p-3.5">
             <span className="text-sm"><i className="fa-solid fa-money-bill-wave mr-2 text-exito" />Efectivo al terminar</span>
             <span className="text-lg font-extrabold text-naranja" data-testid="precio-viaje">{dinero(precio)}</span>
           </div>
-          {v.fueraDeRango && !v.motoristaId && (
-            <p className="p-3.5 text-xs text-suave"><i className="fa-solid fa-route mr-1.5 text-naranja" />Como el destino está lejos, el motorista te puede ofrecer otro precio. Tú decides si lo aceptas.</p>
+          {v.estado === "BUSCANDO" && (v.fueraDeRango || contraoferta) && (
+            <p className="p-3.5 text-xs text-suave"><i className={`fa-solid ${v.fueraDeRango ? "fa-route" : "fa-handshake"} mr-1.5 text-naranja`} />{v.fueraDeRango ? "Como el destino está lejos, el motorista te puede ofrecer otro precio." : "Un motorista te puede proponer otro precio."} Tú decides si lo aceptas.</p>
           )}
         </div>
         <p className="mt-2 text-[11px] text-suave">Pedido el {fechaHora(v.creadoEn)} a nombre de {v.clienteNombre}.</p>

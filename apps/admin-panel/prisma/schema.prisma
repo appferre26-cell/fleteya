@@ -170,6 +170,8 @@ model Configuracion {
   bancoTipoCuenta String? @default("Ahorro")
   bancoNumero     String?
   bancoTitular    String?
+  // Parte 5: el motorista puede proponer otro precio también dentro de los km incluidos
+  contraofertaEnRango Boolean @default(true)
   actualizadoEn  DateTime @updatedAt
 }
 
@@ -199,6 +201,7 @@ model Viaje {
   pesoKg            Decimal     @db.Decimal(10, 2)
   precioBase        Decimal     @db.Decimal(8, 2) // por peso, con mínimo
   fueraDeRango      Boolean     // más km que los incluidos: el motorista puede ofrecer otro precio
+  rangoTon          String?     // Parte 5: el cliente eligió por toneladas ("0-1", "1-2", "2-3", "3+") en vez de materiales
   nota              String?
   estado            EstadoViaje @default(BUSCANDO)
   canceladoPor      String?     // CLIENTE, PROPIETARIO

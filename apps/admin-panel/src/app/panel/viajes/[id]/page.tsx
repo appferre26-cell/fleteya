@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
+import { textoRango } from "@/lib/rangos";
 import { ESTADOS_VIAJE, dinero, kg, numeroViaje } from "@/lib/tarifa";
 import { fechaHora, formatoTelefono } from "@/lib/validacion";
 import { CancelarViaje } from "./CancelarViaje";
@@ -48,7 +49,8 @@ export default async function DetalleViaje({ params }: { params: Promise<{ id: s
                 <span className="text-suave tabular-nums">{kg(Number(i.pesoTotalKg))}</span>
               </li>
             ))}
-            <li className="mt-1 flex justify-between border-t border-borde pt-2 font-semibold"><span>Peso estimado</span><span>{kg(Number(v.pesoKg))}</span></li>
+            {v.rangoTon && <li className="flex justify-between gap-3 py-1" data-testid="rango-viaje"><span>Pedido rápido por toneladas</span><span className="font-semibold">{textoRango(v.rangoTon, Number(v.pesoKg))}</span></li>}
+            <li className="mt-1 flex justify-between border-t border-borde pt-2 font-semibold"><span>{v.rangoTon ? "Peso que se cobra" : "Peso estimado"}</span><span>{kg(Number(v.pesoKg))}</span></li>
           </ul>
           {v.nota && <p className="p-5 text-sm"><span className="text-suave">Nota del cliente: </span>{v.nota}</p>}
           <div className="flex items-center justify-between p-5">
@@ -56,7 +58,7 @@ export default async function DetalleViaje({ params }: { params: Promise<{ id: s
             <span className={`text-xl font-extrabold ${v.precioFinal && Number(v.precioFinal) !== Number(v.precioBase) ? "text-suave line-through" : "text-naranja"}`}>{dinero(Number(v.precioBase))}</span>
           </div>
           {v.precioFinal && Number(v.precioFinal) !== Number(v.precioBase) && (
-            <div className="flex items-center justify-between p-5"><span className="text-sm">Precio acordado (oferta del motorista)</span><span className="text-xl font-extrabold text-naranja" data-testid="precio-final">{dinero(Number(v.precioFinal))}</span></div>
+            <div className="flex items-center justify-between p-5"><span className="text-sm">Precio acordado (contrapropuesta del motorista)</span><span className="text-xl font-extrabold text-naranja" data-testid="precio-final">{dinero(Number(v.precioFinal))}</span></div>
           )}
           {v.comision && (
             <div className="flex items-center justify-between p-5 text-sm"><span>Comisión descontada de los créditos del motorista</span><span className="font-bold" data-testid="comision">{dinero(Number(v.comision))}</span></div>

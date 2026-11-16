@@ -6,8 +6,8 @@ import { aceptarOferta, rechazarOferta } from "../../pedir/acciones";
 
 export type OfertaCliente = { id: string; precio: number; nombre: string; vehiculo: string; kmDeRecogida: number | null };
 
-/** Ofertas de precio de motoristas (viajes más lejos que los km incluidos). */
-export function Ofertas({ codigo, ofertas, precioBase }: { codigo: string; ofertas: OfertaCliente[]; precioBase: number }) {
+/** Contrapropuestas de precio de motoristas (como en inDrive: el cliente decide). */
+export function Ofertas({ codigo, ofertas, precioBase, lejos }: { codigo: string; ofertas: OfertaCliente[]; precioBase: number; lejos: boolean }) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [ocupado, iniciar] = useTransition();
@@ -21,7 +21,7 @@ export function Ofertas({ codigo, ofertas, precioBase }: { codigo: string; ofert
   return (
     <section className="mt-6" data-testid="ofertas">
       <h2 className="seccion-titulo mb-3">Te ofrecieron otro precio</h2>
-      <p className="mb-3 text-xs text-suave">Tu destino está lejos. Estos motoristas pueden llevarlo por el precio que proponen. Si no aceptas ninguno, seguimos buscando con {dinero(precioBase)}.</p>
+      <p className="mb-3 text-xs text-suave">{lejos ? "Tu destino está lejos. " : ""}Estos motoristas pueden llevarlo por el precio que proponen. Si no aceptas ninguno, seguimos buscando con {dinero(precioBase)}.</p>
       <ul className="space-y-3">
         {ofertas.map((o) => (
           <li key={o.id} className="tarjeta p-4" data-testid="oferta">

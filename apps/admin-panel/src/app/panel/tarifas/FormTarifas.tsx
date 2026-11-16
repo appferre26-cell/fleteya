@@ -7,11 +7,13 @@ import { guardarTarifas, type EstadoTarifas } from "./acciones";
 type Cfg = {
   precioTonelada: number; tarifaMinima: number; kmIncluidos: number;
   zonaNombre: string; zonaLat: number; zonaLng: number; zonaRadioKm: number; whatsappAyuda: string | null;
+  contraofertaEnRango: boolean;
 };
 
 export function FormTarifas({ cfg }: { cfg: Cfg }) {
   const [e, accion, enviando] = useActionState<EstadoTarifas, FormData>(guardarTarifas, {});
   const v = (k: keyof Cfg) => e.valores?.[k] ?? String(cfg[k] ?? "");
+  const contraoferta = e.valores ? e.valores.contraofertaEnRango === "on" : cfg.contraofertaEnRango;
   const [t, setT] = useState({ precioTonelada: cfg.precioTonelada, tarifaMinima: cfg.tarifaMinima });
   const [centro, setCentro] = useState({ lat: Number(v("zonaLat")), lng: Number(v("zonaLng")) });
   const [radio, setRadio] = useState(Number(v("zonaRadioKm")));
@@ -40,7 +42,15 @@ export function FormTarifas({ cfg }: { cfg: Cfg }) {
           <p className="mb-1 font-semibold text-texto">Ejemplos con estos valores</p>
           <p>300 kg → {dinero(precioPorPeso(300, { ...t, kmIncluidos: 0 }))} · 1,500 kg → {dinero(precioPorPeso(1500, { ...t, kmIncluidos: 0 }))} · 3,000 kg → {dinero(precioPorPeso(3000, { ...t, kmIncluidos: 0 }))}</p>
           <p className="mt-1">Pago del viaje: solo efectivo, al motorista.</p>
+          <p className="mt-1">Botones rápidos del cliente: 0 a 1 ton → {dinero(precioPorPeso(1000, { ...t, kmIncluidos: 0 }))} · 1 a 2 ton → {dinero(precioPorPeso(2000, { ...t, kmIncluidos: 0 }))} · 2 a 3 ton → {dinero(precioPorPeso(3000, { ...t, kmIncluidos: 0 }))}</p>
         </div>
+        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-borde p-3">
+          <input type="checkbox" name="contraofertaEnRango" defaultChecked={contraoferta} key={String(contraoferta)} className="mt-0.5 h-5 w-5 shrink-0 accent-naranja" />
+          <span className="text-sm">
+            Permitir contrapropuestas dentro de los km incluidos
+            <span className="mt-0.5 block text-[11px] text-suave">El motorista puede proponer un precio mayor aunque el destino esté cerca (como en inDrive). El cliente acepta o sigue esperando con el precio por peso. Fuera de los km incluidos siempre se permite.</span>
+          </span>
+        </label>
         {campo("whatsappAyuda", "WhatsApp de ayuda (opcional)", { inputMode: "tel", placeholder: "7000-0000" },
           "Si lo llenas, el cliente ve un botón «Ayuda» que abre WhatsApp.")}
       </section>

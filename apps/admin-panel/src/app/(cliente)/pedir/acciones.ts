@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { capacidadMaximaKg, obtenerConfig } from "@/lib/config";
 import { centavos, distanciaKm, kg, precioPorPeso } from "@/lib/tarifa";
+import { RANGOS, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import { normalizarTelefono, type ErroresCampos } from "@/lib/validacion";
 import { asignar, ErrorViaje } from "@/lib/viajes-motorista";
 
@@ -24,10 +25,17 @@ const esquema = z.object({
     nombre: z.string().trim().max(60).optional(),
     pesoKg: z.number().optional(),
     cantidad: z.number().positive("Cantidad no válida").max(10000, "Cantidad muy grande"),
-  })).min(1, "Agrega al menos un material").max(30, "Máximo 30 materiales"),
+  })).max(30, "Máximo 30 materiales").default([]),
+  // Parte 5: pedido rápido por toneladas (en vez de la lista de materiales)
+  rango: z.object({
+    id: z.enum(RANGOS.map((r) => r.id) as [IdRango, ...IdRango[]]),
+    ton: z.number().optional(),
+  }).nullable().optional(),
   nota: z.string().trim().max(300, "La nota es muy larga").optional(),
   acepto: z.literal(true, { message: "Debes aceptar los Términos y el Aviso de Privacidad" }),
 });
+
+const SIN_CARGA = "Elige cuántas toneladas llevas o agrega al menos un material";
 
 export type EstadoPedido = { errores?: ErroresCampos; codigo?: string };
 
@@ -53,9 +61,12 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
   if (!r.success) {
     const errores: ErroresCampos = {};
     for (const i of r.error.issues) errores[String(i.path[0])] ??= i.message;
+    const b = bruto as { rango?: unknown; items?: unknown[] } | null;
+    if (!b?.rango && !b?.items?.length) errores.items ??= SIN_CARGA;
     return { errores };
   }
   const d = r.data;
+  if (!d.rango && d.items.length === 0) return { errores: { items: SIN_CARGA } };
   const cfg = await obtenerConfig();
 
   // Punto QR: la recogida es la ferretería
@@ -75,7 +86,7 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
   const ids = d.items.map((i) => i.materialId).filter((x): x is string => !!x);
   const mats = new Map((await db.material.findMany({ where: { id: { in: ids }, activo: true } })).map((m) => [m.id, m]));
   const items = [];
-  for (const i of d.items) {
+  for (const i of d.rango ? [] : d.items) {
     if (i.materialId) {
       const m = mats.get(i.materialId);
       if (!m) return { errores: { items: "Un material ya no está disponible. Recarga la página." } };
@@ -86,9 +97,12 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
       items.push({ materialId: null, nombre: i.nombre, unidad: "Otro", cantidad: i.cantidad, pesoUnitKg: i.pesoKg });
     }
   }
-  const pesoKg = centavos(items.reduce((s, i) => s + i.cantidad * i.pesoUnitKg, 0));
+  const pesoKg = d.rango
+    ? toneladasDeRango(d.rango.id, d.rango.ton) * 1000
+    : centavos(items.reduce((s, i) => s + i.cantidad * i.pesoUnitKg, 0));
   const maxKg = await capacidadMaximaKg();
   if (maxKg !== null && pesoKg > maxKg) {
+    if (d.rango) return { errores: { items: `Ahora mismo el vehículo más grande disponible lleva ${kg(maxKg)}. Elige un rango menor o divide la carga en dos pedidos.` } };
     return { errores: { items: `Son ${kg(pesoKg)} y el vehículo más grande disponible lleva ${kg(maxKg)}. Divide la carga en dos pedidos.` } };
   }
 
@@ -110,6 +124,7 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
       pesoKg,
       precioBase: precioPorPeso(pesoKg, cfg),
       fueraDeRango: km > cfg.kmIncluidos,
+      rangoTon: d.rango?.id ?? null,
       nota: d.nota || null,
       puntoQrId,
       aceptoTerminosEn: new Date(),

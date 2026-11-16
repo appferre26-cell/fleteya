@@ -101,6 +101,19 @@ Una sola aplicación web con tres zonas separadas:
 - Lo que aún no hace: **pagos/recargas en línea** (a futuro), **factura electrónica (DTE)** (por confirmar) y
   **notificaciones push con la app cerrada** (hoy el aviso suena con la app abierta en pantalla).
 
+### Parte 5 — Pedido rápido por toneladas y contrapropuesta del motorista
+
+- **Link del cliente**: nueva pestaña **Por toneladas** (la que se abre primero) con botones **0 a 1 tonelada**, **1 a 2**,
+  **2 a 3** y **Más de 3** (este último con − / + de media tonelada). Cada botón muestra el precio al instante: se cobra el
+  tope del rango con el precio por tonelada de Tarifas ($10, $20, $30, $35+). La pestaña **Por materiales** sigue igual.
+  Los rangos que ningún vehículo activo puede llevar salen desactivados. El servidor recalcula peso y precio.
+- **Contrapropuesta dentro de los km incluidos** (estilo inDrive): el motorista ve «Proponer otro precio» también en viajes
+  cercanos; el precio debe ser mayor al de la app. El cliente acepta o dice «No, gracias» y se sigue buscando con el precio
+  por peso. Fuera de los km incluidos funciona como antes.
+- **Tarifas**: casilla «Permitir contrapropuestas dentro de los km incluidos» (encendida por defecto) y ejemplos de precio por rango.
+- El motorista y el panel ven «1 a 2 toneladas» en lugar de la lista de materiales cuando el cliente pidió por rango.
+- Pruebas: `tests/rangos.spec.ts`. Capturas: `node tests/capturas-rangos.mjs`.
+
 ## Cómo correrlo (desarrollo)
 
 Necesitas Node 20+ y PostgreSQL.
