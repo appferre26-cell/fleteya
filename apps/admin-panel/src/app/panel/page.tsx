@@ -8,7 +8,7 @@ export const metadata = { title: "Inicio — FleteYa" };
 
 export default async function InicioPanel() {
   const yo = await exigirPropietario();
-  const [grupos, pendientes, licencias, recientes] = await Promise.all([
+  const [grupos, pendientes, licencias, recientes, buscando] = await Promise.all([
     db.motorista.groupBy({ by: ["estado"], _count: true }),
     db.motorista.findMany({ where: { estado: "PENDIENTE" }, orderBy: { creadoEn: "asc" }, take: 5,
       select: { id: true, nombre: true, creadoEn: true, _count: { select: { documentos: true } } } }),
@@ -18,6 +18,7 @@ export default async function InicioPanel() {
     }),
     db.historialMotorista.findMany({ orderBy: { fecha: "desc" }, take: 6,
       include: { motorista: { select: { id: true, nombre: true } }, propietario: { select: { nombre: true } } } }),
+    db.viaje.count({ where: { estado: "BUSCANDO" } }),
   ]);
   const n = (e: string) => grupos.find((g) => g.estado === e)?._count ?? 0;
   const total = grupos.reduce((s, g) => s + g._count, 0);
@@ -40,6 +41,14 @@ export default async function InicioPanel() {
           </div>
         ))}
       </div>
+
+      {buscando > 0 && (
+        <Link href="/panel/viajes?f=buscando" className="mt-6 flex items-center gap-4 rounded-xl border border-naranja/30 bg-naranja/[0.07] px-5 py-4">
+          <i className="fa-solid fa-route text-naranja" />
+          <p className="flex-1 text-sm font-semibold">{buscando === 1 ? "1 viaje busca motorista" : `${buscando} viajes buscan motorista`}</p>
+          <span className="text-sm font-semibold text-naranja">Ver viajes <i className="fa-solid fa-arrow-right ml-1 text-xs" /></span>
+        </Link>
+      )}
 
       {total === 0 && (
         <div className="tarjeta mt-6 flex flex-col items-start gap-3 p-6 sm:flex-row sm:items-center">

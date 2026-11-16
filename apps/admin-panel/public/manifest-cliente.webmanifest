@@ -1,0 +1,10 @@
+{
+  "name": "FleteYa — Pide tu flete",
+  "short_name": "FleteYa",
+  "start_url": "/pedir",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "lang": "es",
+  "icons": [{ "src": "/icono.png", "sizes": "512x512", "type": "image/png" }]
+}
