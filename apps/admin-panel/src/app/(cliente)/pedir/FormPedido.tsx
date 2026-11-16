@@ -270,11 +270,11 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr }: Props) {
           </div>
         </div>
         <p className="mt-3 text-xs leading-relaxed text-suave">
-          {dinero(tarifa.precioTonelada)} por tonelada · mínimo {dinero(tarifa.tarifaMinima)} · incluye hasta {tarifa.kmIncluidos} km. Solo te llegan motoristas cuyo vehículo aguanta este peso.
+          {dinero(tarifa.precioTonelada)} por tonelada · mínimo {dinero(tarifa.tarifaMinima)} · incluye hasta {tarifa.kmIncluidos} km a la redonda desde {qr ? "la ferretería" : "donde se carga"}. Solo te llegan motoristas cuyo vehículo aguanta este peso.
         </p>
         {lejos && (
           <p className="mt-2 rounded-lg bg-fondo/50 px-3 py-2 text-xs text-texto" data-testid="aviso-lejos">
-            <i className="fa-solid fa-route mr-1.5 text-naranja" />Tu destino está a más de {tarifa.kmIncluidos} km. El motorista te puede ofrecer otro precio y tú decides si lo aceptas.
+            <i className="fa-solid fa-route mr-1.5 text-naranja" />Tu destino está a más de {tarifa.kmIncluidos} km {qr ? "de la ferretería" : "de donde se carga"}. El motorista te puede ofrecer otro precio y tú decides si lo aceptas.
           </p>
         )}
         {muyPesado && <Aviso m={`Es más de lo que lleva el vehículo más grande disponible (${kg(maxKg!)}). Divide la carga en dos pedidos.`} />}
