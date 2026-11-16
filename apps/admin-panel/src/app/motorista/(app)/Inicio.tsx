@@ -3,8 +3,10 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Mapa, type PuntoMapa } from "@/components/Mapa";
 import type { DatosInicio } from "@/lib/inicio-motorista";
 import { dinero, kg, numeroViaje } from "@/lib/tarifa";
-import { avanzarViaje, calificarCliente, cambiarDisponible, soltarViaje, type Resultado } from "../acciones";
+import { avanzarViaje, calificarCliente, cambiarDisponible, soltarViaje, suscribirAvisos, type Resultado } from "../acciones";
 import { Calificar } from "@/components/Calificar";
+import { BotonAvisos } from "@/components/BotonAvisos";
+import { activarAvisos } from "@/lib/avisos-navegador";
 import { notificar, pantallaEncendida, prepararSonido, sonarAlerta } from "./alerta";
 import { ListaCarga, Ruta, TarjetaSolicitud, type Sol } from "./Solicitud";
 
@@ -21,7 +23,7 @@ const hora = (t: number) => new Intl.DateTimeFormat("es-SV", { hour: "numeric", 
 const mapsUrl = (p: { lat: number; lng: number }) => `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}&travelmode=driving`;
 const wazeUrl = (p: { lat: number; lng: number }) => `https://waze.com/ul?ll=${p.lat},${p.lng}&navigate=yes`;
 
-export function Inicio({ inicial }: { inicial: DatosInicio }) {
+export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; claveAvisos?: string | null }) {
   const [d, setD] = useState(inicial);
   const [aviso, setAviso] = useState<{ texto: string; tipo: "ok" | "error" } | null>(null);
   const [alerta, setAlerta] = useState<{ s: Sol; hasta: number } | null>(null);
@@ -33,6 +35,7 @@ export function Inicio({ inicial }: { inicial: DatosInicio }) {
   const wake = useRef<WakeLockSentinel | null>(null);
   const activoAntes = useRef(inicial.activo?.id ?? null);
   const terminePorMi = useRef(false);
+  const [vAvisos, setVAvisos] = useState(0);
 
   const refrescar = useCallback(async () => {
     try {
@@ -114,7 +117,11 @@ export function Inicio({ inicial }: { inicial: DatosInicio }) {
 
   const alternar = () => iniciar(async () => {
     const quiere = !d.motorista.disponible;
-    if (quiere) prepararSonido();
+    if (quiere) {
+      prepararSonido();
+      // Al conectarse, también activa los avisos con la app cerrada (pide permiso una sola vez).
+      if (claveAvisos) void activarAvisos(claveAvisos, suscribirAvisos).then(() => setVAvisos((n) => n + 1)).catch(() => {});
+    }
     setAviso(null);
     const r = await cambiarDisponible(quiere);
     if (r.error) setAviso({ texto: r.error, tipo: "error" });
@@ -200,6 +207,12 @@ export function Inicio({ inicial }: { inicial: DatosInicio }) {
                 <i className="fa-solid fa-power-off" /><span className="flex-1">{m.disponible ? "DISPONIBLE" : "NO DISPONIBLE"}</span>
                 <span className={`flex h-8 w-14 items-center rounded-full p-1 ${m.disponible ? "justify-end bg-fondo/25" : "justify-start bg-tarjeta-2"}`}><span className="h-6 w-6 rounded-full bg-white" /></span>
               </button>
+              {m.disponible && (
+                <div className="mt-4">
+                  <BotonAvisos key={vAvisos} clave={claveAvisos} modo="motorista" ocultarSiActivo titulo="Recibe pedidos con la app cerrada"
+                    ayuda="Te llega una notificación aunque tengas el teléfono bloqueado o estés en otra app." />
+                </div>
+              )}
               <p className="mt-2 text-center text-xs text-suave">
                 {m.disponible ? <><span className="mr-1.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-naranja" />Buscando solicitudes · cargas de hasta {kg(m.capacidadKg)}</> : "Toca para empezar a recibir solicitudes"}
               </p>

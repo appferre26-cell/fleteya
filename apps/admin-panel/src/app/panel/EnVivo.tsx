@@ -6,7 +6,7 @@ import type { DatosEnVivo } from "@/lib/en-vivo";
 
 const ESTADO: Record<string, string> = { BUSCANDO: "Buscando motorista", ASIGNADO: "Aceptado", EN_CAMINO: "Va a recoger", CARGANDO: "Cargando", EN_RUTA: "Va a entregar" };
 
-export function EnVivo({ inicial, zona }: { inicial: DatosEnVivo; zona: { lat: number; lng: number; radioKm: number } }) {
+export function EnVivo({ inicial, zona }: { inicial: DatosEnVivo; zona: { lat: number; lng: number; radioKm: number; poligono: { lat: number; lng: number }[] | null } }) {
   const [d, setD] = useState(inicial);
   const [error, setError] = useState(false);
 
@@ -58,7 +58,7 @@ export function EnVivo({ inicial, zona }: { inicial: DatosEnVivo; zona: { lat: n
       </div>
       <div className="grid lg:grid-cols-[1.7fr_1fr]">
         <div className="p-3">
-          <Mapa centro={zona} zoom={13} puntos={puntos} circulo={zona} className="h-72 lg:h-80" etiqueta="Mapa en vivo de motoristas y pedidos" />
+          <Mapa centro={zona} zoom={13} puntos={puntos} zona={zona} className="h-72 lg:h-80" etiqueta="Mapa en vivo de motoristas y pedidos" />
           <div className="mt-2 flex flex-wrap gap-4 px-1 text-[11px] text-suave">
             <span><i className="fa-solid fa-circle mr-1 text-exito" />Motorista disponible</span>
             <span><i className="fa-solid fa-circle mr-1 text-amarillo" />Motorista en viaje</span>

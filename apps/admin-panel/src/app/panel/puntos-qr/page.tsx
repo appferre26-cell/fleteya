@@ -1,6 +1,6 @@
 import QRCode from "qrcode";
 import { db } from "@/lib/db";
-import { obtenerConfig } from "@/lib/config";
+import { obtenerConfig, zonaDe } from "@/lib/config";
 import { urlPublica } from "@/lib/url";
 import { BotonActivoPunto, CopiarLink, FormPunto } from "./Piezas";
 
@@ -70,7 +70,7 @@ export default async function PuntosQR() {
             </article>
           ))}
         </section>
-        <aside><FormPunto zona={{ lat: cfg.zonaLat, lng: cfg.zonaLng, radioKm: cfg.zonaRadioKm }} /></aside>
+        <aside><FormPunto zona={zonaDe(cfg)} /></aside>
       </div>
     </>
   );

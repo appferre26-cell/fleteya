@@ -7,6 +7,8 @@ import { textoRango } from "@/lib/rangos";
 import { ESTADOS_VIAJE, centavos, dinero, distanciaKm, kg, numeroViaje } from "@/lib/tarifa";
 import { TIPOS_VEHICULO, fechaHora, formatoTelefono } from "@/lib/validacion";
 import { AccionesViaje } from "./AccionesViaje";
+import { BotonAvisos } from "@/components/BotonAvisos";
+import { clavePublicaAvisos } from "@/lib/avisos";
 import { Ofertas } from "./Ofertas";
 import { CalificarMotorista } from "./CalificarMotorista";
 import { promedioMotorista } from "@/lib/calificaciones";
@@ -81,6 +83,12 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
           <p className="mt-1 max-w-sm text-sm text-suave">Avisamos a los motoristas cercanos cuyo vehículo aguanta tu carga. Cuando uno acepte, aquí verás su nombre, placa y un botón para llamarle.</p>
           <p className="mt-2 text-xs text-suave">Puedes cerrar esta página: guarda el enlace para volver.</p>
         </section>
+      )}
+      {activo && (
+        <div className="mt-5">
+          <BotonAvisos clave={clavePublicaAvisos()} modo="cliente" codigo={v.codigo} titulo="Avísame en este teléfono"
+            ayuda="Te mandamos una notificación cuando un motorista acepte o te proponga precio, cuando llegue y cuando entregue." />
+        </div>
       )}
       {ofertas.length > 0 && <Ofertas codigo={v.codigo} ofertas={ofertas} precioBase={Number(v.precioBase)} lejos={v.fueraDeRango} />}
 

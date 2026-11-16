@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
 import { diasParaVencer, fechaCorta, fechaHora } from "@/lib/validacion";
 import { textoAccion } from "@/lib/historial";
-import { obtenerConfig } from "@/lib/config";
+import { obtenerConfig, zonaDe } from "@/lib/config";
 import { datosEnVivo } from "@/lib/en-vivo";
 import { periodo } from "@/lib/periodos";
 import { resumenPeriodo } from "@/lib/reportes";
@@ -36,7 +36,7 @@ export default async function InicioPanel() {
       <h1 className="text-[26px] leading-tight font-extrabold lg:text-[28px]">Hola, {yo.nombre.split(" ")[0]}</h1>
       <p className="mt-1 text-sm text-suave">Así va FleteYa en {cfg.zonaNombre || "tu zona"}.</p>
 
-      <EnVivo inicial={vivo} zona={{ lat: cfg.zonaLat, lng: cfg.zonaLng, radioKm: cfg.zonaRadioKm }} />
+      <EnVivo inicial={vivo} zona={zonaDe(cfg)} />
 
       <section className="tarjeta mt-4 overflow-hidden" data-testid="ingresos">
         <div className="flex items-center justify-between gap-2 border-b border-borde px-5 py-4">
