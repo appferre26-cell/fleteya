@@ -79,6 +79,7 @@ FleteYa tendrá **un solo sistema** con tres "puertas" separadas, como ya acorda
 
 ### 2.3 Pagos en línea (guardado para después)
 - Por ahora **no se usa**. Si algún día se activa, la opción revisada es **Wompi**: 3.5% + IVA por pago, sin mensualidad; el cliente **no necesita cuenta**, solo su tarjeta; requiere cuenta de Banco Agrícola a nombre del socio.
+- **Recargas de créditos:** decididas **manuales** por ahora. Queda abierta la opción de hacerlas automáticas con enlace de pago (aprox. $0.79 por recarga de $20, estimado). La base de datos guarda la forma de pago de cada recarga, así que agregar "en línea" después no obliga a rehacer los créditos.
 
 ### 2.4 Costo de desarrollo
 - **Opción A — Construirlo conmigo por partes (recomendado para el piloto):** lo voy armando en esta plataforma, parte por parte, y ustedes revisan cada avance. El costo es el de su plan de Abacus.AI más los servicios externos de la tabla 2.2 (hoy $0 estimado).

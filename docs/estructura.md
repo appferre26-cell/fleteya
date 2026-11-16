@@ -387,6 +387,12 @@ Cada recarga genera un **recibo automático**. El motorista lo puede ver de dos 
   - Una sección "Pagos a motoristas" en el panel.
 - Las pantallas de esto quedan diseñadas pero **guardadas para después**.
 
+**Decisión sobre las recargas (15 nov 2026):** por ahora las recargas se registran **a mano** (el propietario confirma en su banco y registra en el panel). Más adelante se puede volver **automático**:
+- El motorista pagaría con un enlace de pago desde "Mis créditos" y los créditos se sumarían solos al instante.
+- Costo aproximado: unos **$0.79 por cada recarga de $20** (estimado con la tarifa de Wompi de 3.5% + IVA).
+- El sistema se construye listo para eso: cada recarga guarda su **forma de pago** (efectivo, transferencia y, a futuro, "en línea"). Así, activarlo después es agregar una forma de pago y no rehacer la parte de créditos.
+- El registro manual se mantendría para el efectivo y las transferencias.
+
 ---
 
 ## 9. Vehículos y Motoristas
