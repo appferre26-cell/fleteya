@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
+import { avisarCliente, avisarMotoristas, despues } from "@/lib/avisos";
 
 export type EstadoCancelar = { error?: string; ok?: boolean };
 
@@ -18,6 +19,11 @@ export async function cancelarViajePropietario(_: EstadoCancelar, form: FormData
     data: { estado: "CANCELADO", canceladoPor: "PROPIETARIO", motivoCancelacion: motivo, canceladoEn: ahora },
   });
   if (r.count === 0) return { error: "Este viaje ya no se puede cancelar." };
+  const v = await db.viaje.findUnique({ where: { id }, select: { motoristaId: true } });
+  despues(async () => {
+    await avisarCliente(id, { titulo: "FleteYa canceló tu pedido", cuerpo: motivo });
+    if (v?.motoristaId) await avisarMotoristas([v.motoristaId], { titulo: "FleteYa canceló tu viaje", cuerpo: `${motivo}. No se descontó nada de tus créditos.`, url: "/motorista", tag: "fleteya-viaje", urgente: true });
+  });
   await db.ofertaPrecio.updateMany({ where: { viajeId: id, estado: "PENDIENTE" }, data: { estado: "RECHAZADA", respondidaEn: ahora } });
   revalidatePath("/panel/viajes");
   revalidatePath(`/panel/viajes/${id}`);

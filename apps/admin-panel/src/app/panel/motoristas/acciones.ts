@@ -4,6 +4,7 @@ import { Prisma, type TipoDocumento } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
+import { avisarMotoristas, despues } from "@/lib/avisos";
 import {
   MAX_DOC_BYTES, contrasenaTemporal, erroresDe, esquemaMotorista, type ErroresCampos,
 } from "@/lib/validacion";
@@ -135,6 +136,7 @@ export async function aprobarMotorista(id: string, _: EstadoAccion, form: FormDa
       historial: { create: { propietarioId: yo.id, accion: "APROBADO" } },
     },
   });
+  despues(() => avisarMotoristas([id], { titulo: "¡Tu cuenta de FleteYa fue aprobada!", cuerpo: "Ya puedes conectarte y recibir viajes cuando tengas créditos.", url: "/motorista", tag: "fleteya-cuenta" }));
   revalidatePath("/panel", "layout");
   return { ok: "Motorista aprobado. Ya puede recibir viajes cuando la app del motorista esté lista." };
 }

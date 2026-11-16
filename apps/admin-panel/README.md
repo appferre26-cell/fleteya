@@ -1,4 +1,4 @@
-# FleteYa — panel de propietarios, link del cliente y app del motorista (Partes 1 a 6)
+# FleteYa — panel de propietarios, link del cliente y app del motorista (Partes 1 a 8)
 
 Una sola aplicación web con tres zonas separadas:
 
@@ -98,8 +98,7 @@ Una sola aplicación web con tres zonas separadas:
 - Cada recarga guarda su forma de pago (`EFECTIVO`, `TRANSFERENCIA`; `EN_LINEA` queda listo para el futuro).
 - **Por confirmar con el contador**: si además del recibo hace falta factura electrónica (DTE) de Hacienda.
 
-- Lo que aún no hace: **pagos/recargas en línea** (a futuro), **factura electrónica (DTE)** (por confirmar) y
-  **notificaciones push con la app cerrada** (hoy el aviso suena con la app abierta en pantalla).
+- Lo que aún no hace: **pagos/recargas en línea** (a futuro), **factura electrónica (DTE)** (por confirmar) (los avisos con la app cerrada llegaron en la Parte 8).
 
 ### Parte 5 — Pedido rápido por toneladas y contrapropuesta del motorista
 
@@ -149,6 +148,30 @@ Una sola aplicación web con tres zonas separadas:
   filtrado y **Exportar a Excel** con los mismos filtros (todas las filas, no solo las 100 de la pantalla).
 - Pruebas: `tests/reportes.spec.ts`. Capturas: `node tests/capturas-reportes.mjs`.
 
+### Parte 8 — Avisos con la app cerrada y zona dibujada en el mapa
+
+- **Avisos (notificaciones) aunque la app esté cerrada**, con el sistema estándar del navegador (Web Push):
+  - *Motorista*: le llega «Nueva solicitud de flete» con precio y ferretería (solo si está **Disponible**, abrió la app en
+    las últimas 8 horas, tiene saldo, licencia vigente, vehículo con capacidad y no está en otro viaje). También le avisa
+    cuando el cliente acepta o rechaza su precio, cuando cancela, cuando el propietario cancela, cuando aprueban su cuenta y
+    cuando le cargan una recarga (con link al recibo). Se activan al ponerse «Disponible» o en **Perfil → Avisos con la app cerrada**,
+    donde también hay «Probar aviso» y «Desactivar».
+  - *Cliente* (sin cuenta): en el link de su pedido aparece **«Avísame en este teléfono»**. Le llega cuando un motorista
+    acepta o le propone precio, cuando va en camino, llega, carga, va hacia el destino y entrega, o si se cancela.
+  - Al tocar el aviso se abre la pantalla correcta. Si un teléfono quitó el permiso, se borra solo.
+  - **Android (Chrome)**: funciona directo. **iPhone**: solo con iOS 16.4 o más nuevo y abriendo FleteYa desde el ícono
+    («Compartir → Agregar a inicio»); la pantalla lo explica.
+- **Zona de servicio dibujada** (Tarifas y zona): además del círculo, el propietario puede tocar el mapa punto por punto
+  para marcar el área exacta (mínimo 3 puntos, máximo 60; «Deshacer punto», «Borrar área»; muestra los km²; no deja
+  guardar si las líneas se cruzan). Al guardar avisa qué ferreterías con QR quedaron fuera. El área se ve en el mapa del
+  cliente, en Puntos QR y en el mapa en vivo. Fuera del área el cliente no puede pedir y no se pueden crear QR.
+  **No cambia el precio**: los $10 por tonelada siguen contando 5 km a la redonda desde la ferretería donde se carga.
+- Claves para los avisos (una sola vez): `npx web-push generate-vapid-keys` y ponerlas en `.env` como `VAPID_PUBLIC_KEY`,
+  `VAPID_PRIVATE_KEY` y `VAPID_CORREO="mailto:soporte@tu-dominio.com"`. **No cambiarlas después**: los teléfonos ya
+  suscritos dejarían de recibir avisos. Sin claves la app funciona igual, solo que sin avisos.
+- Base de datos: correr `npm run db:migrar` (agrega la tabla de suscripciones a avisos y el área de la zona).
+- Pruebas: `tests/avisos-zonas.spec.ts`. Capturas: `node tests/capturas-avisos-zonas.mjs`.
+
 ## Cómo correrlo (desarrollo)
 
 Necesitas Node 20+ y PostgreSQL.
@@ -166,6 +189,10 @@ SESSION_SECRET="una-cadena-larga-y-secreta"   # por ejemplo: openssl rand -hex 3
 # Opcional: enviar los recibos por correo
 # SMTP_URL="smtps://usuario:clave-de-aplicacion@smtp.gmail.com:465"
 # CORREO_REMITENTE="FleteYa <recibos@tu-dominio.com>"
+# Avisos con la app cerrada (Parte 8). Generarlas con: npx web-push generate-vapid-keys
+# VAPID_PUBLIC_KEY="..."
+# VAPID_PRIVATE_KEY="..."
+# VAPID_CORREO="mailto:soporte@tu-dominio.com"
 ```
 
 Crea las tablas y el primer propietario:
@@ -207,7 +234,18 @@ el perfil y en el panel, y la sección Clientes (búsqueda, ficha, bloquear con 
 `SMTP_URL=smtp://localhost:2525` y `SMTP_BUZON=... npx playwright test tests/creditos.spec.ts`. **Usan la base de datos real que configures**, así que crean motoristas y
 propietarios, materiales, puntos QR y viajes de prueba: córrelas solo en una base de pruebas.
 
-`node tests/capturas.mjs` (Parte 1), `node tests/capturas-cliente.mjs` (Parte 2), `node tests/capturas-motorista.mjs` (Parte 3) `node tests/capturas-creditos.mjs` (Parte 4) y `node tests/capturas-reportes.mjs` (Parte 7) sacan capturas de pantalla en
+Parte 8 (`tests/avisos-zonas.spec.ts`): a quién le llega el aviso de un pedido nuevo, avisos al cliente y al motorista,
+borrado de teléfonos que quitaron el permiso, el botón de avisos, dibujar el área y pedir/crear QR fuera de ella. Las de
+avisos usan un servicio de avisos falso que guarda lo que recibe:
+
+```bash
+openssl req -x509 -newkey rsa:2048 -nodes -days 30 -subj /CN=localhost -keyout llave.pem -out cert.pem
+PUSH_BUZON=$PWD/buzon.jsonl PUSH_CERT=cert.pem PUSH_LLAVE=llave.pem node tests/push-falso.mjs &
+NODE_EXTRA_CA_CERTS=cert.pem npm run start     # el panel debe confiar en el certificado de prueba
+PUSH_BUZON=$PWD/buzon.jsonl E2E_CORREO=... E2E_PASSWORD=... npx playwright test tests/avisos-zonas.spec.ts
+```
+
+`node tests/capturas.mjs` (Parte 1), `node tests/capturas-cliente.mjs` (Parte 2), `node tests/capturas-motorista.mjs` (Parte 3) `node tests/capturas-creditos.mjs` (Parte 4) `node tests/capturas-reportes.mjs` (Parte 7) y `node tests/capturas-avisos-zonas.mjs` (Parte 8) sacan capturas de pantalla en
 computadora y celular (carpeta `capturas/`, o la que digas en `CAPTURAS`).
 
 ## Notas

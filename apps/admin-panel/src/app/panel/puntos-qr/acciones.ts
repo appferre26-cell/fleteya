@@ -3,9 +3,9 @@ import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { obtenerConfig } from "@/lib/config";
+import { obtenerConfig, zonaDe } from "@/lib/config";
+import { dentroDeZona } from "@/lib/zona";
 import { exigirPropietario } from "@/lib/sesion";
-import { distanciaKm } from "@/lib/tarifa";
 import { erroresDe, type ErroresCampos } from "@/lib/validacion";
 
 const esquema = z.object({
@@ -29,7 +29,7 @@ export async function guardarPunto(_: EstadoPunto, form: FormData): Promise<Esta
   const r = esquema.safeParse({ ...valores, lat: valores.lat || 0, lng: valores.lng || 0 });
   if (!r.success) return { errores: erroresDe(r.error), valores };
   const cfg = await obtenerConfig();
-  if (distanciaKm(r.data, { lat: cfg.zonaLat, lng: cfg.zonaLng }) > cfg.zonaRadioKm) {
+  if (!dentroDeZona(r.data, zonaDe(cfg))) {
     return { errores: { lat: `Ese punto está fuera de la zona de servicio (${cfg.zonaNombre}). Amplía la zona en Tarifas y zona.` }, valores };
   }
   const id = String(form.get("id") ?? "");

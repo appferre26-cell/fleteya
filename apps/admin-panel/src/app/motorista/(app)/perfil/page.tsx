@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { obtenerConfig } from "@/lib/config";
+import { clavePublicaAvisos } from "@/lib/avisos";
+import { BotonAvisos } from "@/components/BotonAvisos";
 import { db } from "@/lib/db";
 import { promedioMotorista } from "@/lib/calificaciones";
 import { EstrellasFijas, Promedio } from "@/components/Estrellas";
@@ -44,6 +46,11 @@ export default async function PerfilMotorista() {
           </ul>
         )}
       </section>
+
+      <div className="mt-4">
+        <BotonAvisos clave={clavePublicaAvisos()} modo="motorista" titulo="Avisos con la app cerrada"
+          ayuda="Pedidos nuevos, respuestas de clientes, cancelaciones y recargas te llegan como notificación." />
+      </div>
 
       {dias <= 30 && (
         <p className={`mt-4 rounded-lg px-3 py-2.5 text-sm ${dias < 0 ? "bg-error/10 text-error" : "bg-naranja/10 text-naranja"}`}>

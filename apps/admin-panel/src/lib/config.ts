@@ -1,5 +1,6 @@
 import "server-only";
 import { db } from "@/lib/db";
+import { leerPoligono, type Zona } from "@/lib/zona";
 
 /** Tarifas y zona (una sola fila). Se crea con los valores de la Fase 1 si no existe. */
 export async function obtenerConfig() {
@@ -12,6 +13,7 @@ export async function obtenerConfig() {
     zonaLat: c.zonaLat,
     zonaLng: c.zonaLng,
     zonaRadioKm: Number(c.zonaRadioKm),
+    zonaPoligono: leerPoligono(c.zonaPoligono),
     whatsappAyuda: c.whatsappAyuda,
     comisionPct: Number(c.comisionPct),
     planSemanal: Number(c.planSemanal),
@@ -28,6 +30,11 @@ export async function obtenerConfig() {
 }
 
 export type Config = Awaited<ReturnType<typeof obtenerConfig>>;
+
+/** Zona de servicio lista para el mapa y para revisar si un punto está dentro. */
+export function zonaDe(cfg: Config): Zona {
+  return { nombre: cfg.zonaNombre, lat: cfg.zonaLat, lng: cfg.zonaLng, radioKm: cfg.zonaRadioKm, poligono: cfg.zonaPoligono };
+}
 
 /** Mayor capacidad (kg) entre motoristas activos; null si aún no hay ninguno activo. */
 export async function capacidadMaximaKg() {

@@ -2,11 +2,13 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { capacidadMaximaKg, obtenerConfig } from "@/lib/config";
+import { capacidadMaximaKg, obtenerConfig, zonaDe } from "@/lib/config";
+import { dentroDeZona } from "@/lib/zona";
 import { centavos, distanciaKm, kg, precioPorPeso } from "@/lib/tarifa";
 import { RANGOS, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import { normalizarTelefono, type ErroresCampos } from "@/lib/validacion";
 import { asignar, ErrorViaje } from "@/lib/viajes-motorista";
+import { avisarMotoristas, avisarPedidoNuevo, clavePublicaAvisos, despues, guardarSuscripcion } from "@/lib/avisos";
 import { clienteBloqueado, leerCalificacion } from "@/lib/calificaciones";
 
 const punto = z.object({
@@ -79,7 +81,7 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
   }
   const destino = d.destino!;
 
-  if (distanciaKm(origen, { lat: cfg.zonaLat, lng: cfg.zonaLng }) > cfg.zonaRadioKm) {
+  if (!dentroDeZona(origen, zonaDe(cfg))) {
     return { errores: { origen: `Todavía no damos servicio en esa zona. Por ahora solo recogemos en ${cfg.zonaNombre} y alrededores.` } };
   }
 
@@ -137,6 +139,7 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
       items: { create: items.map((i) => ({ ...i, pesoTotalKg: centavos(i.cantidad * i.pesoUnitKg) })) },
     },
   });
+  despues(() => avisarPedidoNuevo(viaje.id));
   return { codigo: viaje.codigo };
 }
 
@@ -155,6 +158,10 @@ export async function cancelarViajeCliente(codigo: string, motivo: string) {
     return { error: v.estado === "CARGANDO" || v.estado === "EN_RUTA" ? "El motorista ya cargó tu material. Llámale para resolverlo." : "Este viaje ya no se puede cancelar." };
   }
   await db.ofertaPrecio.updateMany({ where: { viajeId: v.id, estado: "PENDIENTE" }, data: { estado: "RECHAZADA", respondidaEn: ahora } });
+  if (v.motoristaId) {
+    const mid = v.motoristaId;
+    despues(() => avisarMotoristas([mid], { titulo: "El cliente canceló el viaje", cuerpo: "No se descontó nada de tus créditos. Ya puedes recibir otros pedidos.", url: "/motorista", tag: "fleteya-viaje", urgente: true }));
+  }
   return { ok: true };
 }
 
@@ -166,6 +173,7 @@ export async function aceptarOferta(codigo: string, ofertaId: string) {
   if (o.estado !== "PENDIENTE" || !o.motorista.disponible) return { error: "El motorista retiró esa oferta." };
   try {
     await asignar(v.id, o.motoristaId, Number(o.precio), o.id);
+    despues(() => avisarMotoristas([o.motoristaId], { titulo: "¡El cliente aceptó tu precio!", cuerpo: `Viaje de $${Number(o.precio).toFixed(2)}. Abre la app para ir a recoger.`, url: "/motorista", tag: "fleteya-viaje", urgente: true }));
     return { ok: true };
   } catch (e) {
     if (e instanceof ErrorViaje) return { error: e.message.startsWith("Otro motorista") ? "Otro motorista ya tomó tu viaje." : "Ese motorista ya no está disponible. Espera otra oferta o el precio de la app." };
@@ -177,7 +185,9 @@ export async function aceptarOferta(codigo: string, ofertaId: string) {
 export async function rechazarOferta(codigo: string, ofertaId: string) {
   const v = await db.viaje.findUnique({ where: { codigo } });
   if (!v) return { error: "Esta oferta ya no existe." };
-  await db.ofertaPrecio.updateMany({ where: { id: ofertaId, viajeId: v.id, estado: "PENDIENTE" }, data: { estado: "RECHAZADA", respondidaEn: new Date() } });
+  const o = await db.ofertaPrecio.findFirst({ where: { id: ofertaId, viajeId: v.id, estado: "PENDIENTE" } });
+  const r = await db.ofertaPrecio.updateMany({ where: { id: ofertaId, viajeId: v.id, estado: "PENDIENTE" }, data: { estado: "RECHAZADA", respondidaEn: new Date() } });
+  if (o && r.count) despues(() => avisarMotoristas([o.motoristaId], { titulo: "El cliente no aceptó tu precio", cuerpo: `Tu oferta de $${Number(o.precio).toFixed(2)} no fue aceptada. Puedes aceptar el precio de la app si te sirve.`, url: "/motorista", tag: "fleteya-oferta" }));
   return { ok: true };
 }
 
@@ -192,4 +202,13 @@ export async function calificarMotorista(codigo: string, estrellas: number, come
   });
   if (r.count === 0) return { error: "Este viaje ya fue calificado o todavía no se ha entregado." };
   return { ok: true };
+}
+
+/** Parte 8: el cliente pide que le avisen en este teléfono cómo va su pedido (sin cuenta: queda ligado al viaje). */
+export async function suscribirAvisosViaje(codigo: string, sub: unknown) {
+  if (!clavePublicaAvisos()) return { error: "Los avisos no están disponibles." };
+  const v = await db.viaje.findUnique({ where: { codigo: String(codigo) }, select: { id: true, estado: true, _count: { select: { avisos: true } } } });
+  if (!v || v.estado === "ENTREGADO" || v.estado === "CANCELADO") return { error: "Este pedido ya terminó." };
+  if (v._count.avisos >= 5) return { error: "Ya hay varios teléfonos recibiendo avisos de este pedido." };
+  return (await guardarSuscripcion(sub, { viajeId: v.id })) ? { ok: true } : { error: "No se pudo activar en este teléfono." };
 }

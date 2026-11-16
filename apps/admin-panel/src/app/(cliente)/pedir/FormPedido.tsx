@@ -6,6 +6,7 @@ import { Mapa, type PuntoMapa } from "@/components/Mapa";
 import { dinero, distanciaKm, kg, precioPorPeso, type Tarifa } from "@/lib/tarifa";
 import { RANGOS, TON_EXTRA, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import type { ErroresCampos } from "@/lib/validacion";
+import { dentroDeZona, type Zona } from "@/lib/zona";
 import { solicitarViaje } from "./acciones";
 
 type Material = { id: string; nombre: string; unidad: string; pesoKg: number };
@@ -13,7 +14,7 @@ type Punto = { lat: number; lng: number; direccion: string };
 type Item = { clave: string; materialId?: string; nombre: string; unidad: string; pesoKg: number | ""; cantidad: number | "" };
 type Props = {
   tarifa: Tarifa;
-  zona: { nombre: string; lat: number; lng: number; radioKm: number };
+  zona: Zona;
   materiales: Material[];
   maxKg: number | null;
   qr: { codigo: string; nombre: string; direccion: string; lat: number; lng: number } | null;
@@ -77,7 +78,7 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
   };
 
   const km = origen && destino ? distanciaKm(origen, destino) : null;
-  const fueraZona = origen ? distanciaKm(origen, zona) > zona.radioKm : false;
+  const fueraZona = origen ? !dentroDeZona(origen, zona) : false;
   const porToneladas = modoCarga === "toneladas";
   const pesoKg = porToneladas
     ? (rango ? toneladasDeRango(rango, tonExtra) * 1000 : 0)
@@ -162,7 +163,7 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
         <p className="mb-2 text-xs text-suave">
           {modo === "origen" ? "Toca el mapa donde recogemos la carga." : "Toca el mapa a dónde la llevamos."}
         </p>
-        <Mapa centro={qr ?? zona} zoom={qr ? 15 : 14} puntos={puntos} circulo={{ lat: zona.lat, lng: zona.lng, radioKm: zona.radioKm }}
+        <Mapa centro={qr ?? zona} zoom={qr ? 15 : 14} puntos={puntos} zona={zona}
           onClick={marcar} className="h-64" etiqueta="Mapa para marcar recogida y destino" />
         <button type="button" onClick={miUbicacion} disabled={ubicando || (modo === "origen" && !!qr)}
           className="mt-2 text-xs font-semibold text-naranja disabled:text-suave">

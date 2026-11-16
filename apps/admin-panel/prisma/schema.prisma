@@ -89,6 +89,7 @@ model Motorista {
   rechazos             RechazoViaje[]
   movimientos          MovimientoCredito[]
   recargas             Recarga[]
+  avisos               SuscripcionAviso[]
 }
 
 enum TipoDocumento {
@@ -174,6 +175,8 @@ model Configuracion {
   bancoTitular    String?
   // Parte 5: el motorista puede proponer otro precio también dentro de los km incluidos
   contraofertaEnRango Boolean @default(true)
+  // Parte 8: área de servicio dibujada en el mapa ([{lat,lng},...], mínimo 3 puntos). Vacía = se usa el círculo.
+  zonaPoligono   Json?
   actualizadoEn  DateTime @updatedAt
 }
 
@@ -227,6 +230,7 @@ model Viaje {
   entregadoEn       DateTime?
   ofertas           OfertaPrecio[]
   rechazos          RechazoViaje[]
+  avisos            SuscripcionAviso[]
 
   // Parte 6: calificaciones (1 a 5 estrellas). *CalificadoEn sin estrellas = lo omitió.
   estrellasMotorista    Int?      // la pone el cliente
@@ -389,4 +393,22 @@ model Gasto {
   creadoEn        DateTime    @default(now())
 
   @@index([fecha])
+}
+
+// Parte 8: avisos al teléfono con la app cerrada (Web Push).
+// Es del motorista (para todos sus avisos) o de un viaje (el cliente no tiene cuenta: solo recibe avisos de ese pedido).
+model SuscripcionAviso {
+  id          String     @id @default(cuid())
+  endpoint    String     @unique
+  p256dh      String
+  auth        String
+  motoristaId String?
+  motorista   Motorista? @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  viajeId     String?
+  viaje       Viaje?     @relation(fields: [viajeId], references: [id], onDelete: Cascade)
+  creadaEn    DateTime   @default(now())
+  ultimoEnvio DateTime?
+
+  @@index([motoristaId])
+  @@index([viajeId])
 }

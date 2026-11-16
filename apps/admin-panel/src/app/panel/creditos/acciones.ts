@@ -8,6 +8,7 @@ import { ErrorRecarga, anularRecarga, registrarRecarga } from "@/lib/recargas";
 import { numeroRecibo } from "@/lib/recibo";
 import { dinero } from "@/lib/tarifa";
 import { exigirPropietario } from "@/lib/sesion";
+import { avisarMotoristas, despues } from "@/lib/avisos";
 import { erroresDe, type ErroresCampos } from "@/lib/validacion";
 
 export type EstadoForm = { errores?: ErroresCampos; error?: string; ok?: string; valores?: Record<string, string> };
@@ -40,6 +41,11 @@ export async function registrarRecargaAccion(_: EstadoForm, form: FormData): Pro
       referencia: d.formaPago === "TRANSFERENCIA" ? d.referencia : null, nota: d.nota || null,
     });
     numero = rec.numero;
+    const recibo = rec.numero;
+    despues(async () => {
+      const x = await db.recarga.findUnique({ where: { numero: recibo }, select: { monto: true, saldoDespues: true } });
+      if (x) await avisarMotoristas([d.motoristaId], { titulo: `Recarga de ${dinero(Number(x.monto))} acreditada`, cuerpo: `Tus créditos quedaron en ${dinero(Number(x.saldoDespues))}. Ya puedes recibir viajes.`, url: `/motorista/creditos/recibo/${recibo}`, tag: "fleteya-creditos" });
+    });
     const m = await db.motorista.findUnique({ where: { id: d.motoristaId }, select: { correo: true } });
     conCorreo = !!m?.correo && correoConfigurado();
   } catch (e) {

@@ -3,7 +3,7 @@ import { useActionState, useEffect, useState, useTransition } from "react";
 import { Mapa } from "@/components/Mapa";
 import { cambiarActivoPunto, guardarPunto, type EstadoPunto } from "./acciones";
 
-export function FormPunto({ zona }: { zona: { lat: number; lng: number; radioKm: number } }) {
+export function FormPunto({ zona }: { zona: { lat: number; lng: number; radioKm: number; poligono: { lat: number; lng: number }[] | null } }) {
   const [e, accion, enviando] = useActionState<EstadoPunto, FormData>(guardarPunto, {});
   const [pos, setPos] = useState<{ lat: number; lng: number } | null>(null);
   const [clave, setClave] = useState(0);
@@ -27,7 +27,7 @@ export function FormPunto({ zona }: { zona: { lat: number; lng: number; radioKm:
         </div>
         <div>
           <p className="etiqueta">Ubicación (toca el mapa)</p>
-          <Mapa centro={zona} zoom={14} circulo={zona} onClick={setPos} className="h-56" etiqueta="Mapa para ubicar la ferretería"
+          <Mapa centro={zona} zoom={14} zona={zona} onClick={setPos} className="h-56" etiqueta="Mapa para ubicar la ferretería"
             puntos={pos ? [{ id: "p", lat: pos.lat, lng: pos.lng, color: "#FF6B00", icono: "fa-store" }] : []} />
           <input type="hidden" name="lat" value={pos?.lat ?? ""} />
           <input type="hidden" name="lng" value={pos?.lng ?? ""} />

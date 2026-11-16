@@ -104,7 +104,7 @@ test("cliente: campos obligatorios", async ({ page }) => {
   await page.goto("/pedir");
   await expect(page.getByTestId("precio")).toHaveText("—");
   await page.getByRole("button", { name: /Solicitar FleteYa/ }).click();
-  await expect(page.getByRole("alert")).toBeVisible();
+  await expect(page.getByRole("alert").filter({ hasText: "Revisa lo que está marcado en rojo" })).toBeVisible();
   await expect(page.getByText("Marca en el mapa dónde recogemos")).toBeVisible();
   await expect(page.getByText("Elige cuántas toneladas llevas o agrega al menos un material")).toBeVisible();
   await expect(page.getByText("Escribe tu nombre")).toBeVisible();

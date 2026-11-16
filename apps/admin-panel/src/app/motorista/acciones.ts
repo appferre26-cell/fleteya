@@ -7,6 +7,7 @@ import { exigirMotorista, iniciarSesionMotorista, motoristaActual, VERSION_TERMI
 import { centavos, dinero } from "@/lib/tarifa";
 import { normalizarTelefono } from "@/lib/validacion";
 import { leerCalificacion } from "@/lib/calificaciones";
+import { avisarCliente, avisarPedidoNuevo, avisarMotoristas, clavePublicaAvisos, despues, guardarSuscripcion } from "@/lib/avisos";
 import { asignar, avanzar, comisionDe, ErrorViaje, puedeRecibir, SIGUIENTE, soltar } from "@/lib/viajes-motorista";
 
 export type Resultado = { error?: string; ok?: boolean; aviso?: string };
@@ -94,6 +95,7 @@ export async function aceptarViaje(viajeId: string): Promise<Resultado> {
   try {
     const precio = Number(v.precioBase);
     const { saldo } = await asignar(viajeId, m.id, precio);
+    despues(() => avisarCliente(viajeId, { titulo: `¡${m.nombre.split(" ")[0]} aceptó tu flete!`, cuerpo: `Va en ${m.marca} ${m.modelo}, placa ${m.placa}. Precio: ${dinero(precio)} en efectivo.`, urgente: true }));
     return { ok: true, aviso: avisoSaldo(saldo, await comisionDe(precio)) };
   } catch (e) {
     return { error: textoError(e) };
@@ -131,6 +133,7 @@ export async function ofertarPrecio(viajeId: string, precioTexto: string): Promi
     db.ofertaPrecio.updateMany({ where: { viajeId, motoristaId: m.id, estado: "PENDIENTE" }, data: { estado: "RETIRADA", respondidaEn: new Date() } }),
     db.ofertaPrecio.create({ data: { viajeId, motoristaId: m.id, precio } }),
   ]);
+  despues(() => avisarCliente(viajeId, { titulo: `Un motorista te propone ${dinero(precio)}`, cuerpo: `${m.nombre.split(" ")[0]} · ${m.marca} ${m.modelo}. Abre tu pedido para aceptar o decir «No, gracias».`, urgente: true }));
   return { ok: true };
 }
 
@@ -141,11 +144,19 @@ export async function retirarOferta(viajeId: string): Promise<Resultado> {
 }
 
 // ───── Viaje en curso ─────
+const AVISO_PASO = {
+  EN_CAMINO: { titulo: "Tu motorista va en camino", cuerpo: "Va hacia el punto de recogida. Puedes ver su ubicación en tu pedido." },
+  CARGANDO: { titulo: "Tu motorista llegó", cuerpo: "Ya está en el punto de recogida cargando tu material.", urgente: true },
+  EN_RUTA: { titulo: "Tu carga va en camino", cuerpo: "El motorista salió hacia el destino." },
+  ENTREGADO: { titulo: "¡Entregado!", cuerpo: "Tu material llegó. Cuéntanos qué tal te fue con el motorista." },
+} as const;
 export async function avanzarViaje(viajeId: string, desde: string): Promise<Resultado & { comision?: number }> {
   const m = await exigirMotorista();
   if (!(desde in SIGUIENTE)) return { error: "Paso no válido." };
   try {
     const r = await avanzar(viajeId, m.id, desde as keyof typeof SIGUIENTE);
+    const aviso = AVISO_PASO[r.estado as keyof typeof AVISO_PASO];
+    if (aviso) despues(() => avisarCliente(viajeId, aviso));
     if (r.estado === "ENTREGADO" && "comision" in r) {
       const negativo = (r.saldoDespues ?? 0) < 0;
       return {
@@ -165,6 +176,10 @@ export async function soltarViaje(viajeId: string): Promise<Resultado> {
   const m = await exigirMotorista();
   try {
     await soltar(viajeId, m.id);
+    despues(async () => {
+      await avisarCliente(viajeId, { titulo: "Tu motorista no pudo continuar", cuerpo: "Ya estamos buscando otro motorista para tu pedido. No tienes que hacer nada." });
+      await avisarPedidoNuevo(viajeId, m.id);
+    });
     return { ok: true };
   } catch (e) {
     return { error: textoError(e) };
@@ -187,4 +202,23 @@ export async function calificarCliente(viajeId: string, estrellas: number | null
   });
   if (r.count === 0) return { error: "Este viaje ya fue calificado." };
   return { ok: true };
+}
+
+// ───── Parte 8: avisos con la app cerrada ─────
+export async function suscribirAvisos(sub: unknown): Promise<Resultado> {
+  const m = await exigirMotorista({ permitirPendientes: true });
+  if (!clavePublicaAvisos()) return { error: "Los avisos no están activados en el servidor." };
+  return (await guardarSuscripcion(sub, { motoristaId: m.id })) ? { ok: true } : { error: "No se pudo activar en este teléfono." };
+}
+
+export async function quitarAvisos(endpoint: string): Promise<Resultado> {
+  const m = await exigirMotorista({ permitirPendientes: true });
+  await db.suscripcionAviso.deleteMany({ where: { endpoint: String(endpoint).slice(0, 800), motoristaId: m.id } });
+  return { ok: true };
+}
+
+export async function probarAviso(): Promise<Resultado> {
+  const m = await exigirMotorista({ permitirPendientes: true });
+  const n = await avisarMotoristas([m.id], { titulo: "FleteYa · aviso de prueba", cuerpo: "¡Listo! Así te avisaremos de pedidos nuevos aunque la app esté cerrada.", url: "/motorista/perfil", tag: "fleteya-prueba" });
+  return n > 0 ? { ok: true } : { error: "No se pudo enviar. Desactiva y vuelve a activar los avisos." };
 }
