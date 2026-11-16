@@ -35,7 +35,7 @@ export default async function Viajes({ searchParams }: { searchParams: Promise<{
   }
 
   const [viajes, grupos] = await Promise.all([
-    db.viaje.findMany({ where, orderBy: { creadoEn: "desc" }, take: 100, include: { puntoQr: { select: { codigo: true } } } }),
+    db.viaje.findMany({ where, orderBy: { creadoEn: "desc" }, take: 100, include: { puntoQr: { select: { codigo: true } }, motorista: { select: { nombre: true } } } }),
     db.viaje.groupBy({ by: ["estado"], _count: true }),
   ]);
   const cuenta = (es?: EstadoViaje[]) => grupos.filter((g) => !es || es.includes(g.estado)).reduce((s, g) => s + g._count, 0);
@@ -44,7 +44,7 @@ export default async function Viajes({ searchParams }: { searchParams: Promise<{
   return (
     <>
       <h1 className="text-[24px] font-extrabold lg:text-[28px]">Viajes</h1>
-      <p className="mt-1 text-sm text-suave">Pedidos hechos por los clientes desde el link o el QR. Los motoristas los aceptarán desde su app (Parte 3).</p>
+      <p className="mt-1 text-sm text-suave">Pedidos hechos por los clientes desde el link o el QR. Los motoristas los aceptan desde su app.</p>
 
       <section className="tarjeta mt-5 overflow-hidden">
         <div className="flex flex-col gap-3 border-b border-borde px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
@@ -87,9 +87,10 @@ export default async function Viajes({ searchParams }: { searchParams: Promise<{
                         {v.puntoQr && <span className="mr-1 rounded bg-naranja/15 px-1 font-mono text-[10px] font-bold text-naranja">{v.puntoQr.codigo}</span>}
                         {v.origenDireccion} → {v.destinoDireccion}
                       </p>
+                      {v.motorista && <p className="truncate text-xs"><i className="fa-solid fa-truck mr-1 text-[10px] text-suave" />{v.motorista.nombre}</p>}
                     </div>
                     <div className="text-right text-xs text-suave">
-                      <p className="text-sm font-bold text-texto">{dinero(Number(v.precioBase))}{v.fueraDeRango && <span className="ml-1 text-naranja" title="Fuera de los km incluidos">*</span>}</p>
+                      <p className="text-sm font-bold text-texto">{dinero(Number(v.precioFinal ?? v.precioBase))}{v.fueraDeRango && <span className="ml-1 text-naranja" title="Fuera de los km incluidos">*</span>}</p>
                       <p>{kg(Number(v.pesoKg))} · {Number(v.distanciaKm).toFixed(1)} km</p>
                     </div>
                     <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${e.clase}`}>{e.nombre}</span>

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { cancelarViajeCliente } from "../../pedir/acciones";
 
-export function AccionesViaje({ codigo, activo, buscando }: { codigo: string; activo: boolean; buscando: boolean }) {
+export function AccionesViaje({ codigo, activo, cancelable }: { codigo: string; activo: boolean; cancelable: boolean }) {
   const router = useRouter();
   const [abierto, setAbierto] = useState(false);
   const [motivo, setMotivo] = useState("");
@@ -12,7 +12,7 @@ export function AccionesViaje({ codigo, activo, buscando }: { codigo: string; ac
   const [ocupado, iniciar] = useTransition();
   const [copiado, setCopiado] = useState(false);
 
-  // Mientras espera motorista, revisa el estado cada 10 segundos
+  // Mientras el viaje sigue abierto, revisa el estado cada 10 segundos (motorista, ofertas, avance)
   useEffect(() => {
     if (!activo) return;
     const t = setInterval(() => router.refresh(), 10000);
@@ -39,7 +39,7 @@ export function AccionesViaje({ codigo, activo, buscando }: { codigo: string; ac
           <i className={`fa-solid ${copiado ? "fa-check text-exito" : "fa-share-nodes text-suave"}`} />{copiado ? "Enlace copiado" : "Guardar o compartir este enlace"}
         </button>
       )}
-      {buscando && !abierto && (
+      {cancelable && !abierto && (
         <button type="button" onClick={() => setAbierto(true)} className="w-full py-2 text-sm font-medium text-error">Cancelar pedido</button>
       )}
       {abierto && (

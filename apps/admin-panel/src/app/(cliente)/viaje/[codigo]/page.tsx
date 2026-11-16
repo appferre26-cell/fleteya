@@ -1,18 +1,54 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { ESTADOS_VIAJE, dinero, kg, numeroViaje } from "@/lib/tarifa";
-import { fechaHora } from "@/lib/validacion";
+import { Mapa, type PuntoMapa } from "@/components/Mapa";
+import { ESTADOS_VIAJE, centavos, dinero, distanciaKm, kg, numeroViaje } from "@/lib/tarifa";
+import { TIPOS_VEHICULO, fechaHora, formatoTelefono } from "@/lib/validacion";
 import { AccionesViaje } from "./AccionesViaje";
+import { Ofertas } from "./Ofertas";
+
+const PASOS = [
+  ["ASIGNADO", "Aceptado", "asignadoEn"],
+  ["EN_CAMINO", "Va a recoger", "enCaminoEn"],
+  ["CARGANDO", "Cargando", "cargandoEn"],
+  ["EN_RUTA", "En ruta", "enRutaEn"],
+  ["ENTREGADO", "Entregado", "entregadoEn"],
+] as const;
 
 export const metadata: Metadata = { title: "Tu flete — FleteYa", robots: { index: false, follow: false } };
 
 export default async function ViajeCliente({ params }: { params: Promise<{ codigo: string }> }) {
   const { codigo } = await params;
-  const v = await db.viaje.findUnique({ where: { codigo }, include: { items: true } });
+  const v = await db.viaje.findUnique({
+    where: { codigo },
+    include: {
+      items: true,
+      motorista: { select: { nombre: true, telefono: true, placa: true, marca: true, modelo: true, tipoVehiculo: true, lat: true, lng: true, ubicacionEn: true } },
+      ofertas: {
+        where: { estado: "PENDIENTE", motorista: { disponible: true } }, orderBy: { precio: "asc" },
+        include: { motorista: { select: { nombre: true, marca: true, modelo: true, tipoVehiculo: true, lat: true, lng: true } } },
+      },
+    },
+  });
   if (!v) notFound();
   const e = ESTADOS_VIAJE[v.estado];
   const activo = v.estado !== "CANCELADO" && v.estado !== "ENTREGADO";
+  const m = v.motorista;
+  const precio = Number(v.precioFinal ?? v.precioBase);
+  const paso = PASOS.findIndex(([k]) => k === v.estado);
+  // La ubicación del motorista solo se muestra mientras va a recoger y si es reciente (10 min).
+  const verUbicacion = m && (v.estado === "ASIGNADO" || v.estado === "EN_CAMINO") && m.lat != null && m.lng != null
+    && m.ubicacionEn && Date.now() - m.ubicacionEn.getTime() < 10 * 60_000;
+  const puntos: PuntoMapa[] = [
+    { id: "o", lat: v.origenLat, lng: v.origenLng, color: "#FF6B00", icono: "fa-box", etiqueta: "Recogida" },
+    { id: "d", lat: v.destinoLat, lng: v.destinoLng, color: "#F5F5F5", icono: "fa-flag-checkered", etiqueta: "Destino" },
+  ];
+  if (verUbicacion) puntos.push({ id: "m", lat: m.lat!, lng: m.lng!, color: "#4CAF50", icono: "fa-truck", etiqueta: m.nombre.split(" ")[0] });
+  const ofertas = v.estado === "BUSCANDO" ? v.ofertas.map((o) => ({
+    id: o.id, precio: Number(o.precio), nombre: o.motorista.nombre.split(" ")[0],
+    vehiculo: `${TIPOS_VEHICULO[o.motorista.tipoVehiculo].nombre} ${o.motorista.marca}`,
+    kmDeRecogida: o.motorista.lat != null && o.motorista.lng != null ? centavos(distanciaKm({ lat: o.motorista.lat, lng: o.motorista.lng }, { lat: v.origenLat, lng: v.origenLng })) : null,
+  })) : [];
 
   return (
     <main className="px-5 pt-5 pb-8">
@@ -34,6 +70,47 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
           <p className="mt-2 text-xs text-suave">Puedes cerrar esta página: guarda el enlace para volver.</p>
         </section>
       )}
+      {ofertas.length > 0 && <Ofertas codigo={v.codigo} ofertas={ofertas} precioBase={Number(v.precioBase)} />}
+
+      {m && v.estado !== "CANCELADO" && (
+        <section className="mt-6" data-testid="motorista-asignado">
+          <h2 className="seccion-titulo mb-3">{v.estado === "ENTREGADO" ? "Te atendió" : "Tu motorista"}</h2>
+          <div className="tarjeta p-4">
+            <div className="flex items-center gap-3">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-tarjeta-2"><i className="fa-solid fa-user text-suave" /></span>
+              <div className="min-w-0 flex-1">
+                <p className="font-bold" data-testid="nombre-motorista">{m.nombre}</p>
+                <p className="text-xs text-suave">{TIPOS_VEHICULO[m.tipoVehiculo].nombre} · {m.marca} {m.modelo}</p>
+              </div>
+              <span className="rounded-md border border-borde bg-fondo px-2 py-1 font-mono text-sm font-bold" data-testid="placa">{m.placa}</span>
+            </div>
+            {activo && (
+              <a href={`tel:+503${m.telefono}`} className="btn-primario mt-4 w-full" data-testid="llamar-motorista">
+                <i className="fa-solid fa-phone" />Llamar a {m.nombre.split(" ")[0]} · {formatoTelefono(m.telefono)}
+              </a>
+            )}
+          </div>
+          {paso >= 0 && (
+            <ol className="tarjeta mt-3 space-y-0 p-4" aria-label="Avance del viaje">
+              {PASOS.map(([k, t, campo], n) => {
+                const f = v[campo];
+                return (
+                  <li key={k} className="flex items-center gap-3 py-1.5 text-sm">
+                    <span className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] ${n <= paso ? "bg-naranja text-fondo" : "bg-tarjeta-2 text-suave"}`}>
+                      {n < paso || v.estado === "ENTREGADO" ? <i className="fa-solid fa-check" /> : n + 1}
+                    </span>
+                    <span className={`flex-1 ${n === paso ? "font-bold" : n < paso ? "" : "text-suave"}`}>{t}</span>
+                    {f && <span className="text-xs text-suave">{fechaHora(f)}</span>}
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+          {activo && <Mapa centro={verUbicacion ? { lat: m.lat!, lng: m.lng! } : { lat: v.origenLat, lng: v.origenLng }} puntos={puntos} className="mt-3 h-52" etiqueta="Mapa del viaje" />}
+          {activo && (v.estado === "ASIGNADO" || v.estado === "EN_CAMINO") && !verUbicacion && <p className="mt-2 text-xs text-suave">La ubicación del motorista aparece cuando su teléfono la comparte.</p>}
+        </section>
+      )}
+
       {v.estado === "CANCELADO" && (
         <section className="mt-6 rounded-xl border border-error/30 bg-error/10 p-4 text-sm">
           <p className="font-semibold text-error">Este pedido fue cancelado{v.canceladoPor === "PROPIETARIO" ? " por FleteYa" : ""}.</p>
@@ -64,16 +141,16 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
           {v.nota && <p className="p-3.5 text-sm"><span className="text-suave">Nota: </span>{v.nota}</p>}
           <div className="flex items-center justify-between p-3.5">
             <span className="text-sm"><i className="fa-solid fa-money-bill-wave mr-2 text-exito" />Efectivo al terminar</span>
-            <span className="text-lg font-extrabold text-naranja" data-testid="precio-viaje">{dinero(Number(v.precioBase))}</span>
+            <span className="text-lg font-extrabold text-naranja" data-testid="precio-viaje">{dinero(precio)}</span>
           </div>
-          {v.fueraDeRango && (
+          {v.fueraDeRango && !v.motoristaId && (
             <p className="p-3.5 text-xs text-suave"><i className="fa-solid fa-route mr-1.5 text-naranja" />Como el destino está lejos, el motorista te puede ofrecer otro precio. Tú decides si lo aceptas.</p>
           )}
         </div>
         <p className="mt-2 text-[11px] text-suave">Pedido el {fechaHora(v.creadoEn)} a nombre de {v.clienteNombre}.</p>
       </section>
 
-      <AccionesViaje codigo={v.codigo} activo={activo} buscando={v.estado === "BUSCANDO"} />
+      <AccionesViaje codigo={v.codigo} activo={activo} cancelable={["BUSCANDO", "ASIGNADO", "EN_CAMINO"].includes(v.estado)} />
     </main>
   );
 }

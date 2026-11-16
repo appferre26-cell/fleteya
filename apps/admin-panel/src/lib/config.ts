@@ -13,6 +13,9 @@ export async function obtenerConfig() {
     zonaLng: c.zonaLng,
     zonaRadioKm: Number(c.zonaRadioKm),
     whatsappAyuda: c.whatsappAyuda,
+    comisionPct: Number(c.comisionPct),
+    planSemanal: Number(c.planSemanal),
+    planMensual: Number(c.planMensual),
   };
 }
 

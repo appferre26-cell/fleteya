@@ -1,9 +1,10 @@
-# FleteYa — panel de propietarios y link del cliente (Partes 1 y 2)
+# FleteYa — panel de propietarios, link del cliente y app del motorista (Partes 1, 2 y 3)
 
-Una sola aplicación web con dos zonas separadas:
+Una sola aplicación web con tres zonas separadas:
 
 - **`/panel`**: solo para propietarios (con correo y contraseña). Los motoristas y los clientes no entran aquí.
 - **`/pedir`**: el link del cliente. **El cliente no se registra**: da solo nombre y celular.
+- **`/motorista`**: la app del motorista, con su propia sesión (celular y contraseña que le crea el propietario).
 
 ## Qué hace
 
@@ -42,7 +43,34 @@ Una sola aplicación web con dos zonas separadas:
   - **Puntos QR**: ferretería con ubicación en el mapa, código FER001…, QR para descargar y **cartel para imprimir**,
     pausar, pedidos del mes.
   - **Tarifas y zona**: precio por tonelada, mínimo, km incluidos, centro y radio de la zona, WhatsApp de ayuda.
-- Lo que aún no hace (Parte 3): avisar a los motoristas, aceptar el viaje, contraoferta de precio y seguimiento.
+
+### Parte 3 — App del motorista
+
+- **`/motorista`**: app web para el celular del motorista (se instala desde el navegador con «Agregar a pantalla de
+  inicio»). Sesión **separada** de la del propietario: el motorista entra con su celular y contraseña, y no puede abrir
+  `/panel` (ni el propietario la app del motorista con su sesión).
+  - Primer ingreso: **cambio obligatorio** de la contraseña temporal y aceptación de los **Términos para Motoristas**
+    (`/motorista/legal/terminos`, desde `docs/legal/terminos-motoristas.md`).
+  - **Inicio**: botón Disponible, resumen de hoy, mapa con su ubicación (se envía cada 20 s mientras está disponible o en
+    viaje) y lista de solicitudes. Solo le llegan pedidos que su vehículo aguanta; no recibe nada si está pendiente,
+    suspendido, con licencia vencida o **sin créditos**.
+  - **Aviso de solicitud nueva**: ventana con cuenta regresiva de 30 s, sonido que se repite y vibración (con la app
+    abierta; la pantalla se mantiene encendida mientras está disponible). Aceptar, Rechazar (ya no le vuelve a salir) o
+    Ver después. Si dos aceptan a la vez, **solo uno se lo queda**.
+  - **Viaje lejano** (más de los km incluidos): el motorista puede **ofrecer otro precio** (no menor al calculado, máx.
+    $500). El cliente lo ve en su enlace y lo acepta o dice «No, gracias»; el motorista puede retirar su oferta.
+  - **Viaje en curso**: navegar con Google Maps o Waze, llamar al cliente, pasos *Voy en camino → Ya llegué → Carga
+    lista → Entrega completada*, y «No puedo hacer este viaje» (vuelve a la lista para otros). Si el cliente cancela, le avisa.
+  - **Comisión**: al entregar se descuenta el 10 % del precio de sus créditos (se cambia en la base, `Configuracion`).
+    Si no le alcanza, se le avisa al aceptar y el saldo queda negativo: la diferencia se descuenta de la siguiente recarga.
+  - **Viajes** (hoy, semana, mes con lo cobrado y la comisión), **Créditos** (saldo, planes semanal $20 / mensual $60,
+    movimientos y botón de WhatsApp si se configuró en Tarifas) y **Perfil** (sus datos, cambiar contraseña, términos, privacidad, cerrar sesión).
+- El **cliente** ve en `/viaje/[código]` a su motorista (nombre, vehículo, placa, botón Llamar), los pasos con hora y
+  la ubicación del motorista en el mapa mientras va a recoger. Puede cancelar hasta que el motorista llega a cargar.
+- En el **panel**: el detalle del viaje muestra motorista, precio acordado, comisión, ofertas y tiempos; el detalle
+  del motorista tiene la sección «App y créditos» (saldo, si está disponible, entregados, último ingreso, términos y movimientos).
+- Lo que aún no hace: **registrar recargas de créditos** (Parte 4; por ahora el saldo se cambia en la base) y
+  **notificaciones push con la app cerrada** (hoy el aviso suena con la app abierta en pantalla).
 
 ## Cómo correrlo (desarrollo)
 
@@ -86,10 +114,13 @@ Prueban (Parte 1, `tests/panel.spec.ts`): acceso sin sesión, contraseña incorr
 documento falso, teléfono repetido, búsqueda, aprobar, suspender, reactivar, contraseña nueva, editar) y
 agregar/desactivar un propietario. Parte 2 (`tests/cliente.spec.ts`): link sin sesión, catálogo (con nombre
 repetido), tarifas (con error), punto QR y cartel, campos obligatorios del cliente, pedido desde QR con cálculo de
-precio, cancelar desde el cliente y desde el panel. **Usan la base de datos real que configures**, así que crean motoristas y
+precio, cancelar desde el cliente y desde el panel. Parte 3 (`tests/motorista.spec.ts`): sesiones separadas, primer
+ingreso (contraseña y términos), cuentas en revisión/suspendidas, viaje completo con aviso, pasos, entrega y comisión
+(también con saldo negativo), rechazar, dos motoristas aceptando a la vez, oferta de precio aceptada/rechazada,
+cancelación del cliente, soltar un viaje y perfil. **Usan la base de datos real que configures**, así que crean motoristas y
 propietarios, materiales, puntos QR y viajes de prueba: córrelas solo en una base de pruebas.
 
-`node tests/capturas.mjs` (Parte 1) y `node tests/capturas-cliente.mjs` (Parte 2) sacan capturas de pantalla en
+`node tests/capturas.mjs` (Parte 1), `node tests/capturas-cliente.mjs` (Parte 2) y `node tests/capturas-motorista.mjs` (Parte 3) sacan capturas de pantalla en
 computadora y celular (carpeta `capturas/`, o la que digas en `CAPTURAS`).
 
 ## Notas

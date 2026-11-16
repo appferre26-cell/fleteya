@@ -69,6 +69,21 @@ model Motorista {
 
   documentos           Documento[]
   historial            HistorialMotorista[]
+
+  // Parte 3: app del motorista
+  disponible           Boolean         @default(false) // botón "Disponible" en su app
+  lat                  Float?
+  lng                  Float?
+  ubicacionEn          DateTime?
+  vistoEn              DateTime?       // última vez que la app habló con el servidor
+  ultimoAcceso         DateTime?
+  terminosVersion      String?
+  terminosAceptadosEn  DateTime?
+  saldoCreditos        Decimal         @default(0) @db.Decimal(8, 2) // puede quedar en negativo
+  viajes               Viaje[]
+  ofertas              OfertaPrecio[]
+  rechazos             RechazoViaje[]
+  movimientos          MovimientoCredito[]
 }
 
 enum TipoDocumento {
@@ -141,6 +156,9 @@ model Configuracion {
   zonaLng        Float    @default(-89.37)
   zonaRadioKm    Decimal  @default(8) @db.Decimal(5, 1)
   whatsappAyuda  String?  // 8 dígitos; vacío = no se muestra el botón "Ayuda"
+  comisionPct    Decimal  @default(10) @db.Decimal(5, 2) // % de cada viaje que se descuenta de los créditos
+  planSemanal    Decimal  @default(20) @db.Decimal(8, 2)
+  planMensual    Decimal  @default(60) @db.Decimal(8, 2)
   actualizadoEn  DateTime @updatedAt
 }
 
@@ -172,7 +190,7 @@ model Viaje {
   fueraDeRango      Boolean     // más km que los incluidos: el motorista puede ofrecer otro precio
   nota              String?
   estado            EstadoViaje @default(BUSCANDO)
-  canceladoPor      String?     // CLIENTE o PROPIETARIO
+  canceladoPor      String?     // CLIENTE, PROPIETARIO
   motivoCancelacion String?
   canceladoEn       DateTime?
   puntoQrId         String?
@@ -181,7 +199,21 @@ model Viaje {
   creadoEn          DateTime    @default(now())
   items             ViajeItem[]
 
+  // Parte 3: motorista
+  motoristaId       String?
+  motorista         Motorista?  @relation(fields: [motoristaId], references: [id])
+  precioFinal       Decimal?    @db.Decimal(8, 2) // precio acordado (base u oferta aceptada)
+  comision          Decimal?    @db.Decimal(8, 2) // lo que se descontó de créditos al entregar
+  asignadoEn        DateTime?
+  enCaminoEn        DateTime?
+  cargandoEn        DateTime?
+  enRutaEn          DateTime?
+  entregadoEn       DateTime?
+  ofertas           OfertaPrecio[]
+  rechazos          RechazoViaje[]
+
   @@index([estado, creadoEn])
+  @@index([motoristaId, estado])
   @@index([clienteTelefono])
 }
 
@@ -196,4 +228,64 @@ model ViajeItem {
   cantidad    Decimal   @db.Decimal(10, 2)
   pesoUnitKg  Decimal   @db.Decimal(10, 2)
   pesoTotalKg Decimal   @db.Decimal(10, 2)
+}
+
+
+// ───────────── Parte 3: app del motorista ─────────────
+
+enum EstadoOferta {
+  PENDIENTE  // el cliente aún no responde
+  ACEPTADA
+  RECHAZADA  // el cliente dijo que no
+  RETIRADA   // el motorista la quitó o tomó otro viaje
+}
+
+// Viajes de más km que los incluidos: el motorista propone un precio y el cliente acepta o no.
+model OfertaPrecio {
+  id           String       @id @default(cuid())
+  viajeId      String
+  viaje        Viaje        @relation(fields: [viajeId], references: [id], onDelete: Cascade)
+  motoristaId  String
+  motorista    Motorista    @relation(fields: [motoristaId], references: [id])
+  precio       Decimal      @db.Decimal(8, 2)
+  estado       EstadoOferta @default(PENDIENTE)
+  creadaEn     DateTime     @default(now())
+  respondidaEn DateTime?
+
+  @@index([viajeId, estado])
+  @@index([motoristaId, estado])
+}
+
+// "No me interesa": ese motorista ya no ve esa solicitud.
+model RechazoViaje {
+  viajeId     String
+  viaje       Viaje     @relation(fields: [viajeId], references: [id], onDelete: Cascade)
+  motoristaId String
+  motorista   Motorista @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  motivo      String    @default("RECHAZO") // RECHAZO o CANCELO (lo soltó después de aceptarlo)
+  creadoEn    DateTime  @default(now())
+
+  @@id([viajeId, motoristaId])
+}
+
+enum TipoMovimiento {
+  RECARGA  // la registra un propietario (Parte 4)
+  COMISION // % de un viaje entregado
+  AJUSTE   // corrección manual
+}
+
+model MovimientoCredito {
+  id            String         @id @default(cuid())
+  motoristaId   String
+  motorista     Motorista      @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  tipo          TipoMovimiento
+  monto         Decimal        @db.Decimal(8, 2) // + suma, - resta
+  saldoAntes    Decimal        @db.Decimal(8, 2)
+  saldoDespues  Decimal        @db.Decimal(8, 2)
+  viajeId       String?
+  detalle       String?
+  creadoPorId   String?        // propietario, si fue manual
+  creadoEn      DateTime       @default(now())
+
+  @@index([motoristaId, creadoEn])
 }

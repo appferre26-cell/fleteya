@@ -1,0 +1,54 @@
+import Link from "next/link";
+import { obtenerConfig } from "@/lib/config";
+import { exigirMotorista, VERSION_TERMINOS } from "@/lib/sesion-motorista";
+import { ESTADOS, TIPOS_VEHICULO, diasParaVencer, fechaCorta, fechaHora, formatoTelefono } from "@/lib/validacion";
+
+export const metadata = { title: "Perfil — FleteYa Motorista" };
+
+export default async function PerfilMotorista() {
+  const m = await exigirMotorista();
+  const cfg = await obtenerConfig();
+  const dias = diasParaVencer(m.licenciaVence);
+  const filas: [string, string][] = [
+    ["Teléfono", formatoTelefono(m.telefono)],
+    ["DUI", m.dui],
+    ["Licencia", `${m.licenciaNumero} · vence ${fechaCorta(m.licenciaVence)}`],
+    ["Vehículo", `${m.marca} ${m.modelo} · ${m.placa}`],
+    ["Tipo", `${TIPOS_VEHICULO[m.tipoVehiculo].nombre} · ${Number(m.capacidadTon)} ton`],
+  ];
+  if (m.correo) filas.splice(1, 0, ["Correo", m.correo]);
+
+  return (
+    <main className="px-5 pt-6 pb-6">
+      <h1 className="text-2xl font-extrabold">Mi perfil</h1>
+      <div className="mt-4 flex items-center gap-3">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-tarjeta-2 text-lg font-bold"><i className="fa-solid fa-user text-suave" /></span>
+        <div><p className="text-lg font-bold">{m.nombre}</p><span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${ESTADOS[m.estado].clase}`}>{ESTADOS[m.estado].nombre}</span></div>
+      </div>
+
+      {dias <= 30 && (
+        <p className={`mt-4 rounded-lg px-3 py-2.5 text-sm ${dias < 0 ? "bg-error/10 text-error" : "bg-naranja/10 text-naranja"}`}>
+          <i className="fa-solid fa-id-card mr-2" />{dias < 0 ? "Tu licencia está vencida: no puedes recibir viajes." : `Tu licencia vence en ${dias} días. Renuévala a tiempo.`}
+        </p>
+      )}
+
+      <dl className="tarjeta mt-4 divide-y divide-borde text-sm">
+        {filas.map(([k, v]) => (
+          <div key={k} className="flex justify-between gap-4 p-3.5"><dt className="text-suave">{k}</dt><dd className="text-right font-medium break-words">{v}</dd></div>
+        ))}
+      </dl>
+      <p className="mt-2 text-xs text-suave">Para cambiar estos datos o actualizar un documento, comunícate con FleteYa.</p>
+
+      <div className="mt-5 space-y-2">
+        <Link href="/motorista/contrasena" className="btn-secundario w-full justify-start rounded-xl"><i className="fa-solid fa-key w-5 text-suave" />Cambiar contraseña</Link>
+        <Link href="/motorista/legal/terminos" className="btn-secundario w-full justify-start rounded-xl"><i className="fa-solid fa-file-lines w-5 text-suave" />Términos para motoristas</Link>
+        <Link href="/motorista/legal/privacidad" className="btn-secundario w-full justify-start rounded-xl"><i className="fa-solid fa-user-shield w-5 text-suave" />Aviso de privacidad</Link>
+        {cfg.whatsappAyuda && (
+          <a href={`https://wa.me/503${cfg.whatsappAyuda}`} target="_blank" rel="noopener" className="btn-secundario w-full justify-start rounded-xl"><i className="fa-brands fa-whatsapp w-5 text-exito" />Ayuda por WhatsApp</a>
+        )}
+        <a href="/motorista/salir" className="btn-secundario w-full justify-start rounded-xl text-error"><i className="fa-solid fa-right-from-bracket w-5" />Cerrar sesión</a>
+      </div>
+      <p className="mt-4 text-center text-[11px] text-suave">Términos versión {VERSION_TERMINOS}{m.terminosAceptadosEn ? ` aceptados el ${fechaHora(m.terminosAceptadosEn)}` : ""}</p>
+    </main>
+  );
+}
