@@ -44,3 +44,6 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /capturas/
+
+# copia de docs/legal (la genera scripts/copiar-legales.mjs antes de build/dev)
+/legal/

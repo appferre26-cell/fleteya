@@ -45,3 +45,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   @apply text-xs font-semibold uppercase tracking-wider text-suave;
 }
 }
+
+/* Textos legales (Términos y Privacidad) */
+.legal { @apply text-sm leading-relaxed text-[#d6d6d6]; }
+.legal h1 { @apply mb-4 text-2xl font-extrabold text-texto; }
+.legal h2 { @apply mt-6 mb-2 text-base font-bold text-texto; }
+.legal h3 { @apply mt-4 mb-1 font-semibold text-texto; }
+.legal p, .legal ul, .legal ol { @apply mb-3; }
+.legal ul { @apply list-disc pl-5; }
+.legal ol { @apply list-decimal pl-5; }
+.legal a { @apply text-naranja underline; }
+.legal blockquote { @apply mb-4 rounded-lg border border-naranja/40 bg-naranja/10 px-4 py-3 text-xs text-texto; }
+.legal hr { @apply my-5 border-borde; }
+.legal table { @apply mb-4 w-full text-xs; }
+.legal th, .legal td { @apply border border-borde px-2 py-1.5 text-left; }
+
+@media print {
+  aside, header, nav { display: none !important; }
+  body { background: #fff !important; }
+  main { padding: 0 !important; max-width: none !important; }
+}

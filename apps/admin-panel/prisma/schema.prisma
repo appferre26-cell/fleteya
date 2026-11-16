@@ -101,3 +101,99 @@ model HistorialMotorista {
 
   @@index([motoristaId, fecha])
 }
+
+
+// ───────────── Parte 2: link del cliente ─────────────
+
+// Lo que el cliente elige en "¿Qué vas a llevar?". Los pesos se ajustan desde el panel.
+model Material {
+  id       String      @id @default(cuid())
+  nombre   String      @unique
+  unidad   String      // Bolsa, Unidad, Metro cúbico...
+  pesoKg   Decimal     @db.Decimal(10, 2) // peso aproximado de UNA unidad
+  activo   Boolean     @default(true)     // desactivado = oculto para el cliente, sin borrarlo
+  orden    Int         @default(0)
+  creadoEn DateTime    @default(now())
+  items    ViajeItem[]
+}
+
+// Ferretería con QR: el link lleva ?f=CODIGO y la recogida sale ya llenada.
+model PuntoQR {
+  id        String   @id @default(cuid())
+  codigo    String   @unique // FER001, FER002...
+  nombre    String
+  direccion String
+  lat       Float
+  lng       Float
+  activo    Boolean  @default(true)
+  creadoEn  DateTime @default(now())
+  viajes    Viaje[]
+}
+
+// Una sola fila (id = 1): tarifas y zona de servicio, editables sin tocar código.
+model Configuracion {
+  id             Int      @id @default(1)
+  precioTonelada Decimal  @default(10) @db.Decimal(8, 2)
+  tarifaMinima   Decimal  @default(10) @db.Decimal(8, 2)
+  kmIncluidos    Decimal  @default(5) @db.Decimal(5, 1)
+  zonaNombre     String   @default("Lourdes, Colón")
+  zonaLat        Float    @default(13.725)
+  zonaLng        Float    @default(-89.37)
+  zonaRadioKm    Decimal  @default(8) @db.Decimal(5, 1)
+  whatsappAyuda  String?  // 8 dígitos; vacío = no se muestra el botón "Ayuda"
+  actualizadoEn  DateTime @updatedAt
+}
+
+enum EstadoViaje {
+  BUSCANDO  // esperando que un motorista acepte
+  ASIGNADO  // un motorista aceptó (Parte 3)
+  EN_CAMINO
+  CARGANDO
+  EN_RUTA
+  ENTREGADO
+  CANCELADO
+}
+
+model Viaje {
+  id                String      @id @default(cuid())
+  numero            Int         @unique @default(autoincrement()) // se muestra como FY-0001
+  codigo            String      @unique // clave secreta del link del cliente (/viaje/codigo)
+  clienteNombre     String
+  clienteTelefono   String
+  origenDireccion   String
+  origenLat         Float
+  origenLng         Float
+  destinoDireccion  String
+  destinoLat        Float
+  destinoLng        Float
+  distanciaKm       Decimal     @db.Decimal(6, 2) // en línea recta ("a la redonda")
+  pesoKg            Decimal     @db.Decimal(10, 2)
+  precioBase        Decimal     @db.Decimal(8, 2) // por peso, con mínimo
+  fueraDeRango      Boolean     // más km que los incluidos: el motorista puede ofrecer otro precio
+  nota              String?
+  estado            EstadoViaje @default(BUSCANDO)
+  canceladoPor      String?     // CLIENTE o PROPIETARIO
+  motivoCancelacion String?
+  canceladoEn       DateTime?
+  puntoQrId         String?
+  puntoQr           PuntoQR?    @relation(fields: [puntoQrId], references: [id])
+  aceptoTerminosEn  DateTime
+  creadoEn          DateTime    @default(now())
+  items             ViajeItem[]
+
+  @@index([estado, creadoEn])
+  @@index([clienteTelefono])
+}
+
+model ViajeItem {
+  id          String    @id @default(cuid())
+  viajeId     String
+  viaje       Viaje     @relation(fields: [viajeId], references: [id], onDelete: Cascade)
+  materialId  String?   // vacío = "Otro" escrito por el cliente
+  material    Material? @relation(fields: [materialId], references: [id])
+  nombre      String    // copia del nombre al momento del pedido
+  unidad      String
+  cantidad    Decimal   @db.Decimal(10, 2)
+  pesoUnitKg  Decimal   @db.Decimal(10, 2)
+  pesoTotalKg Decimal   @db.Decimal(10, 2)
+}

@@ -22,7 +22,7 @@ FleteYa conecta a personas que necesitan transportar materiales (por ejemplo, al
 - **Link web del cliente y app del motorista:** Next.js (PWA), en las próximas partes
 - **Tiempo real y mapas:** WebSockets / notificaciones push y Google Maps, en las próximas partes
 
-> Avance: **Parte 1 — Panel del propietario** (login de propietarios, alta de motoristas con DUI, licencia y tarjeta de circulación, aprobar/suspender). Ver [apps/admin-panel/README.md](apps/admin-panel/README.md). Aún no está publicado.
+> Avance: **Parte 1 — Panel del propietario** (login, motoristas con DUI, licencia y tarjeta de circulación, aprobar/suspender) y **Parte 2 — Link del cliente** (QR por ferretería, lista de materiales, peso y precio, pedido sin registro, estado del viaje; en el panel: viajes, catálogo, puntos QR, tarifas). Ver [apps/admin-panel/README.md](apps/admin-panel/README.md). Aún no está publicado.
 
 ## 📁 Estructura de carpetas
 
@@ -31,7 +31,7 @@ fleteya/
 ├── apps/
 │   ├── motorista/      # App móvil para motoristas
 │   ├── cliente-web/    # Link web para que el cliente pida el viaje
-│   └── admin-panel/    # Panel de propietarios (Parte 1, ya con código)
+│   └── admin-panel/    # Panel de propietarios y link del cliente (Partes 1 y 2)
 ├── docs/
 │   └── estructura.md   # Planificación completa del proyecto
 └── README.md
