@@ -20,7 +20,7 @@ Para que su cuenta sea activada, el motorista debe presentar **únicamente**:
 2. Licencia de conducir vigente
 3. Tarjeta de circulación del vehículo con el que trabajará
 
-[Cuenta bancaria: por confirmar si se sigue pidiendo, ya que por ahora todo se maneja en efectivo.]
+No se pide cuenta bancaria: el motorista cobra cada viaje en efectivo directamente al cliente.
 
 El vehículo puede ser propio, prestado o alquilado. El motorista se compromete a mantener sus documentos vigentes y a avisar a FleteYa si alguno vence o cambia.
 
@@ -30,7 +30,7 @@ El vehículo puede ser propio, prestado o alquilado. El motorista se compromete 
 4.3. El motorista es responsable de lo que se haga con su cuenta.
 
 ## 5. Créditos y comisión
-5.1. Para recibir viajes, el motorista debe tener créditos recargados. Las recargas se pagan al equipo de FleteYa **en efectivo o por transferencia**, y FleteYa las registra en el sistema. Por cada recarga se entrega un recibo en la app:
+5.1. Para recibir viajes, el motorista debe tener créditos recargados. Las recargas se pagan **por transferencia a la cuenta bancaria de FleteYa** (cuyos datos se muestran en la app) **o en efectivo** al equipo de FleteYa. Solo se aceptan pagos a esa cuenta o entregados en persona al equipo de FleteYa. FleteYa las registra en el sistema. Por cada recarga se entrega un recibo en la app:
    - Plan semanal: **$20.00**
    - Plan mensual: **$60.00**
 5.2. Por cada viaje completado, FleteYa descuenta de sus créditos el **10% del valor del viaje** como comisión.

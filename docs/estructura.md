@@ -160,7 +160,7 @@ Peso estimado:            1,109 kg (≈ 1.1 ton)
 
 **Mis créditos**
 - Saldo actual (en rojo si está en negativo)
-- Cómo recargar: paga el plan (semanal $20 o mensual $60) **en efectivo al propietario o por transferencia**; el propietario la registra y el saldo se actualiza solo
+- Cómo recargar: paga el plan (semanal $20 o mensual $60) **por transferencia a la cuenta de FleteYa o en efectivo al propietario**; el propietario la registra y el saldo se actualiza solo
 - Movimientos: recargas y descuentos del 10% por viaje
 - **Historial de recargas con recibos:** ver, descargar en PDF o compartir (ver sección 8)
 
@@ -312,11 +312,18 @@ El motorista trabaja con un **saldo de créditos prepagados**. FleteYa gana de d
 
 El motorista recarga antes de poder recibir viajes. Como no habrá pagos en línea, **la recarga se hace así:**
 
-1. El motorista paga el plan al propietario **en efectivo** o por **transferencia** a la cuenta del socio.
-2. El propietario entra al panel → **Créditos y recargas → Registrar recarga**, elige al motorista y el plan.
-3. El saldo del motorista se actualiza al instante y **el recibo se genera solo**.
+1. El motorista paga el plan por **transferencia a la cuenta de FleteYa** (opción principal) o **en efectivo** al propietario.
+2. Si fue transferencia, el motorista manda la captura del comprobante por WhatsApp.
+3. El propietario revisa que el dinero esté en la cuenta y entra al panel → **Créditos y recargas → Registrar recarga**: elige al motorista, el plan y anota el número de referencia.
+4. El saldo del motorista se actualiza al instante y **el recibo se genera solo**.
 
-> **Cuenta de banco del motorista:** se pedía para las recargas en línea y los pagos semanales. Con solo efectivo ya no es indispensable; queda **por confirmar** si se sigue pidiendo (sigue sin ser un documento).
+**Cuenta de FleteYa:**
+- Una cuenta de ahorro **solo para FleteYa**, a nombre del socio inscrito en Hacienda (no se mezcla con dinero personal).
+- Ahí caen todas las recargas. Esa es la ganancia de FleteYa: el 10% de cada viaje se descuenta de esos créditos ya pagados.
+- El efectivo que se reciba se deposita en la misma cuenta, para que todo quede en un solo lugar y sea fácil de cuadrar.
+- Los datos de la cuenta (banco, número, nombre) se muestran al motorista en **Mis créditos → ¿Cómo recargo?**.
+
+> **Cuenta de banco del motorista:** ya **no se pide**. Con solo efectivo, el motorista cobra el viaje directo al cliente y FleteYa no le deposita nada.
 
 #### 2. Comisión por viaje
 
@@ -479,7 +486,7 @@ Una sección sencilla **"Puntos QR"**:
 
 1. **Zona de lanzamiento** — Lourdes, Colón. La zona se configura desde el panel antes de abrir el servicio.
 2. **Captación de motoristas** — Sin motoristas, no hay servicio. Plan de reclutamiento antes del lanzamiento.
-3. **Verificación de motoristas** — Documentos: únicamente DUI, licencia y tarjeta de circulación. La cuenta de banco queda por confirmar (ya no es indispensable con solo efectivo).
+3. **Verificación de motoristas** — Documentos: únicamente DUI, licencia y tarjeta de circulación. No se pide cuenta de banco.
 4. **QR en ferreterías** — Pedir permiso a las ferreterías de Lourdes para pegar el QR de FleteYa antes del lanzamiento.
 5. **Soporte al cliente** — WhatsApp Business o número directo para quejas/incidencias.
 6. **Sistema de calificaciones** — Protege tanto al cliente como al motorista.

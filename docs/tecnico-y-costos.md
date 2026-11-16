@@ -45,8 +45,8 @@ FleteYa tendrá **un solo sistema** con tres "puertas" separadas, como ya acorda
 6. Pago: **en efectivo** al motorista al terminar el viaje.
 
 ### Cómo fluye una recarga
-1. El motorista paga $20 o $60 al propietario (efectivo o transferencia).
-2. El propietario la registra en el panel → **Créditos y recargas → Registrar recarga**.
+1. El motorista paga $20 o $60 por **transferencia a la cuenta de FleteYa** (y manda la captura por WhatsApp) o en efectivo al propietario.
+2. El propietario confirma que el dinero está en la cuenta y la registra en el panel → **Créditos y recargas → Registrar recarga** (con número de referencia).
 3. Se descuenta la deuda si tenía saldo negativo, se actualiza el saldo y se genera el recibo (ver, PDF, WhatsApp, correo opcional).
 
 ---
@@ -107,7 +107,7 @@ FleteYa tendrá **un solo sistema** con tres "puertas" separadas, como ya acorda
 
 | Parte | Qué se construye | Resultado para probar |
 |---|---|---|
-| 1 | Panel del propietario: inicio de sesión, alta de motoristas (DUI, licencia, tarjeta de circulación, cuenta bancaria) | Ustedes pueden registrar motoristas |
+| 1 | Panel del propietario: inicio de sesión, alta de motoristas (DUI, licencia, tarjeta de circulación) | Ustedes pueden registrar motoristas |
 | 2 | Link del cliente: QR por ferretería, lista de materiales, cálculo de peso y precio | Un cliente puede pedir un flete |
 | 3 | App del motorista: inicio de sesión, términos, recibir y aceptar solicitudes en tiempo real, mapa | Un viaje completo de punta a punta (pago en efectivo) |
 | 4 | Créditos: planes $20/$60, registro de recargas en el panel, descuento del 10%, bloqueo por saldo negativo, recibos | Control de créditos y recibos descargables |
