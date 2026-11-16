@@ -8,10 +8,17 @@ import { CancelarViaje } from "./CancelarViaje";
 
 export const metadata = { title: "Detalle del viaje — FleteYa" };
 
+const ESTADO_OFERTA = { PENDIENTE: "esperando al cliente", ACEPTADA: "aceptada", RECHAZADA: "no aceptada", RETIRADA: "retirada" } as const;
+const TIEMPOS = [["asignadoEn", "Aceptado"], ["enCaminoEn", "En camino"], ["cargandoEn", "Cargando"], ["enRutaEn", "En ruta"], ["entregadoEn", "Entregado"]] as const;
+
 export default async function DetalleViaje({ params }: { params: Promise<{ id: string }> }) {
   await exigirPropietario();
   const { id } = await params;
-  const v = await db.viaje.findUnique({ where: { id }, include: { items: true, puntoQr: true } });
+  const v = await db.viaje.findUnique({ where: { id }, include: {
+    items: true, puntoQr: true,
+    motorista: { select: { id: true, nombre: true, telefono: true, placa: true } },
+    ofertas: { orderBy: { creadaEn: "desc" }, include: { motorista: { select: { nombre: true } } } },
+  } });
   if (!v) notFound();
   const e = ESTADOS_VIAJE[v.estado];
   const activo = v.estado !== "CANCELADO" && v.estado !== "ENTREGADO";
@@ -46,9 +53,25 @@ export default async function DetalleViaje({ params }: { params: Promise<{ id: s
           {v.nota && <p className="p-5 text-sm"><span className="text-suave">Nota del cliente: </span>{v.nota}</p>}
           <div className="flex items-center justify-between p-5">
             <span className="text-sm">Precio por peso · efectivo</span>
-            <span className="text-xl font-extrabold text-naranja">{dinero(Number(v.precioBase))}</span>
+            <span className={`text-xl font-extrabold ${v.precioFinal && Number(v.precioFinal) !== Number(v.precioBase) ? "text-suave line-through" : "text-naranja"}`}>{dinero(Number(v.precioBase))}</span>
           </div>
-          {v.fueraDeRango && <p className="p-5 text-xs text-suave"><i className="fa-solid fa-route mr-1.5 text-naranja" />Más lejos que los km incluidos: el motorista podrá ofrecer otro precio (Parte 3).</p>}
+          {v.precioFinal && Number(v.precioFinal) !== Number(v.precioBase) && (
+            <div className="flex items-center justify-between p-5"><span className="text-sm">Precio acordado (oferta del motorista)</span><span className="text-xl font-extrabold text-naranja" data-testid="precio-final">{dinero(Number(v.precioFinal))}</span></div>
+          )}
+          {v.comision && (
+            <div className="flex items-center justify-between p-5 text-sm"><span>Comisión descontada de los créditos del motorista</span><span className="font-bold" data-testid="comision">{dinero(Number(v.comision))}</span></div>
+          )}
+          {v.fueraDeRango && <p className="p-5 text-xs text-suave"><i className="fa-solid fa-route mr-1.5 text-naranja" />Más lejos que los km incluidos: el motorista puede ofrecer otro precio y el cliente decide.</p>}
+          {v.ofertas.length > 0 && (
+            <div className="p-5 text-sm">
+              <p className="seccion-titulo mb-2">Ofertas de precio</p>
+              <ul className="space-y-1">
+                {v.ofertas.map((o) => (
+                  <li key={o.id} className="flex justify-between gap-3"><span>{o.motorista.nombre} · {fechaHora(o.creadaEn)}</span><span><b>{dinero(Number(o.precio))}</b> <span className="text-xs text-suave">{ESTADO_OFERTA[o.estado]}</span></span></li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
 
         <aside className="space-y-4">
@@ -62,6 +85,18 @@ export default async function DetalleViaje({ params }: { params: Promise<{ id: s
             </div>
             <p className="mt-3 text-[11px] text-suave">Aceptó términos y privacidad el {fechaHora(v.aceptoTerminosEn)}.</p>
             <a href={`/viaje/${v.codigo}`} target="_blank" className="mt-2 inline-block text-xs text-naranja">Ver lo que ve el cliente <i className="fa-solid fa-arrow-up-right-from-square ml-1" /></a>
+          </section>
+          <section className="tarjeta p-5 text-sm" data-testid="motorista-viaje">
+            <h2 className="font-bold">Motorista</h2>
+            {v.motorista ? (
+              <>
+                <Link href={`/panel/motoristas/${v.motorista.id}`} className="mt-2 block font-medium text-naranja">{v.motorista.nombre}</Link>
+                <p className="text-suave">{formatoTelefono(v.motorista.telefono)} · {v.motorista.placa}</p>
+                <ul className="mt-3 space-y-1 text-xs">
+                  {TIEMPOS.map(([c, t]) => v[c] && <li key={c} className="flex justify-between"><span className="text-suave">{t}</span><span>{fechaHora(v[c]!)}</span></li>)}
+                </ul>
+              </>
+            ) : <p className="mt-2 text-suave">{v.estado === "BUSCANDO" ? "Todavía nadie lo ha aceptado." : "Sin motorista."}</p>}
           </section>
           {v.estado === "CANCELADO" && (
             <section className="rounded-xl border border-error/30 bg-error/10 p-4 text-sm">

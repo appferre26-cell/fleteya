@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { dinero, numeroViaje } from "@/lib/tarifa";
 import { textoAccion } from "@/lib/historial";
 import { exigirPropietario } from "@/lib/sesion";
 import { DOCUMENTOS, TIPOS_VEHICULO, diasParaVencer, fechaCorta, fechaHora, formatoTelefono } from "@/lib/validacion";
@@ -22,6 +23,13 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
     },
   });
   if (!m) notFound();
+  const [entregados, movimientos, enCurso] = await Promise.all([
+    db.viaje.aggregate({ where: { motoristaId: m.id, estado: "ENTREGADO" }, _count: true, _sum: { comision: true } }),
+    db.movimientoCredito.findMany({ where: { motoristaId: m.id }, orderBy: { creadoEn: "desc" }, take: 8 }),
+    db.viaje.findFirst({ where: { motoristaId: m.id, estado: { in: ["ASIGNADO", "EN_CAMINO", "CARGANDO", "EN_RUTA"] } }, select: { id: true, numero: true } }),
+  ]);
+  const saldo = Number(m.saldoCreditos);
+  const enLinea = m.disponible && m.vistoEn && Date.now() - m.vistoEn.getTime() < 2 * 60_000;
 
   const venc = diasParaVencer(m.licenciaVence);
   const dato = (t: string, v: React.ReactNode) => (
@@ -103,6 +111,30 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
                 );
               })}
             </div>
+          </section>
+
+          <section className="tarjeta p-5" data-testid="app-motorista">
+            <h2 className="seccion-titulo">App y créditos</h2>
+            <dl className="mt-4 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+              {dato("Saldo de créditos", <span className={`tabular-nums ${saldo <= 0 ? "text-error" : ""}`} data-testid="saldo-motorista">{dinero(saldo)}</span>)}
+              {dato("Ahora", enCurso ? <Link href={`/panel/viajes/${enCurso.id}`} className="text-naranja">En viaje {numeroViaje(enCurso.numero)}</Link> : enLinea ? <span className="text-exito">Disponible</span> : <span className="font-normal text-suave">Desconectado</span>)}
+              {dato("Viajes entregados", <span className="tabular-nums">{entregados._count} · comisión {dinero(Number(entregados._sum.comision ?? 0))}</span>)}
+              {dato("Último ingreso a la app", m.ultimoAcceso ? fechaHora(m.ultimoAcceso) : <span className="font-normal text-suave">Nunca</span>)}
+            </dl>
+            <p className="mt-3 text-xs text-suave">
+              {m.terminosAceptadosEn ? `Aceptó los Términos para Motoristas (v${m.terminosVersion}) el ${fechaHora(m.terminosAceptadosEn)}.` : "Aún no acepta los Términos para Motoristas (se le piden al entrar por primera vez)."}
+              {" "}Las recargas se registran en la Parte 4.
+            </p>
+            {movimientos.length > 0 && (
+              <ul className="mt-3 divide-y divide-borde border-t border-borde text-sm">
+                {movimientos.map((x) => (
+                  <li key={x.id} className="flex justify-between gap-3 py-2">
+                    <span>{x.tipo === "COMISION" ? "Comisión" : x.tipo === "RECARGA" ? "Recarga" : "Ajuste"} <span className="text-suave">· {x.detalle} · {fechaHora(x.creadoEn)}</span></span>
+                    <span className={`tabular-nums ${Number(x.monto) < 0 ? "text-error" : "text-exito"}`}>{Number(x.monto) < 0 ? "-" : "+"}{dinero(Math.abs(Number(x.monto)))}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           <section className="tarjeta p-5">

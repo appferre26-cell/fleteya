@@ -1,0 +1,12 @@
+{
+  "name": "FleteYa Motorista",
+  "short_name": "FleteYa Motorista",
+  "start_url": "/motorista",
+  "scope": "/motorista",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "lang": "es",
+  "icons": [{ "src": "/icono.png", "sizes": "512x512", "type": "image/png" }]
+}
