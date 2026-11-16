@@ -23,6 +23,8 @@ model Propietario {
   motoristasCreados  Motorista[]          @relation("CreadoPor")
   motoristasAprobados Motorista[]         @relation("AprobadoPor")
   historial          HistorialMotorista[]
+  recargasRegistradas Recarga[]           @relation("RecargasRegistradas")
+  recargasAnuladas    Recarga[]           @relation("RecargasAnuladas")
 }
 
 enum EstadoMotorista {
@@ -84,6 +86,7 @@ model Motorista {
   ofertas              OfertaPrecio[]
   rechazos             RechazoViaje[]
   movimientos          MovimientoCredito[]
+  recargas             Recarga[]
 }
 
 enum TipoDocumento {
@@ -159,6 +162,14 @@ model Configuracion {
   comisionPct    Decimal  @default(10) @db.Decimal(5, 2) // % de cada viaje que se descuenta de los créditos
   planSemanal    Decimal  @default(20) @db.Decimal(8, 2)
   planMensual    Decimal  @default(60) @db.Decimal(8, 2)
+  // Parte 4: datos que salen en los recibos y la cuenta donde el motorista paga
+  emisorNombre    String? // socio inscrito en Hacienda
+  emisorNit       String?
+  emisorDireccion String?
+  bancoNombre     String?
+  bancoTipoCuenta String? @default("Ahorro")
+  bancoNumero     String?
+  bancoTitular    String?
   actualizadoEn  DateTime @updatedAt
 }
 
@@ -269,7 +280,7 @@ model RechazoViaje {
 }
 
 enum TipoMovimiento {
-  RECARGA  // la registra un propietario (Parte 4)
+  RECARGA  // la registra un propietario (ver Recarga)
   COMISION // % de un viaje entregado
   AJUSTE   // corrección manual
 }
@@ -286,6 +297,56 @@ model MovimientoCredito {
   detalle       String?
   creadoPorId   String?        // propietario, si fue manual
   creadoEn      DateTime       @default(now())
+  recargaId     String?
+  recarga       Recarga?       @relation(fields: [recargaId], references: [id])
 
   @@index([motoristaId, creadoEn])
+}
+
+
+// ───────────── Parte 4: recargas de créditos ─────────────
+
+enum PlanRecarga {
+  SEMANAL
+  MENSUAL
+}
+
+enum FormaPago {
+  EFECTIVO
+  TRANSFERENCIA
+  EN_LINEA // a futuro (Wompi u otro): hoy no se usa
+}
+
+// Cada recarga es un recibo (REC-000123). Guarda una copia de los datos del emisor para que el recibo no cambie después.
+model Recarga {
+  id              String      @id @default(cuid())
+  numero          Int         @unique @default(autoincrement())
+  motoristaId     String
+  motorista       Motorista   @relation(fields: [motoristaId], references: [id])
+  plan            PlanRecarga
+  monto           Decimal     @db.Decimal(8, 2)
+  formaPago       FormaPago
+  referencia      String?     // número de la transferencia
+  nota            String?
+  saldoAntes      Decimal     @db.Decimal(8, 2)
+  deudaDescontada Decimal     @db.Decimal(8, 2) // si estaba en negativo
+  saldoDespues    Decimal     @db.Decimal(8, 2)
+  registradoPorId String
+  registradoPor   Propietario @relation("RecargasRegistradas", fields: [registradoPorId], references: [id])
+  creadoEn        DateTime    @default(now())
+  emisorNombre    String?
+  emisorNit       String?
+  emisorDireccion String?
+  correoEnviadoA  String?
+  correoEnviadoEn DateTime?
+  correoError     String?
+  anuladaEn       DateTime?
+  anuladaPorId    String?
+  anuladaPor      Propietario? @relation("RecargasAnuladas", fields: [anuladaPorId], references: [id])
+  motivoAnulacion String?
+  movimientos     MovimientoCredito[]
+
+  @@index([motoristaId, creadoEn])
+  @@index([creadoEn])
+  @@index([referencia])
 }

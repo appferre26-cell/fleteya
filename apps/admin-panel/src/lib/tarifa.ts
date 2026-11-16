@@ -20,7 +20,7 @@ export function precioPorPeso(pesoKg: number, t: Tarifa) {
 }
 
 export function dinero(n: number) {
-  return `$${n.toFixed(2)}`;
+  return `${n < 0 ? "-" : ""}$${Math.abs(n).toFixed(2)}`;
 }
 
 export function kg(n: number) {

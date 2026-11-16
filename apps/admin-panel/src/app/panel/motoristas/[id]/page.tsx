@@ -25,7 +25,7 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
   if (!m) notFound();
   const [entregados, movimientos, enCurso] = await Promise.all([
     db.viaje.aggregate({ where: { motoristaId: m.id, estado: "ENTREGADO" }, _count: true, _sum: { comision: true } }),
-    db.movimientoCredito.findMany({ where: { motoristaId: m.id }, orderBy: { creadoEn: "desc" }, take: 8 }),
+    db.movimientoCredito.findMany({ where: { motoristaId: m.id }, orderBy: { creadoEn: "desc" }, take: 8, include: { recarga: { select: { numero: true } } } }),
     db.viaje.findFirst({ where: { motoristaId: m.id, estado: { in: ["ASIGNADO", "EN_CAMINO", "CARGANDO", "EN_RUTA"] } }, select: { id: true, numero: true } }),
   ]);
   const saldo = Number(m.saldoCreditos);
@@ -123,13 +123,17 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
             </dl>
             <p className="mt-3 text-xs text-suave">
               {m.terminosAceptadosEn ? `Aceptó los Términos para Motoristas (v${m.terminosVersion}) el ${fechaHora(m.terminosAceptadosEn)}.` : "Aún no acepta los Términos para Motoristas (se le piden al entrar por primera vez)."}
-              {" "}Las recargas se registran en la Parte 4.
             </p>
+            {m.estado !== "SUSPENDIDO" && (
+              <Link href={`/panel/creditos?m=${m.id}#registrar`} className="btn-primario mt-3 h-10 w-full sm:w-auto sm:px-5" data-testid="registrar-recarga">
+                <i className="fa-solid fa-plus" />Registrar recarga
+              </Link>
+            )}
             {movimientos.length > 0 && (
               <ul className="mt-3 divide-y divide-borde border-t border-borde text-sm">
                 {movimientos.map((x) => (
                   <li key={x.id} className="flex justify-between gap-3 py-2">
-                    <span>{x.tipo === "COMISION" ? "Comisión" : x.tipo === "RECARGA" ? "Recarga" : "Ajuste"} <span className="text-suave">· {x.detalle} · {fechaHora(x.creadoEn)}</span></span>
+                    <span>{x.tipo === "COMISION" ? "Comisión" : x.tipo === "RECARGA" ? "Recarga" : "Ajuste"} <span className="text-suave">· {x.recarga ? <Link href={`/panel/creditos/recibo/${x.recarga.numero}`} className="text-naranja hover:underline">{x.detalle}</Link> : x.detalle} · {fechaHora(x.creadoEn)}</span></span>
                     <span className={`tabular-nums ${Number(x.monto) < 0 ? "text-error" : "text-exito"}`}>{Number(x.monto) < 0 ? "-" : "+"}{dinero(Math.abs(Number(x.monto)))}</span>
                   </li>
                 ))}

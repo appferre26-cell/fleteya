@@ -9,16 +9,12 @@ const LISTOS = [
   { href: "/panel/motoristas", icono: "fa-id-card", nombre: "Motoristas", corto: "Motoristas" },
   { href: "/panel/puntos-qr", icono: "fa-qrcode", nombre: "Puntos QR", corto: "Puntos QR" },
   { href: "/panel/catalogo", icono: "fa-cubes", nombre: "Catálogo de materiales", corto: "Catálogo" },
+  { href: "/panel/creditos", icono: "fa-coins", nombre: "Créditos y recargas", corto: "Créditos" },
   { href: "/panel/tarifas", icono: "fa-tags", nombre: "Tarifas y zona", corto: "Tarifas" },
   { href: "/panel/administradores", icono: "fa-user-shield", nombre: "Administradores", corto: "Admins" },
 ];
 // En el celular, la barra de abajo muestra estos; el resto va en «Más».
 const EN_BARRA = ["/panel", "/panel/viajes", "/panel/motoristas"];
-
-// Secciones de las siguientes partes del plan: se ven, pero aún no se pueden abrir.
-const PRONTO = [
-  { icono: "fa-coins", nombre: "Créditos y recargas" },
-];
 
 function activo(path: string, href: string) {
   return href === "/panel" ? path === "/panel" : path.startsWith(href);
@@ -37,13 +33,6 @@ export function MenuLateral({ pendientes }: { pendientes: number }) {
             <span className="ml-auto rounded-full bg-naranja px-1.5 py-0.5 text-[10px] font-bold text-fondo">{pendientes}</span>
           )}
         </Link>
-      ))}
-      <p className="mt-6 mb-2 px-3 text-[10px] font-semibold tracking-wider text-[#6b6b6b] uppercase">Próximas partes</p>
-      {PRONTO.map((l) => (
-        <span key={l.nombre} aria-disabled className="flex h-10 cursor-not-allowed items-center gap-3 rounded-lg px-3 text-sm font-medium text-[#5a5a5a]">
-          <i className={`fa-solid ${l.icono} w-4`} />{l.nombre}
-          <span className="ml-auto rounded bg-tarjeta-2 px-1.5 py-0.5 text-[9px] font-bold tracking-wider uppercase">Pronto</span>
-        </span>
       ))}
     </nav>
   );

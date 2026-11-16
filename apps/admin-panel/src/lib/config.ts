@@ -16,6 +16,13 @@ export async function obtenerConfig() {
     comisionPct: Number(c.comisionPct),
     planSemanal: Number(c.planSemanal),
     planMensual: Number(c.planMensual),
+    emisorNombre: c.emisorNombre,
+    emisorNit: c.emisorNit,
+    emisorDireccion: c.emisorDireccion,
+    bancoNombre: c.bancoNombre,
+    bancoTipoCuenta: c.bancoTipoCuenta,
+    bancoNumero: c.bancoNumero,
+    bancoTitular: c.bancoTitular,
   };
 }
 

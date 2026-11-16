@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 // Parte 3: app del motorista (/motorista) y lo que ve el cliente y el panel.
-// Los motoristas y los viajes se preparan directo en la base (las recargas son de la Parte 4).
+// Los motoristas y los viajes se preparan directo en la base (las recargas se prueban en creditos.spec.ts).
 const db = new PrismaClient();
 const CORREO = process.env.E2E_CORREO ?? "";
 const PASSWORD = process.env.E2E_PASSWORD ?? "";
@@ -256,7 +256,7 @@ test("viaje completo: aviso, aceptar, pasos, entrega y comisión del 10 %", asyn
     await app.getByTestId("avanzar").filter({ hasText: pasos[i][0] }).click();
     if (i < 3) await expect(app.getByTestId("avanzar")).toContainText(pasos[i + 1][0]);
   }
-  await expect(app.getByTestId("aviso")).toContainText("Tu saldo quedó en $-0.70");
+  await expect(app.getByTestId("aviso")).toContainText("Tu saldo quedó en -$0.70");
   await expect(app.getByTestId("no-puede")).toContainText("No tienes créditos");
   expect(Number((await db.viaje.findUniqueOrThrow({ where: { id: v2.id } })).comision)).toBe(1);
   await cliente.close();
