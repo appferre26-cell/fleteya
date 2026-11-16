@@ -11,6 +11,7 @@ const LISTOS = [
   { href: "/panel/puntos-qr", icono: "fa-qrcode", nombre: "Puntos QR", corto: "Puntos QR" },
   { href: "/panel/catalogo", icono: "fa-cubes", nombre: "Catálogo de materiales", corto: "Catálogo" },
   { href: "/panel/creditos", icono: "fa-coins", nombre: "Créditos y recargas", corto: "Créditos" },
+  { href: "/panel/reportes", icono: "fa-chart-column", nombre: "Reportes y finanzas", corto: "Reportes" },
   { href: "/panel/tarifas", icono: "fa-tags", nombre: "Tarifas y zona", corto: "Tarifas" },
   { href: "/panel/administradores", icono: "fa-user-shield", nombre: "Administradores", corto: "Admins" },
 ];

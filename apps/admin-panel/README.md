@@ -129,6 +129,26 @@ Una sola aplicación web con tres zonas separadas:
 - Base de datos: correr `npm run db:migrar` (agrega las calificaciones al viaje y la tabla de clientes bloqueados).
 - Pruebas: `tests/calificaciones.spec.ts`. Capturas: `node tests/capturas-calificaciones.mjs`.
 
+### Parte 7 — Tablero en vivo, reportes y finanzas
+
+- **Inicio del panel → Ahora mismo**: mapa en vivo (OpenStreetMap) con los motoristas disponibles (verde), los que van en
+  viaje (amarillo) y los pedidos que buscan motorista (naranja, con los minutos que llevan esperando; en rojo desde 10 min).
+  Se actualiza solo cada 15 s. Un motorista cuenta como conectado si su app habló con el servidor en los últimos 2 minutos.
+- **Inicio → Viajes e ingresos**: hoy, esta semana (desde el lunes) y este mes: viajes entregados, lo cobrado por los
+  motoristas, la comisión y las recargas.
+- **Reportes y finanzas** (`/panel/reportes`): hoy, esta semana, este mes, mes anterior u otras fechas (hora de El Salvador).
+  - *Dinero de FleteYa*: **recargas cobradas** (efectivo / transferencia, sin las anuladas), **gastos**,
+    **ganancia neta = recargas − gastos** y **comisión de viajes** (se descuenta de los créditos ya pagados, por eso no se suma dos veces).
+    También muestra los créditos que los motoristas aún no han usado y lo que deben los que están en negativo.
+  - *Viajes*: entregados (por fecha de entrega), cobrado por los motoristas, precio promedio, pedidos y % de cancelados.
+  - Gráfica por día (o por mes si son más de 62 días), tabla **por motorista** (viajes, cobrado, comisión, recargas, estrellas)
+    y **por punto QR** (pedidos, entregados, cobrado).
+  - **Gastos de FleteYa**: anotar fecha, categoría, detalle y monto; se pueden borrar. Botones para descargar en Excel los
+    viajes, las recargas y los gastos del periodo.
+- **Viajes**: filtros por fechas, motorista, punto QR y búsqueda (además de las pestañas por estado), totales de lo
+  filtrado y **Exportar a Excel** con los mismos filtros (todas las filas, no solo las 100 de la pantalla).
+- Pruebas: `tests/reportes.spec.ts`. Capturas: `node tests/capturas-reportes.mjs`.
+
 ## Cómo correrlo (desarrollo)
 
 Necesitas Node 20+ y PostgreSQL.
@@ -187,7 +207,7 @@ el perfil y en el panel, y la sección Clientes (búsqueda, ficha, bloquear con 
 `SMTP_URL=smtp://localhost:2525` y `SMTP_BUZON=... npx playwright test tests/creditos.spec.ts`. **Usan la base de datos real que configures**, así que crean motoristas y
 propietarios, materiales, puntos QR y viajes de prueba: córrelas solo en una base de pruebas.
 
-`node tests/capturas.mjs` (Parte 1), `node tests/capturas-cliente.mjs` (Parte 2), `node tests/capturas-motorista.mjs` (Parte 3) y `node tests/capturas-creditos.mjs` (Parte 4) sacan capturas de pantalla en
+`node tests/capturas.mjs` (Parte 1), `node tests/capturas-cliente.mjs` (Parte 2), `node tests/capturas-motorista.mjs` (Parte 3) `node tests/capturas-creditos.mjs` (Parte 4) y `node tests/capturas-reportes.mjs` (Parte 7) sacan capturas de pantalla en
 computadora y celular (carpeta `capturas/`, o la que digas en `CAPTURAS`).
 
 ## Notas

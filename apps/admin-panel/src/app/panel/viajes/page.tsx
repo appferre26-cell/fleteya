@@ -1,45 +1,27 @@
 import Link from "next/link";
-import type { EstadoViaje, Prisma } from "@prisma/client";
+import type { EstadoViaje } from "@prisma/client";
 import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
+import { leerFiltros, FILTROS_ESTADO, type ParamsViajes } from "@/lib/filtro-viajes";
 import { ESTADOS_VIAJE, dinero, kg, numeroViaje } from "@/lib/tarifa";
-import { fechaHora, formatoTelefono, normalizarTelefono } from "@/lib/validacion";
+import { fechaHora, formatoTelefono } from "@/lib/validacion";
 
 export const metadata = { title: "Viajes — FleteYa" };
 
-const EN_CURSO: EstadoViaje[] = ["ASIGNADO", "EN_CAMINO", "CARGANDO", "EN_RUTA"];
-const FILTROS: { clave: string; nombre: string; estados?: EstadoViaje[] }[] = [
-  { clave: "todos", nombre: "Todos" },
-  { clave: "buscando", nombre: "Buscando motorista", estados: ["BUSCANDO"] },
-  { clave: "curso", nombre: "En curso", estados: EN_CURSO },
-  { clave: "entregados", nombre: "Entregados", estados: ["ENTREGADO"] },
-  { clave: "cancelados", nombre: "Cancelados", estados: ["CANCELADO"] },
-];
-
-export default async function Viajes({ searchParams }: { searchParams: Promise<{ f?: string; q?: string }> }) {
+export default async function Viajes({ searchParams }: { searchParams: Promise<ParamsViajes> }) {
   await exigirPropietario();
-  const { f = "todos", q = "" } = await searchParams;
-  const filtro = FILTROS.find((x) => x.clave === f) ?? FILTROS[0];
-  const busqueda = q.trim().slice(0, 60);
+  const { estado: filtro, base, where, valores, query, hayFiltros } = leerFiltros(await searchParams);
+  const busqueda = valores.q;
 
-  const where: Prisma.ViajeWhereInput = {};
-  if (filtro.estados) where.estado = { in: filtro.estados };
-  if (busqueda) {
-    const tel = normalizarTelefono(busqueda);
-    const num = /^(fy-?)?(\d{1,6})$/i.exec(busqueda)?.[2];
-    where.OR = [
-      { clienteNombre: { contains: busqueda, mode: "insensitive" } },
-      ...(tel.length >= 3 ? [{ clienteTelefono: { contains: tel } }] : []),
-      ...(num ? [{ numero: Number(num) }] : []),
-    ];
-  }
-
-  const [viajes, grupos] = await Promise.all([
+  const [viajes, grupos, motoristas, puntos, totales] = await Promise.all([
     db.viaje.findMany({ where, orderBy: { creadoEn: "desc" }, take: 100, include: { puntoQr: { select: { codigo: true } }, motorista: { select: { nombre: true } } } }),
-    db.viaje.groupBy({ by: ["estado"], _count: true }),
+    db.viaje.groupBy({ by: ["estado"], where: base, _count: true }),
+    db.motorista.findMany({ orderBy: { nombre: "asc" }, select: { id: true, nombre: true, estado: true } }),
+    db.puntoQR.findMany({ orderBy: { codigo: "asc" }, select: { id: true, codigo: true, nombre: true } }),
+    db.viaje.aggregate({ where: { AND: [where, { estado: "ENTREGADO" }] }, _count: true, _sum: { precioFinal: true, comision: true } }),
   ]);
   const cuenta = (es?: EstadoViaje[]) => grupos.filter((g) => !es || es.includes(g.estado)).reduce((s, g) => s + g._count, 0);
-  const url = (clave: string) => `/panel/viajes?f=${clave}${busqueda ? `&q=${encodeURIComponent(busqueda)}` : ""}`;
+  const url = (clave: string) => `/panel/viajes${query({ f: clave })}`;
 
   return (
     <>
@@ -49,25 +31,46 @@ export default async function Viajes({ searchParams }: { searchParams: Promise<{
       <section className="tarjeta mt-5 overflow-hidden">
         <div className="flex flex-col gap-3 border-b border-borde px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex gap-1 overflow-x-auto rounded-lg border border-borde bg-fondo p-1 text-sm">
-            {FILTROS.map((x) => (
+            {FILTROS_ESTADO.map((x) => (
               <Link key={x.clave} href={url(x.clave)}
                 className={`flex h-8 shrink-0 items-center gap-2 rounded-md px-3 ${x.clave === filtro.clave ? "bg-tarjeta-2 font-semibold" : "text-suave"}`}>
                 {x.nombre} <span className="text-[11px] text-suave">{cuenta(x.estados)}</span>
               </Link>
             ))}
           </div>
-          <form className="relative lg:w-72" action="/panel/viajes">
-            <input type="hidden" name="f" value={filtro.clave} />
-            <i className="fa-solid fa-magnifying-glass pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-xs text-suave" />
-            <input name="q" defaultValue={busqueda} placeholder="Cliente, teléfono o FY-0001" aria-label="Buscar viaje"
-              className="h-10 w-full rounded-lg border border-borde bg-fondo pr-3 pl-9 text-sm outline-none focus:border-naranja" />
-          </form>
+          <a href={`/api/viajes${query()}`} className="btn-secundario h-10 shrink-0" data-testid="exportar-viajes">
+            <i className="fa-solid fa-file-excel text-exito" />Exportar a Excel
+          </a>
         </div>
+
+        <form action="/panel/viajes" className="grid grid-cols-2 gap-3 border-b border-borde px-4 py-4 sm:px-5 lg:grid-cols-[1fr_1fr_1.3fr_1.3fr_1.5fr_auto]" data-testid="filtros-viajes">
+          {filtro.clave !== "todos" && <input type="hidden" name="f" value={filtro.clave} />}
+          <label className="text-xs"><span className="etiqueta">Desde</span>
+            <input type="date" name="desde" defaultValue={valores.desde} className="campo h-10" aria-label="Desde" /></label>
+          <label className="text-xs"><span className="etiqueta">Hasta</span>
+            <input type="date" name="hasta" defaultValue={valores.hasta} className="campo h-10" aria-label="Hasta" /></label>
+          <label className="text-xs"><span className="etiqueta">Motorista</span>
+            <select name="m" defaultValue={valores.m} className="campo h-10" aria-label="Motorista">
+              <option value="">Todos</option>
+              {motoristas.map((x) => <option key={x.id} value={x.id}>{x.nombre}{x.estado !== "ACTIVO" ? ` (${x.estado === "PENDIENTE" ? "pendiente" : "suspendido"})` : ""}</option>)}
+            </select></label>
+          <label className="text-xs"><span className="etiqueta">Punto QR</span>
+            <select name="p" defaultValue={valores.p} className="campo h-10" aria-label="Punto QR">
+              <option value="">Todos (con y sin QR)</option>
+              {puntos.map((x) => <option key={x.id} value={x.id}>{x.codigo} · {x.nombre}</option>)}
+            </select></label>
+          <label className="col-span-2 text-xs lg:col-span-1"><span className="etiqueta">Buscar</span>
+            <input name="q" defaultValue={busqueda} placeholder="Cliente, teléfono o FY-0001" aria-label="Buscar viaje" className="campo h-10" /></label>
+          <div className="col-span-2 flex items-end gap-2 lg:col-span-1">
+            <button type="submit" className="btn-primario h-10 flex-1 lg:flex-none"><i className="fa-solid fa-filter" />Filtrar</button>
+            {hayFiltros && <Link href={filtro.clave === "todos" ? "/panel/viajes" : `/panel/viajes?f=${filtro.clave}`} className="btn-secundario h-10">Quitar</Link>}
+          </div>
+        </form>
 
         {viajes.length === 0 ? (
           <div className="px-5 py-14 text-center">
             <i className="fa-solid fa-route text-2xl text-suave" />
-            <p className="mt-3 font-semibold">{busqueda ? "No se encontró ningún viaje" : "No hay viajes en esta lista"}</p>
+            <p className="mt-3 font-semibold">{hayFiltros ? "No se encontró ningún viaje con estos filtros" : "No hay viajes en esta lista"}</p>
             <p className="mt-1 text-sm text-suave">Cuando un cliente pida un flete desde /pedir, aparecerá aquí.</p>
           </div>
         ) : (
@@ -101,7 +104,8 @@ export default async function Viajes({ searchParams }: { searchParams: Promise<{
           </ul>
         )}
         <p className="border-t border-borde px-5 py-3 text-xs text-suave">
-          Mostrando {viajes.length} de {cuenta(filtro.estados)}{viajes.length === 100 ? " (los 100 más recientes)" : ""} · <span className="text-naranja">*</span> más lejos que los km incluidos: el motorista puede ofrecer otro precio.
+          Mostrando {viajes.length} de {cuenta(filtro.estados)}{viajes.length === 100 ? " (los 100 más recientes; «Exportar a Excel» los trae todos)" : ""} ·{" "}
+          <span data-testid="totales-viajes">Entregados: {totales._count} · cobrado {dinero(Number(totales._sum.precioFinal ?? 0))} · comisión {dinero(Number(totales._sum.comision ?? 0))}</span> · <span className="text-naranja">*</span> más lejos que los km incluidos: el motorista puede ofrecer otro precio.
         </p>
       </section>
     </>
