@@ -1,0 +1,10 @@
+{
+  "name": "FleteYa — Panel de propietarios",
+  "short_name": "FleteYa Admin",
+  "start_url": "/panel",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "lang": "es",
+  "icons": [{ "src": "/icono.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }]
+}
