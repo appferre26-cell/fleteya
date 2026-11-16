@@ -1,4 +1,4 @@
-# FleteYa — panel de propietarios, link del cliente y app del motorista (Partes 1, 2 y 3)
+# FleteYa — panel de propietarios, link del cliente y app del motorista (Partes 1 a 4)
 
 Una sola aplicación web con tres zonas separadas:
 
@@ -61,7 +61,7 @@ Una sola aplicación web con tres zonas separadas:
     $500). El cliente lo ve en su enlace y lo acepta o dice «No, gracias»; el motorista puede retirar su oferta.
   - **Viaje en curso**: navegar con Google Maps o Waze, llamar al cliente, pasos *Voy en camino → Ya llegué → Carga
     lista → Entrega completada*, y «No puedo hacer este viaje» (vuelve a la lista para otros). Si el cliente cancela, le avisa.
-  - **Comisión**: al entregar se descuenta el 10 % del precio de sus créditos (se cambia en la base, `Configuracion`).
+  - **Comisión**: al entregar se descuenta el 10 % del precio de sus créditos (se cambia en Créditos → Datos y planes).
     Si no le alcanza, se le avisa al aceptar y el saldo queda negativo: la diferencia se descuenta de la siguiente recarga.
   - **Viajes** (hoy, semana, mes con lo cobrado y la comisión), **Créditos** (saldo, planes semanal $20 / mensual $60,
     movimientos y botón de WhatsApp si se configuró en Tarifas) y **Perfil** (sus datos, cambiar contraseña, términos, privacidad, cerrar sesión).
@@ -69,7 +69,36 @@ Una sola aplicación web con tres zonas separadas:
   la ubicación del motorista en el mapa mientras va a recoger. Puede cancelar hasta que el motorista llega a cargar.
 - En el **panel**: el detalle del viaje muestra motorista, precio acordado, comisión, ofertas y tiempos; el detalle
   del motorista tiene la sección «App y créditos» (saldo, si está disponible, entregados, último ingreso, términos y movimientos).
-- Lo que aún no hace: **registrar recargas de créditos** (Parte 4; por ahora el saldo se cambia en la base) y
+
+### Parte 4 — Recargas de créditos y recibos
+
+- El motorista paga su plan (**semanal $20 / mensual $60**) a FleteYa **por transferencia** (opción principal) o **en efectivo**.
+- En el **panel → Créditos y recargas**:
+  - Resumen: recargado este mes, comisión descontada en la semana, motoristas con saldo bajo (< $5) y sin saldo.
+  - **Registrar recarga**: motorista, plan y forma de pago. En transferencia se pide el **número de referencia** y
+    marcar que se vio el dinero en la cuenta; una referencia ya usada (aunque se escriba con espacios o minúsculas) se
+    rechaza. Muestra antes de guardar el saldo nuevo. **Si el saldo era negativo, la deuda se descuenta primero**
+    (ej.: -$0.20 + $20 = $19.80). El registro bloquea la fila del motorista para no pisarse con una comisión al mismo tiempo.
+  - Al guardar, el saldo se actualiza y se genera el **recibo REC-000123**: fecha y hora, datos de FleteYa (socio
+    inscrito, NIT, dirección), motorista, plan, forma de pago y referencia, quién lo registró, saldo anterior, deuda
+    descontada y saldo nuevo. Se ve en pantalla y en **PDF**, y se puede mandar por **WhatsApp** al motorista.
+  - Saldo por motorista (los de menos saldo primero, botón + para recargar) y **últimas recargas** con búsqueda por
+    motorista, celular, REC o referencia; abrir o descargar cualquier recibo y **Exportar** a CSV (para el contador).
+  - **Anular** una recarga registrada por error (con motivo): resta el monto, deja un movimiento de ajuste y el recibo
+    queda marcado ANULADO.
+  - **Datos y planes**: datos que salen en el recibo, la cuenta para transferencias (banco, tipo, número, titular),
+    precios de los planes y % de comisión. Los recibos ya emitidos guardan los datos con que se hicieron.
+  - El detalle del motorista tiene el botón **Registrar recarga** y sus recargas enlazan al recibo.
+- En la **app del motorista → Mis créditos**: «¿Cómo recargo?» con la cuenta de FleteYa (botón Copiar), su plan actual
+  resaltado y el **Historial de recargas**: ver el recibo, descargar el PDF y **Compartir** (menú del celular con el
+  PDF; si el celular no lo permite, WhatsApp con el texto). Solo puede abrir sus propios recibos.
+- **Correo (opcional)**: si el motorista tiene correo y el servidor tiene `SMTP_URL`, el recibo le llega con el PDF
+  adjunto y el panel muestra a qué correo se envió (o el error) y permite **reenviarlo**. Sin `SMTP_URL` no se envía nada
+  y el panel lo avisa.
+- Cada recarga guarda su forma de pago (`EFECTIVO`, `TRANSFERENCIA`; `EN_LINEA` queda listo para el futuro).
+- **Por confirmar con el contador**: si además del recibo hace falta factura electrónica (DTE) de Hacienda.
+
+- Lo que aún no hace: **pagos/recargas en línea** (a futuro), **factura electrónica (DTE)** (por confirmar) y
   **notificaciones push con la app cerrada** (hoy el aviso suena con la app abierta en pantalla).
 
 ## Cómo correrlo (desarrollo)
@@ -86,6 +115,9 @@ Crea el archivo `.env` (no se sube a GitHub):
 ```
 DATABASE_URL="postgresql://USUARIO:CLAVE@localhost:5432/fleteya"
 SESSION_SECRET="una-cadena-larga-y-secreta"   # por ejemplo: openssl rand -hex 32
+# Opcional: enviar los recibos por correo
+# SMTP_URL="smtps://usuario:clave-de-aplicacion@smtp.gmail.com:465"
+# CORREO_REMITENTE="FleteYa <recibos@tu-dominio.com>"
 ```
 
 Crea las tablas y el primer propietario:
@@ -117,10 +149,15 @@ repetido), tarifas (con error), punto QR y cartel, campos obligatorios del clien
 precio, cancelar desde el cliente y desde el panel. Parte 3 (`tests/motorista.spec.ts`): sesiones separadas, primer
 ingreso (contraseña y términos), cuentas en revisión/suspendidas, viaje completo con aviso, pasos, entrega y comisión
 (también con saldo negativo), rechazar, dos motoristas aceptando a la vez, oferta de precio aceptada/rechazada,
-cancelación del cliente, soltar un viaje y perfil. **Usan la base de datos real que configures**, así que crean motoristas y
+cancelación del cliente, soltar un viaje y perfil. Parte 4 (`tests/creditos.spec.ts`): transferencia sin referencia
+o sin revisar, deuda descontada en el recibo, referencia repetida, PDF, efectivo mensual, búsqueda y CSV, lo que ve el
+motorista (saldo, historial, recibo, PDF) y que no abre recibos ajenos, acceso sin sesión, anular, datos y planes, y que
+con saldo ya puede ponerse disponible. La prueba del correo solo corre con un SMTP de prueba:
+`node tests/smtp-falso.mjs` (guarda los correos en `SMTP_BUZON`), el servidor arrancado con
+`SMTP_URL=smtp://localhost:2525` y `SMTP_BUZON=... npx playwright test tests/creditos.spec.ts`. **Usan la base de datos real que configures**, así que crean motoristas y
 propietarios, materiales, puntos QR y viajes de prueba: córrelas solo en una base de pruebas.
 
-`node tests/capturas.mjs` (Parte 1), `node tests/capturas-cliente.mjs` (Parte 2) y `node tests/capturas-motorista.mjs` (Parte 3) sacan capturas de pantalla en
+`node tests/capturas.mjs` (Parte 1), `node tests/capturas-cliente.mjs` (Parte 2), `node tests/capturas-motorista.mjs` (Parte 3) y `node tests/capturas-creditos.mjs` (Parte 4) sacan capturas de pantalla en
 computadora y celular (carpeta `capturas/`, o la que digas en `CAPTURAS`).
 
 ## Notas
