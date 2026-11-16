@@ -160,7 +160,7 @@ Peso estimado:            1,109 kg (≈ 1.1 ton)
 
 **Mis créditos**
 - Saldo actual (en rojo si está en negativo)
-- Botón **Recargar** (plan semanal $20 o mensual $60, pago en línea)
+- Cómo recargar: paga el plan (semanal $20 o mensual $60) **por transferencia a la cuenta de FleteYa o en efectivo al propietario**; el propietario la registra y el saldo se actualiza solo
 - Movimientos: recargas y descuentos del 10% por viaje
 - **Historial de recargas con recibos:** ver, descargar en PDF o compartir (ver sección 8)
 
@@ -216,15 +216,11 @@ El panel de propietarios funciona **en computadora y en el celular**:
 **Reportes y finanzas**
 - Reporte de ganancias netas
 - Comisiones cobradas
-- Pagos a motoristas pendientes
 
 **Créditos y recargas**
 - Saldo de créditos de cada motorista (incluye los que están en negativo)
+- **Registrar recarga:** el propietario anota la recarga que el motorista le pagó (efectivo o transferencia) y el recibo se genera solo
 - Historial de todas las recargas con su recibo: descargar o volver a enviar
-
-**Pagos a motoristas**
-- Pagos semanales de los viajes cobrados en línea (corte el domingo, pago el lunes)
-- Marcar cada pago como transferido
 
 **Puntos QR**
 - Ferreterías con QR (código, dirección de recogida, viajes generados)
@@ -299,8 +295,9 @@ Cuando el destino está a más de 5 km del punto de salida:
 
 ## 8. Métodos de Pago (Fase 1)
 
-- **Efectivo al motorista** — el cliente le paga directo al motorista al terminar el viaje.
-- **Pago en línea** — desde el link web del cliente. *(El proveedor de pagos aún no está definido; se integrará cuando se seleccione.)*
+- **Solo efectivo al motorista** — el cliente le paga directo al motorista al terminar el viaje.
+- **Decisión:** por ahora **no habrá pagos con tarjeta ni en línea**, porque muy pocos clientes pagan así. El dinero de los viajes nunca pasa por FleteYa.
+- Si más adelante se quiere cobrar en línea, se puede agregar (ver sección "A futuro: pagos en línea").
 
 ### Sistema de créditos del motorista (cómo gana FleteYa)
 
@@ -313,9 +310,20 @@ El motorista trabaja con un **saldo de créditos prepagados**. FleteYa gana de d
 | Semanal | $20.00 |
 | Mensual | $60.00 |
 
-El motorista recarga antes de poder recibir viajes. **Las recargas son solo en línea** (desde la app del motorista, con el mismo proveedor de pagos que se elija para los clientes).
+El motorista recarga antes de poder recibir viajes. Como no habrá pagos en línea, **la recarga se hace así:**
 
-> **Requisito:** todo motorista debe tener **cuenta de banco** para poder recargar créditos y recibir los pagos en línea de los clientes.
+1. El motorista paga el plan por **transferencia a la cuenta de FleteYa** (opción principal) o **en efectivo** al propietario.
+2. Si fue transferencia, el motorista manda la captura del comprobante por WhatsApp.
+3. El propietario revisa que el dinero esté en la cuenta y entra al panel → **Créditos y recargas → Registrar recarga**: elige al motorista, el plan y anota el número de referencia.
+4. El saldo del motorista se actualiza al instante y **el recibo se genera solo**.
+
+**Cuenta de FleteYa:**
+- Una cuenta de ahorro **solo para FleteYa**, a nombre del socio inscrito en Hacienda (no se mezcla con dinero personal).
+- Ahí caen todas las recargas. Esa es la ganancia de FleteYa: el 10% de cada viaje se descuenta de esos créditos ya pagados.
+- El efectivo que se reciba se deposita en la misma cuenta, para que todo quede en un solo lugar y sea fácil de cuadrar.
+- Los datos de la cuenta (banco, número, nombre) se muestran al motorista en **Mis créditos → ¿Cómo recargo?**.
+
+> **Cuenta de banco del motorista:** ya **no se pide**. Con solo efectivo, el motorista cobra el viaje directo al cliente y FleteYa no le deposita nada.
 
 #### 2. Comisión por viaje
 
@@ -335,7 +343,7 @@ Motorista recarga ($20 semana o $60 mes)
   Créditos = $0  →  bloqueado hasta próxima recarga
 ```
 
-> Los créditos **no son dinero para los clientes**: son la forma en que el motorista paga su acceso y la comisión de FleteYa. El cliente paga aparte (efectivo o en línea).
+> Los créditos **no son dinero para los clientes**: son la forma en que el motorista paga su acceso y la comisión de FleteYa. El cliente paga aparte, en efectivo al motorista.
 
 #### Créditos insuficientes (saldo negativo)
 
@@ -363,39 +371,27 @@ Cada recarga genera un **recibo automático**. El motorista lo puede ver de dos 
 - Número correlativo (ej. **REC-000123**), fecha y hora.
 - Datos de FleteYa: nombre del socio inscrito, NIT y dirección.
 - Nombre del motorista.
-- Plan recargado (semanal $20 o mensual $60) y referencia del pago en línea.
+- Plan recargado (semanal $20 o mensual $60) y forma de pago (efectivo o transferencia, con número de referencia si es transferencia).
+- Quién registró la recarga.
 - Saldo anterior, deuda descontada (si estaba en negativo) y saldo nuevo.
 
 **En el panel de propietarios:** en **Créditos y recargas** se ven todas las recargas, y desde ahí se puede volver a enviar o descargar cualquier recibo.
 
 > **Por confirmar con el contador:** si además del recibo de la app hay que emitir **factura electrónica (DTE)** de Hacienda por cada recarga. Si es así, la app guarda y muestra también ese documento junto al recibo, sin cambiar la pantalla.
 
-### Pagos en línea del cliente → pago semanal al motorista
+### A futuro: pagos en línea (no en Fase 1)
+- Por ahora **no se usará** ningún proveedor de pagos en línea. Todo es en efectivo.
+- Si más adelante se activan (por ejemplo con Wompi, 3.5% + IVA por pago, sin que el cliente cree cuenta), se agregaría:
+  - Botón "Pagar en línea" en el link del cliente y recargas en línea desde la app del motorista.
+  - El dinero llegaría primero a FleteYa y se pagaría a los motoristas cada lunes (corte el domingo).
+  - Una sección "Pagos a motoristas" en el panel.
+- Las pantallas de esto quedan diseñadas pero **guardadas para después**.
 
-```
-Cliente paga en línea desde el link web
-        ↓
-  El dinero llega primero a la cuenta de FleteYa
-        ↓
-  Se acumula a favor del motorista que hizo el viaje
-        ↓
-  Cada semana FleteYa transfiere al motorista
-  el total de sus viajes pagados en línea (a su cuenta de banco)
-```
-
-- Los viajes en **efectivo** los cobra el motorista directamente; no pasan por FleteYa.
-- En el panel de propietarios habrá una sección **"Pagos a motoristas"** con:
-  - Cuánto se le debe a cada motorista esa semana (solo viajes pagados en línea)
-  - Botón para marcar como pagado, con fecha y número de transferencia
-  - Historial de pagos
-- El motorista ve en su app cuánto tiene acumulado para su próximo pago semanal.
-
-#### Calendario y monto del pago
-- **Corte:** domingo. Se suman los viajes pagados en línea de lunes a domingo.
-- **Día de pago:** lunes.
-- **Monto:** se transfiere **completo** lo que le corresponde al motorista por esos viajes. No se descuenta nada, porque el 10% ya sale de sus créditos.
-
-*(Decisión vigente por ahora; se puede cambiar más adelante.)*
+**Decisión sobre las recargas (15 nov 2026):** por ahora las recargas se registran **a mano** (el propietario confirma en su banco y registra en el panel). Más adelante se puede volver **automático**:
+- El motorista pagaría con un enlace de pago desde "Mis créditos" y los créditos se sumarían solos al instante.
+- Costo aproximado: unos **$0.79 por cada recarga de $20** (estimado con la tarifa de Wompi de 3.5% + IVA).
+- El sistema se construye listo para eso: cada recarga guarda su **forma de pago** (efectivo, transferencia y, a futuro, "en línea"). Así, activarlo después es agregar una forma de pago y no rehacer la parte de créditos.
+- El registro manual se mantendría para el efectivo y las transferencias.
 
 ---
 
@@ -478,7 +474,7 @@ Cliente en la ferretería
 
 - La ferretería solo **pega el QR** en un lugar visible. No necesita instalar nada, no tiene cuenta y no maneja nada.
 - El cliente hace exactamente el mismo proceso que con el link normal.
-- El link del QR incluye un código de la ferretería (ej. `fleteya.sv/pedir?f=FER001`). Así el punto de recogida ya sale con la dirección de esa ferretería y los propietarios pueden ver de dónde vienen más pedidos.
+- El link del QR incluye un código de la ferretería (ej. `[dirección de la app en Abacus]/pedir?f=FER001`). Así el punto de recogida ya sale con la dirección de esa ferretería y los propietarios pueden ver de dónde vienen más pedidos.
 
 ### En el panel de propietarios
 
@@ -496,7 +492,7 @@ Una sección sencilla **"Puntos QR"**:
 
 1. **Zona de lanzamiento** — Lourdes, Colón. La zona se configura desde el panel antes de abrir el servicio.
 2. **Captación de motoristas** — Sin motoristas, no hay servicio. Plan de reclutamiento antes del lanzamiento.
-3. **Verificación de motoristas** — Documentos: únicamente DUI, licencia y tarjeta de circulación. Además, el motorista debe tener cuenta de banco (para recargas en línea y pagos semanales).
+3. **Verificación de motoristas** — Documentos: únicamente DUI, licencia y tarjeta de circulación. No se pide cuenta de banco.
 4. **QR en ferreterías** — Pedir permiso a las ferreterías de Lourdes para pegar el QR de FleteYa antes del lanzamiento.
 5. **Soporte al cliente** — WhatsApp Business o número directo para quejas/incidencias.
 6. **Sistema de calificaciones** — Protege tanto al cliente como al motorista.
@@ -528,7 +524,6 @@ Una sección sencilla **"Puntos QR"**:
 
 ### Registro ante Hacienda
 - **Listo:** la inscripción está a nombre de **uno de los socios**, que ya tiene registrado en el Ministerio de Hacienda el rubro de **transporte de carga**.
-- Con ese registro ya se puede **solicitar la cuenta con el proveedor de pagos en línea** (cuando se elija el proveedor).
 - **Confirmado con el contador:** el giro de transporte de carga **sí cubre** las comisiones por viaje y las recargas de créditos. Si más adelante surge algún cambio, se ajusta en ese momento.
 - Recibos de las recargas: en la app y por correo opcional (ver sección 8, "Recibos de las recargas").
 - Los datos de ese socio (nombre o razón social, NIT y dirección) son los que van en la parte **"Responsable"** de los Términos y del Aviso de Privacidad.
@@ -554,9 +549,21 @@ Una sección sencilla **"Puntos QR"**:
 > Son **borradores** y deben ser revisados por un abogado salvadoreño antes de publicarse.
 
 ### Dominio
-- **Piloto:** se puede usar la dirección gratuita que da la plataforma donde se publique la app.
-- **Recomendación:** comprar el dominio propio (fleteya.sv o fleteya.com) **antes de imprimir los QR**. El link va dentro del QR; si después cambia, hay que reimprimirlos todos.
+- **Decisión:** se usará **la dirección gratuita de Abacus** (donde se publica la app). No se comprará dominio propio por ahora.
+- **Los QR se crearán con esa dirección** cuando se publique la app (todavía no existe la dirección final).
+- Importante: los QR impresos quedan amarrados a esa dirección. Si algún día se cambia de dominio o de plataforma, habría que reimprimirlos.
 
 ---
 
 *Documento elaborado como base de definición de producto — sujeto a revisiones del equipo FleteYa.*
+
+---
+
+## 16. Parte Técnica y Costos
+
+Ver el detalle en `docs/tecnico-y-costos.md`. Resumen:
+- Piloto como app web instalable (PWA) para las 3 puertas; app nativa de Android en fase 2.
+- Publicada en Abacus con su dirección gratuita (sin dominio propio).
+- Herramientas: Next.js, base de datos PostgreSQL con tiempo real, Google Maps.
+- **Solo efectivo:** sin proveedor de pagos en línea; las recargas las registra el propietario en el panel.
+- Costo mensual estimado del piloto: $0 – $20 en servicios externos, además del plan de Abacus.

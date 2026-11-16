@@ -20,7 +20,7 @@ Para que su cuenta sea activada, el motorista debe presentar **únicamente**:
 2. Licencia de conducir vigente
 3. Tarjeta de circulación del vehículo con el que trabajará
 
-Además, debe tener una **cuenta bancaria** a su nombre para recargar créditos y recibir los pagos en línea.
+No se pide cuenta bancaria: el motorista cobra cada viaje en efectivo directamente al cliente.
 
 El vehículo puede ser propio, prestado o alquilado. El motorista se compromete a mantener sus documentos vigentes y a avisar a FleteYa si alguno vence o cambia.
 
@@ -30,7 +30,7 @@ El vehículo puede ser propio, prestado o alquilado. El motorista se compromete 
 4.3. El motorista es responsable de lo que se haga con su cuenta.
 
 ## 5. Créditos y comisión
-5.1. Para recibir viajes, el motorista debe tener créditos recargados. Las recargas se hacen **solo en línea**:
+5.1. Para recibir viajes, el motorista debe tener créditos recargados. Las recargas se pagan **por transferencia a la cuenta bancaria de FleteYa** (cuyos datos se muestran en la app) **o en efectivo** al equipo de FleteYa. Solo se aceptan pagos a esa cuenta o entregados en persona al equipo de FleteYa. FleteYa las registra en el sistema. Por cada recarga se entrega un recibo en la app:
    - Plan semanal: **$20.00**
    - Plan mensual: **$60.00**
 5.2. Por cada viaje completado, FleteYa descuenta de sus créditos el **10% del valor del viaje** como comisión.
@@ -44,8 +44,8 @@ El vehículo puede ser propio, prestado o alquilado. El motorista se compromete 
 6.3. El motorista no debe cobrar al cliente montos distintos al precio acordado en la app.
 
 ## 7. Cobro y pagos
-7.1. **Efectivo:** el motorista cobra directamente al cliente al terminar el viaje.
-7.2. **Pago en línea:** el dinero llega primero a FleteYa. FleteYa transfiere al motorista el **monto completo** que le corresponde por esos viajes **cada lunes**, sumando los viajes de lunes a domingo de la semana anterior, a su cuenta bancaria.
+7.1. Por ahora todos los viajes se pagan **en efectivo**: el motorista cobra directamente al cliente al terminar el viaje.
+7.2. El dinero de los viajes no pasa por FleteYa. La comisión de FleteYa se cobra únicamente de los créditos (punto 5).
 
 ## 8. Responsabilidad por la carga
 8.1. **El motorista es responsable de los daños o pérdidas de la carga** mientras está bajo su cuidado, desde que la recibe hasta que la entrega.
