@@ -34,8 +34,8 @@ export function FormTarifas({ cfg }: { cfg: Cfg }) {
           {campo("precioTonelada", "Precio por tonelada ($)", { ...nro, onChange: (x) => setT({ ...t, precioTonelada: Number(x.target.value) || 0 }) })}
           {campo("tarifaMinima", "Tarifa mínima ($)", { ...nro, onChange: (x) => setT({ ...t, tarifaMinima: Number(x.target.value) || 0 }) })}
         </div>
-        {campo("kmIncluidos", "Km incluidos en el precio", { ...nro, step: "0.5" },
-          "Más lejos de eso, el motorista puede ofrecer otro precio y el cliente acepta o no.")}
+        {campo("kmIncluidos", "Km incluidos en el precio (a la redonda desde la ferretería)", { ...nro, step: "0.5" },
+          "Se miden desde la ferretería donde se carga hasta el destino. Más lejos de eso, el motorista puede ofrecer otro precio y el cliente acepta o no.")}
         <div className="rounded-lg bg-fondo p-3 text-xs text-suave">
           <p className="mb-1 font-semibold text-texto">Ejemplos con estos valores</p>
           <p>300 kg → {dinero(precioPorPeso(300, { ...t, kmIncluidos: 0 }))} · 1,500 kg → {dinero(precioPorPeso(1500, { ...t, kmIncluidos: 0 }))} · 3,000 kg → {dinero(precioPorPeso(3000, { ...t, kmIncluidos: 0 }))}</p>
@@ -47,7 +47,7 @@ export function FormTarifas({ cfg }: { cfg: Cfg }) {
 
       <section className="tarjeta space-y-4 p-5">
         <h2 className="font-bold"><i className="fa-solid fa-map-location-dot mr-2 text-naranja" />Zona de servicio</h2>
-        <p className="text-xs text-suave">Solo se aceptan recogidas dentro del círculo. Toca el mapa para mover el centro.</p>
+        <p className="text-xs text-suave">Dónde pueden estar las ferreterías con QR (recogidas). No cambia el precio: los km incluidos se cuentan desde cada ferretería. Toca el mapa para mover el centro.</p>
         <Mapa centro={centro} zoom={12} className="h-64" etiqueta="Centro de la zona"
           puntos={[{ id: "c", ...centro, color: "#FF6B00", icono: "fa-location-crosshairs", etiqueta: "Centro" }]}
           circulo={{ ...centro, radioKm: radio || 0 }} onClick={setCentro} />
