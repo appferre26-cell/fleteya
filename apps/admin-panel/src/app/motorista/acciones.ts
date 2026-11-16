@@ -2,6 +2,7 @@
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { obtenerConfig } from "@/lib/config";
 import { exigirMotorista, iniciarSesionMotorista, motoristaActual, VERSION_TERMINOS } from "@/lib/sesion-motorista";
 import { centavos, dinero } from "@/lib/tarifa";
 import { normalizarTelefono } from "@/lib/validacion";
@@ -117,10 +118,10 @@ export async function ofertarPrecio(viajeId: string, precioTexto: string): Promi
   const precio = centavos(Number(String(precioTexto).replace(/[$,\s]/g, "")));
   const v = await db.viaje.findUnique({ where: { id: viajeId } });
   if (!v || v.estado !== "BUSCANDO") return { error: "Este pedido ya no está disponible." };
-  if (!v.fueraDeRango) return { error: "Este viaje está dentro de los km incluidos: se cobra el precio de la app." };
+  if (!v.fueraDeRango && !(await obtenerConfig()).contraofertaEnRango) return { error: "Este viaje está dentro de los km incluidos: se cobra el precio de la app." };
   if (Number(v.pesoKg) > Number(m.capacidadTon) * 1000) return { error: "Esta carga es más pesada de lo que lleva tu vehículo." };
   const base = Number(v.precioBase);
-  if (!Number.isFinite(precio) || precio < base) return { error: `El precio no puede ser menor que ${dinero(base)} (el precio por peso).` };
+  if (!Number.isFinite(precio) || precio <= base) return { error: `Tu precio debe ser mayor que ${dinero(base)}. Si te sirve ese precio, toca «Aceptar».` };
   if (precio > 500) return { error: "El precio máximo es $500." };
   const ocupado = await db.viaje.count({ where: { motoristaId: m.id, estado: { in: ["ASIGNADO", "EN_CAMINO", "CARGANDO", "EN_RUTA"] } } });
   if (ocupado) return { error: "Ya tienes un viaje en curso." };

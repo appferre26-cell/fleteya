@@ -106,7 +106,7 @@ test("cliente: campos obligatorios", async ({ page }) => {
   await page.getByRole("button", { name: /Solicitar FleteYa/ }).click();
   await expect(page.getByRole("alert")).toBeVisible();
   await expect(page.getByText("Marca en el mapa dónde recogemos")).toBeVisible();
-  await expect(page.getByText("Agrega al menos un material")).toBeVisible();
+  await expect(page.getByText("Elige cuántas toneladas llevas o agrega al menos un material")).toBeVisible();
   await expect(page.getByText("Escribe tu nombre")).toBeVisible();
   await expect(page.getByText("Debes aceptar los Términos")).toBeVisible();
 });
@@ -123,6 +123,7 @@ test("cliente: pide desde el QR, ve su viaje y lo cancela; el panel lo ve", asyn
   await page.locator("#destino-dir").fill("Col. Las Brisas, pasaje 3, casa 12, portón negro");
 
   // 150 sacos de 10 kg = 1,500 kg → 1.5 ton × $10 = $15.00 (proporcional al peso)
+  await page.getByRole("tab", { name: "Por materiales" }).click();
   await page.getByRole("button", { name: "Agregar material" }).click();
   await page.getByLabel("Buscar material").fill(MATERIAL);
   await page.getByRole("button", { name: new RegExp(MATERIAL) }).click();
@@ -188,6 +189,7 @@ test("propietario cancela un viaje y el cliente ve el motivo", async ({ page, co
   await page.locator("#origen-dir").fill("Ferretería del centro, Lourdes");
   await tocarMapa(page, 40, -30);
   await page.locator("#destino-dir").fill("Residencial Prueba, casa 4");
+  await page.getByRole("tab", { name: "Por materiales" }).click();
   await page.getByRole("button", { name: "Otro (escribir)" }).click();
   await page.getByLabel("Qué es (otro material)").fill("Bolsas de arena");
   await page.getByLabel("Peso por unidad en kg").fill("40");

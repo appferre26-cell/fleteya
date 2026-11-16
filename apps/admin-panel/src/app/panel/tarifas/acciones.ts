@@ -20,6 +20,7 @@ const esquema = z.object({
     .transform(normalizarTelefono)
     .refine((t) => t === "" || /^[267]\d{7}$/.test(t), "Número de 8 dígitos")
     .transform((t) => (t === "" ? null : t)),
+  contraofertaEnRango: z.string().transform((v) => v === "on"),
 });
 
 export type EstadoTarifas = { errores?: ErroresCampos; ok?: string; valores?: Record<string, string> };

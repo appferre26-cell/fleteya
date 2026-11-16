@@ -35,6 +35,7 @@ export async function datosInicio(m: MotoristaSesion) {
     motorista: { nombre: fila.nombre, disponible: fila.disponible, saldo: Number(fila.saldoCreditos), capacidadKg: Number(fila.capacidadTon) * 1000 },
     puede: puede.ok ? { ok: true as const } : { ok: false as const, motivo: puede.motivo, codigo: puede.codigo },
     comisionPct: cfg.comisionPct,
+    contraofertaEnRango: cfg.contraofertaEnRango,
     zona: { lat: cfg.zonaLat, lng: cfg.zonaLng, nombre: cfg.zonaNombre },
     activo: activo && {
       id: activo.id, numero: activo.numero, estado: activo.estado as keyof typeof SIGUIENTE,
@@ -43,7 +44,7 @@ export async function datosInicio(m: MotoristaSesion) {
       origen: { direccion: activo.origenDireccion, lat: activo.origenLat, lng: activo.origenLng },
       destino: { direccion: activo.destinoDireccion, lat: activo.destinoLat, lng: activo.destinoLng },
       distanciaKm: Number(activo.distanciaKm), pesoKg: Number(activo.pesoKg), nota: activo.nota,
-      precio: Number(activo.precioFinal ?? activo.precioBase), items: items(activo.items),
+      precio: Number(activo.precioFinal ?? activo.precioBase), items: items(activo.items), rangoTon: activo.rangoTon,
     },
     solicitudes: sol.map((v) => ({
       id: v.id, numero: v.numero, creadoEn: v.creadoEn.getTime(),
@@ -52,7 +53,7 @@ export async function datosInicio(m: MotoristaSesion) {
       destino: { direccion: v.destinoDireccion, lat: v.destinoLat, lng: v.destinoLng },
       ferreteria: v.puntoQr?.nombre ?? null,
       distanciaKm: Number(v.distanciaKm), kmDeMi: v.kmDeMi, pesoKg: Number(v.pesoKg), nota: v.nota,
-      precioBase: Number(v.precioBase), fueraDeRango: v.fueraDeRango, items: items(v.items),
+      precioBase: Number(v.precioBase), fueraDeRango: v.fueraDeRango, items: items(v.items), rangoTon: v.rangoTon,
       miOferta: v.miOferta && { precio: Number(v.miOferta.precio), estado: v.miOferta.estado },
     })),
     hoy: { viajes: hoy._count, ganancias: Number(hoy._sum.precioFinal ?? 0), comision: Number(hoy._sum.comision ?? 0) },

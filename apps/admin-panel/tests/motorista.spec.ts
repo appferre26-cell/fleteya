@@ -327,7 +327,7 @@ test("viaje lejano: el motorista ofrece otro precio y el cliente decide", async 
   await tarjeta.getByRole("button", { name: /Ofrecer otro precio/ }).click();
   await tarjeta.getByLabel("Tu precio en dólares").fill("8");
   await tarjeta.getByRole("button", { name: "Enviar" }).click();
-  await expect(tarjeta.locator(ALERTA)).toContainText("no puede ser menor que $10.00");
+  await expect(tarjeta.locator(ALERTA)).toContainText("debe ser mayor que $10.00");
   await tarjeta.getByLabel("Tu precio en dólares").fill("18");
   await tarjeta.getByRole("button", { name: "Enviar" }).click();
   await expect(app.getByTestId("oferta-pendiente")).toContainText("Ofreciste $18.00");

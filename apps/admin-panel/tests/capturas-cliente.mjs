@@ -72,6 +72,7 @@ for (const [tam, suf] of [[{ width: 390, height: 844 }, "cel"], [{ width: 1366, 
   await c.goto(`${B}/pedir?f=${codigo}`);
   await tocarMapa(c, 70, 50);
   await c.locator("#destino-dir").fill("Col. Las Brisas, pasaje 3, casa 12");
+  await c.getByRole("tab", { name: "Por materiales" }).click().catch(() => {});
   await c.getByRole("button", { name: "Agregar material" }).click();
   await c.getByRole("button", { name: /Bolsa de cemento/ }).click();
   await c.getByLabel("Cantidad de Bolsa de cemento").fill("10");

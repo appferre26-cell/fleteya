@@ -23,6 +23,7 @@ export async function obtenerConfig() {
     bancoTipoCuenta: c.bancoTipoCuenta,
     bancoNumero: c.bancoNumero,
     bancoTitular: c.bancoTitular,
+    contraofertaEnRango: c.contraofertaEnRango,
   };
 }
 
