@@ -193,7 +193,26 @@ SESSION_SECRET="una-cadena-larga-y-secreta"   # por ejemplo: openssl rand -hex 3
 # VAPID_PUBLIC_KEY="..."
 # VAPID_PRIVATE_KEY="..."
 # VAPID_CORREO="mailto:soporte@tu-dominio.com"
+# Mapas de Google (ver "Google Maps" abajo). Sin ella se usa OpenStreetMap.
+# GOOGLE_MAPS_API_KEY="AIza..."
 ```
+
+### Google Maps
+
+Todos los mapas (cliente, motorista, Puntos QR, Tarifas y zona, mapa en vivo) usan **Google Maps** cuando el servidor
+tiene `GOOGLE_MAPS_API_KEY`. No hace falta volver a compilar: basta con reiniciar el servidor. Si la variable no está,
+o Google rechaza la clave, los mapas se muestran con OpenStreetMap para que la app no deje de funcionar.
+
+Cómo sacar la clave (con la cuenta de Google de FleteYa):
+1. Entrar a https://console.cloud.google.com, crear el proyecto **FleteYa** y activar la **facturación** (Google da
+   un crédito mensual gratis; una app de este tamaño normalmente no lo pasa, pero pide tarjeta).
+2. En **APIs y servicios → Biblioteca** activar **Maps JavaScript API**.
+3. En **APIs y servicios → Credenciales → Crear credenciales → Clave de API**.
+4. Editar la clave: **Restricciones de aplicación → Sitios web (referentes HTTP)** con la dirección de la app
+   (por ejemplo `https://tu-dominio/*`), y **Restricciones de API → Maps JavaScript API**.
+5. Poner la clave en `.env` como `GOOGLE_MAPS_API_KEY` y reiniciar.
+
+La clave viaja al navegador (así funciona Google Maps); por eso es importante la restricción por dirección del paso 4.
 
 Crea las tablas y el primer propietario:
 
