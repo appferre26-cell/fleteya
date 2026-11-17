@@ -3,7 +3,7 @@ import { obtenerConfig } from "@/lib/config";
 import { db } from "@/lib/db";
 import { exigirMotorista } from "@/lib/sesion-motorista";
 import { centavos, dinero, numeroViaje } from "@/lib/tarifa";
-import { PLANES, fechaRecibo, numeroRecibo } from "@/lib/recibo";
+import { CONCEPTOS, MONTOS_RAPIDOS, RECARGA_MIN, fechaRecibo, numeroRecibo } from "@/lib/recibo";
 import { fechaCorta, fechaHora } from "@/lib/validacion";
 import { Copiar } from "./BotonesCliente";
 
@@ -22,7 +22,6 @@ export default async function CreditosMotorista() {
     db.movimientoCredito.findMany({ where: { motoristaId: m.id }, orderBy: { creadoEn: "desc" }, take: 50, include: { recarga: { select: { numero: true } } } }),
     db.recarga.findMany({ where: { motoristaId: m.id }, orderBy: { numero: "desc" }, take: 30 }),
   ]);
-  const planActual = recargas.find((r) => !r.anuladaEn)?.plan;
   const huboCorreo = recargas.some((r) => r.correoEnviadoEn);
   const viajes = await db.viaje.findMany({ where: { id: { in: movimientos.map((x) => x.viajeId).filter((x): x is string => !!x) } }, select: { id: true, numero: true } });
   const numero = new Map(viajes.map((v) => [v.id, v.numero]));
@@ -42,13 +41,13 @@ export default async function CreditosMotorista() {
         <p className="text-[11px] font-semibold tracking-wider text-suave uppercase">Saldo disponible</p>
         <p className={`mt-1 text-5xl font-extrabold tabular-nums ${saldo < 0 ? "text-error" : ""}`} data-testid="saldo">{dinero(saldo)}</p>
         <p className="mt-2 text-xs text-suave">
-          {planActual && saldo > 0 ? `Plan ${PLANES[planActual].toLowerCase()}. ` : ""}{saldo > 0 ? `Alcanza para unos ${alcanza} viajes de ${dinero(cfg.tarifaMinima)}. Por cada viaje se descuenta el ${cfg.comisionPct}%.`
+          {saldo > 0 ? `Alcanza para unos ${alcanza} viajes de ${dinero(cfg.tarifaMinima)}. Por cada viaje se descuenta el ${cfg.comisionPct}%.`
             : saldo < 0 ? `Debes ${dinero(-saldo)}: se descuentan de tu próxima recarga. Mientras tanto no recibes viajes.`
             : "Sin créditos no recibes viajes. Recarga para empezar."}
         </p>
         <div className="mt-4 rounded-xl border border-borde bg-fondo/60 p-4 text-sm">
           <p className="font-semibold"><i className="fa-solid fa-circle-info mr-2 text-naranja" />¿Cómo recargo?</p>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-suave">Paga tu plan a FleteYa <b className="text-texto">en efectivo o por transferencia</b>. Al registrarlo, tu saldo se actualiza solo y te llega el recibo aquí.</p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-suave">No hay planes: recarga <b className="text-texto">el monto que quieras</b> (desde {dinero(RECARGA_MIN)}) en efectivo o por transferencia. Al registrarlo, tu saldo se actualiza solo y te llega el comprobante aquí. Para recibir viajes necesitas saldo.</p>
           {cfg.bancoNumero && (
             <div className="mt-3 rounded-lg bg-tarjeta-2 p-3" data-testid="cuenta-banco">
               <p className="text-[11px] font-semibold tracking-wider text-suave uppercase">Transfiere a</p>
@@ -69,14 +68,20 @@ export default async function CreditosMotorista() {
         </div>
       </section>
 
-      <section className="mt-4 grid grid-cols-2 gap-3">
-        {(["SEMANAL", "MENSUAL"] as const).map((p) => (
-          <div key={p} className={`tarjeta p-4 ${planActual === p ? "border-naranja" : ""}`} data-testid={`plan-${p.toLowerCase()}`}>
-            <p className="text-[11px] font-semibold tracking-wider text-suave uppercase">{PLANES[p]}</p>
-            <p className="mt-1 text-2xl font-extrabold">{dinero(p === "SEMANAL" ? cfg.planSemanal : cfg.planMensual)}</p>
-            <p className={`mt-1 text-[11px] ${planActual === p ? "font-semibold text-naranja" : "text-suave"}`}>{planActual === p ? "Tu plan actual" : "Efectivo o transferencia"}</p>
-          </div>
-        ))}
+      <section className="tarjeta mt-4 p-4" data-testid="montos-sugeridos">
+        <p className="text-[11px] font-semibold tracking-wider text-suave uppercase">Montos más usados</p>
+        <div className="mt-2 grid grid-cols-4 gap-2">
+          {MONTOS_RAPIDOS.map((x) => {
+            const viajes = comisionTipica > 0 ? Math.floor(x / comisionTipica) : 0;
+            return (
+              <div key={x} className="rounded-lg border border-borde bg-fondo p-2 text-center">
+                <p className="text-lg font-extrabold">{dinero(x)}</p>
+                <p className="text-[10px] text-suave">~{viajes} viajes</p>
+              </div>
+            );
+          })}
+        </div>
+        <p className="mt-2 text-[11px] text-suave">Aproximado con viajes de {dinero(cfg.tarifaMinima)}. Puedes recargar cualquier otro monto.</p>
       </section>
 
       <section className="mt-6">
@@ -114,7 +119,7 @@ export default async function CreditosMotorista() {
               <li key={r.id} className="flex items-center gap-3 p-3.5" data-testid="recarga">
                 <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${r.anuladaEn ? "bg-error/15 text-error" : "bg-exito/15 text-exito"}`}><i className="fa-solid fa-receipt text-xs" /></span>
                 <div className="min-w-0 flex-1">
-                  <p className={`truncate text-sm font-semibold ${r.anuladaEn ? "text-suave line-through" : ""}`}>{PLANES[r.plan]} · {dinero(Number(r.monto))}</p>
+                  <p className={`truncate text-sm font-semibold ${r.anuladaEn ? "text-suave line-through" : ""}`}>{CONCEPTOS[r.concepto]} · {dinero(Number(r.monto))}</p>
                   <p className="truncate text-xs text-suave" title={fechaRecibo(r.creadoEn)}>{numeroRecibo(r.numero)} · {fechaCorta(r.creadoEn)}{r.anuladaEn ? " · Anulado" : ""}</p>
                 </div>
                 <Link href={`/motorista/creditos/recibo/${r.numero}`} className="flex h-9 items-center rounded-lg border border-borde px-3 text-xs font-semibold" aria-label={`Ver recibo ${numeroRecibo(r.numero)}`}>Ver</Link>

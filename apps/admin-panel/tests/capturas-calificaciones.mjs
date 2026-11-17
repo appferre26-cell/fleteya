@@ -11,7 +11,7 @@ const desborde = async (p, n) => { const w = await p.evaluate(() => document.doc
 // Un viaje entregado del motorista demo, para que el cliente y el motorista califiquen
 const m = await db.motorista.findUniqueOrThrow({ where: { telefono: "70000001" } });
 await db.viaje.updateMany({ where: { motoristaId: m.id, estado: { in: ["ASIGNADO", "EN_CAMINO", "CARGANDO", "EN_RUTA"] } }, data: { estado: "CANCELADO", canceladoPor: "PROPIETARIO", canceladoEn: new Date() } });
-await db.motorista.update({ where: { id: m.id }, data: { terminosVersion: "0.1", terminosAceptadosEn: new Date(), disponible: false } });
+await db.motorista.update({ where: { id: m.id }, data: { terminosVersion: "0.2", terminosAceptadosEn: new Date(), disponible: false } });
 const ahora = Date.now();
 const v = await db.viaje.create({ data: {
   codigo: `cap6${ahora}`, clienteNombre: "Ana López", clienteTelefono: "61234567", origenDireccion: "Ferretería El Constructor · Lourdes", origenLat: 13.725, origenLng: -89.37,

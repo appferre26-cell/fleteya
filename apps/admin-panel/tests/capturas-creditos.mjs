@@ -43,7 +43,7 @@ const m = await db.motorista.create({
     nombre: "José Antonio Ramírez", telefono, passwordHash: await bcrypt.hash("clave-segura-1", 10), debeCambiarPassword: false,
     dui: `${azar(8)}-${azar(1)}`, licenciaNumero: azar(10), licenciaVence: new Date("2030-01-01"), placa: `P ${azar(6)}`,
     marca: "Toyota", modelo: "Hilux", tipoVehiculo: "PICKUP", capacidadTon: 1.5, estado: "ACTIVO", creadoPorId: prop.id,
-    saldoCreditos: -0.2, terminosVersion: "0.1", terminosAceptadosEn: new Date(), correo: `jose${azar(4)}@prueba.local`,
+    saldoCreditos: -0.2, terminosVersion: "0.2", terminosAceptadosEn: new Date(), correo: `jose${azar(4)}@prueba.local`,
   },
 });
 

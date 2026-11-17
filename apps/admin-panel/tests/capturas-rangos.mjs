@@ -24,7 +24,7 @@ if (await c.getByTestId("rango-3+").isEnabled()) { // solo si hay un vehículo a
 // Motorista con contrapropuesta: viaje de 1 a 2 ton dentro de 5 km
 const m = await db.motorista.findUniqueOrThrow({ where: { telefono: "70000001" } });
 await db.viaje.updateMany({ where: { estado: "BUSCANDO" }, data: { estado: "CANCELADO", canceladoPor: "PROPIETARIO", canceladoEn: new Date() } });
-await db.motorista.update({ where: { id: m.id }, data: { saldoCreditos: 20, terminosVersion: "0.1", terminosAceptadosEn: new Date(), disponible: false } });
+await db.motorista.update({ where: { id: m.id }, data: { saldoCreditos: 20, terminosVersion: "0.2", terminosAceptadosEn: new Date(), disponible: false } });
 const v = await db.viaje.create({ data: {
   codigo: `cap${Date.now()}`, clienteNombre: "Ana López", clienteTelefono: "61234567", origenDireccion: "Ferretería El Constructor · Lourdes", origenLat: 13.725, origenLng: -89.37,
   destinoDireccion: "Col. Las Brisas, pasaje 3, casa 12", destinoLat: 13.73, destinoLng: -89.36, distanciaKm: 1.2, pesoKg: 2000, precioBase: 20, fueraDeRango: false,

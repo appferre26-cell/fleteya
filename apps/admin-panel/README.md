@@ -1,21 +1,22 @@
-# FleteYa — panel de propietarios, link del cliente y app del motorista (Partes 1 a 8)
+# FleteYa — panel de propietarios, link del cliente y app del motorista (Partes 1 a 10)
 
 Una sola aplicación web con tres zonas separadas:
 
 - **`/panel`**: solo para propietarios (con correo y contraseña). Los motoristas y los clientes no entran aquí.
 - **`/pedir`**: el link del cliente. **El cliente no se registra**: da solo nombre y celular.
-- **`/motorista`**: la app del motorista, con su propia sesión (celular y contraseña que le crea el propietario).
+- **`/motorista`**: la app del motorista, con su propia sesión (celular y contraseña). Desde la Parte 10 el motorista
+  también puede **registrarse solo** en `/motorista/registro`.
 
 ## Qué hace
 
 - **Entrar** con correo y contraseña de propietario (no hay registro público). Opción "Recordar 30 días".
 - **Motoristas**
-  - Agregar motorista: nombre, celular (será su usuario), DUI, correo opcional, licencia, vehículo y las fotos de
-    **únicamente** DUI, licencia y tarjeta de circulación. Se le crea una contraseña temporal para enviarle por WhatsApp.
+  - Agregar motorista: nombre, celular (será su usuario), DUI, correo opcional, licencia, vehículo y las **10 fotos**
+    (DUI, licencia y tarjeta de circulación de ambos lados, y el vehículo de frente, atrás y ambos costados — Parte 10). Se le crea una contraseña temporal para enviarle por WhatsApp.
   - Las fotos grandes del celular se achican antes de subirse (máx. 4 MB, JPG/PNG/WEBP o PDF).
   - Lista con pestañas (todos, activos, pendientes, suspendidos) y búsqueda por nombre, teléfono, placa o DUI.
   - Detalle: datos, documentos, historial de cambios, botones Llamar y WhatsApp.
-  - Aprobar (solo con los 3 documentos y marcando que se revisaron), suspender con motivo, reactivar,
+  - Aprobar (solo con las 10 fotos, el pago del acceso de $10 y marcando las 4 revisiones), suspender con motivo, reactivar,
     editar datos y crear una contraseña nueva.
 - **Inicio**: totales, pendientes de aprobar, licencias por vencer en 30 días y últimos movimientos.
 - **Administradores**: agregar otro propietario, desactivar/activar, contraseña nueva y cambiar mi contraseña.
@@ -61,9 +62,9 @@ Una sola aplicación web con tres zonas separadas:
     $500). El cliente lo ve en su enlace y lo acepta o dice «No, gracias»; el motorista puede retirar su oferta.
   - **Viaje en curso**: navegar con Google Maps o Waze, llamar al cliente, pasos *Voy en camino → Ya llegué → Carga
     lista → Entrega completada*, y «No puedo hacer este viaje» (vuelve a la lista para otros). Si el cliente cancela, le avisa.
-  - **Comisión**: al entregar se descuenta el 10 % del precio de sus créditos (se cambia en Créditos → Datos y planes).
+  - **Comisión**: al entregar se descuenta el 10 % del precio de sus créditos (se cambia en Créditos → Datos y precios).
     Si no le alcanza, se le avisa al aceptar y el saldo queda negativo: la diferencia se descuenta de la siguiente recarga.
-  - **Viajes** (hoy, semana, mes con lo cobrado y la comisión), **Créditos** (saldo, planes semanal $20 / mensual $60,
+  - **Viajes** (hoy, semana, mes con lo cobrado y la comisión), **Créditos** (saldo, montos sugeridos para recargar — sin planes desde la Parte 10 —,
     movimientos y botón de WhatsApp si se configuró en Tarifas) y **Perfil** (sus datos, cambiar contraseña, términos, privacidad, cerrar sesión).
 - El **cliente** ve en `/viaje/[código]` a su motorista (nombre, vehículo, placa, botón Llamar), los pasos con hora y
   la ubicación del motorista en el mapa mientras va a recoger. Puede cancelar hasta que el motorista llega a cargar.
@@ -72,33 +73,32 @@ Una sola aplicación web con tres zonas separadas:
 
 ### Parte 4 — Recargas de créditos y recibos
 
-- El motorista paga su plan (**semanal $20 / mensual $60**) a FleteYa **por transferencia** (opción principal) o **en efectivo**.
+- El motorista recarga **el monto que quiera** (antes eran planes; se quitaron en la Parte 10) a FleteYa **por transferencia** (opción principal) o **en efectivo**.
 - En el **panel → Créditos y recargas**:
   - Resumen: recargado este mes, comisión descontada en la semana, motoristas con saldo bajo (< $5) y sin saldo.
-  - **Registrar recarga**: motorista, plan y forma de pago. En transferencia se pide el **número de referencia** y
+  - **Registrar recarga**: motorista, monto y forma de pago. En transferencia se pide el **número de referencia** y
     marcar que se vio el dinero en la cuenta; una referencia ya usada (aunque se escriba con espacios o minúsculas) se
     rechaza. Muestra antes de guardar el saldo nuevo. **Si el saldo era negativo, la deuda se descuenta primero**
     (ej.: -$0.20 + $20 = $19.80). El registro bloquea la fila del motorista para no pisarse con una comisión al mismo tiempo.
   - Al guardar, el saldo se actualiza y se genera el **recibo REC-000123**: fecha y hora, datos de FleteYa (socio
-    inscrito, NIT, dirección), motorista, plan, forma de pago y referencia, quién lo registró, saldo anterior, deuda
+    inscrito, NIT, dirección), motorista, concepto (recarga o acceso), monto, forma de pago y referencia, quién lo registró, saldo anterior, deuda
     descontada y saldo nuevo. Se ve en pantalla y en **PDF**, y se puede mandar por **WhatsApp** al motorista.
   - Saldo por motorista (los de menos saldo primero, botón + para recargar) y **últimas recargas** con búsqueda por
     motorista, celular, REC o referencia; abrir o descargar cualquier recibo y **Exportar** a CSV (para el contador).
   - **Anular** una recarga registrada por error (con motivo): resta el monto, deja un movimiento de ajuste y el recibo
     queda marcado ANULADO.
-  - **Datos y planes**: datos que salen en el recibo, la cuenta para transferencias (banco, tipo, número, titular),
-    precios de los planes y % de comisión. Los recibos ya emitidos guardan los datos con que se hicieron.
+  - **Datos y precios**: datos que salen en el recibo, la cuenta para transferencias (banco, tipo, número, titular),
+    precio del acceso y % de comisión. Los recibos ya emitidos guardan los datos con que se hicieron.
   - El detalle del motorista tiene el botón **Registrar recarga** y sus recargas enlazan al recibo.
-- En la **app del motorista → Mis créditos**: «¿Cómo recargo?» con la cuenta de FleteYa (botón Copiar), su plan actual
-  resaltado y el **Historial de recargas**: ver el recibo, descargar el PDF y **Compartir** (menú del celular con el
+- En la **app del motorista → Mis créditos**: «¿Cómo recargo?» con la cuenta de FleteYa (botón Copiar), montos sugeridos y el **Historial de recargas**: ver el recibo, descargar el PDF y **Compartir** (menú del celular con el
   PDF; si el celular no lo permite, WhatsApp con el texto). Solo puede abrir sus propios recibos.
 - **Correo (opcional)**: si el motorista tiene correo y el servidor tiene `SMTP_URL`, el recibo le llega con el PDF
   adjunto y el panel muestra a qué correo se envió (o el error) y permite **reenviarlo**. Sin `SMTP_URL` no se envía nada
   y el panel lo avisa.
 - Cada recarga guarda su forma de pago (`EFECTIVO`, `TRANSFERENCIA`; `EN_LINEA` queda listo para el futuro).
-- **Por confirmar con el contador**: si además del recibo hace falta factura electrónica (DTE) de Hacienda.
+- **Confirmado con el contador (16 nov)**: hay que emitir factura (o crédito fiscal) por el acceso y las recargas; ver Parte 10.
 
-- Lo que aún no hace: **pagos/recargas en línea** (a futuro), **factura electrónica (DTE)** (por confirmar) (los avisos con la app cerrada llegaron en la Parte 8).
+- Lo que aún no hace: **pagos/recargas en línea** (a futuro), **factura electrónica (DTE)** (confirmada, pendiente del registro de la empresa) (los avisos con la app cerrada llegaron en la Parte 8).
 
 ### Parte 5 — Pedido rápido por toneladas y contrapropuesta del motorista
 
@@ -171,6 +171,33 @@ Una sola aplicación web con tres zonas separadas:
   suscritos dejarían de recibir avisos. Sin claves la app funciona igual, solo que sin avisos.
 - Base de datos: correr `npm run db:migrar` (agrega la tabla de suscripciones a avisos y el área de la zona).
 - Pruebas: `tests/avisos-zonas.spec.ts`. Capturas: `node tests/capturas-avisos-zonas.mjs`.
+
+### Parte 10 — Registro del motorista, acceso de $10 y recargas libres
+
+Decisión del 16 de noviembre de 2026: **ya no hay planes semanales ni mensuales**.
+
+- **Recargas de monto libre** (de $1 a $500): el motorista necesita saldo para recibir viajes. En el panel se escribe el
+  monto (con botones rápidos $5/$10/$20/$50) y en la app el motorista ve montos sugeridos con cuántos viajes alcanzan.
+- **Acceso a la plataforma: $10, una sola vez** (se cambia en Créditos → Datos y precios). No se convierte en créditos.
+  Genera su propio recibo con concepto «Acceso a la plataforma» y se puede anular como una recarga.
+- **Registro por el propio motorista** en `/motorista/registro` (enlace en la pantalla de entrar), en 6 pasos:
+  Tus datos (con su contraseña) → Licencia → Vehículo → **Fotos** (DUI frente y reverso, licencia frente y reverso,
+  tarjeta de circulación frente y reverso, vehículo de frente, atrás y ambos costados) → **Facturación** (opcional: casilla
+  «Necesito crédito fiscal (CCF)» con NIT, NRC, razón social, giro y dirección) → **Pago y alta**, con el botón
+  **«Pagar $10 y activar mi perfil»**. Si algo falla vuelve al paso con el error sin perder las fotos. Máximo 5 registros
+  por hora por conexión.
+- Después del registro entra a **Mi alta** (`/motorista/alta`): ve los 3 pasos (fotos, pago, revisión), la cuenta de
+  FleteYa para transferir (Copiar), pago en efectivo, WhatsApp y un formulario para **avisar su número de referencia**.
+  El botón «Pagar en línea con tarjeta» aparece desactivado («muy pronto») hasta contratar Wompi.
+- En el **panel → Motoristas**: la lista marca «se registró solo», cuántas fotos tiene (n/10) y el estado del acceso
+  (sin pagar / avisó su pago / pagado). En el detalle: fotos agrupadas, datos fiscales, la tarjeta **Pago del acceso**
+  (con la referencia que avisó el motorista, forma de pago y «Registrar pago de $10.00») y aprobar exige las 10 fotos,
+  el acceso pagado y 4 casillas de revisión (incluida «Las 4 fotos del vehículo coinciden con la placa y el tipo»).
+- Términos para Motoristas y Aviso de Privacidad pasan a **v0.2**: los motoristas actuales los aceptan de nuevo al entrar.
+- **Queda para cuando exista el registro de la empresa** (con Wompi contratado): pago en línea del acceso y de las
+  recargas, factura electrónica DTE (consumidor final o crédito fiscal) en lugar del comprobante interno, y los datos
+  de la empresa en Datos y precios y en los textos legales.
+- Pruebas: `tests/registro.spec.ts` (y las de `panel.spec.ts` y `creditos.spec.ts` actualizadas).
 
 ## Cómo correrlo (desarrollo)
 
@@ -245,7 +272,7 @@ ingreso (contraseña y términos), cuentas en revisión/suspendidas, viaje compl
 (también con saldo negativo), rechazar, dos motoristas aceptando a la vez, oferta de precio aceptada/rechazada,
 cancelación del cliente, soltar un viaje y perfil. Parte 4 (`tests/creditos.spec.ts`): transferencia sin referencia
 o sin revisar, deuda descontada en el recibo, referencia repetida, PDF, efectivo mensual, búsqueda y CSV, lo que ve el
-motorista (saldo, historial, recibo, PDF) y que no abre recibos ajenos, acceso sin sesión, anular, datos y planes, y que
+motorista (saldo, historial, recibo, PDF) y que no abre recibos ajenos, acceso sin sesión, anular, datos y precios, recarga de monto libre, y que
 con saldo ya puede ponerse disponible. Parte 6 (`tests/calificaciones.spec.ts`): entrega completa en la app, resumen y
 calificación del cliente (sin estrellas da error, no se califica dos veces), el motorista califica u omite, promedios en
 el perfil y en el panel, y la sección Clientes (búsqueda, ficha, bloquear con motivo, pedido rechazado y desbloquear). La prueba del correo solo corre con un SMTP de prueba:

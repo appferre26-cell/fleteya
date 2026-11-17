@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReciboTarjeta } from "@/components/ReciboTarjeta";
 import { obtenerRecibo } from "@/lib/recargas";
-import { PLANES, leerNumeroRecibo, numeroRecibo, ocultarCorreo } from "@/lib/recibo";
+import { CONCEPTOS, leerNumeroRecibo, numeroRecibo, ocultarCorreo } from "@/lib/recibo";
 import { exigirMotorista } from "@/lib/sesion-motorista";
 import { dinero } from "@/lib/tarifa";
 import { CompartirRecibo } from "../../BotonesCliente";
@@ -16,7 +16,7 @@ export default async function ReciboMotorista({ params }: { params: Promise<{ nu
   const r = n ? await obtenerRecibo({ numero: n, motoristaId: m.id }) : null;
   if (!r) notFound();
   const rec = numeroRecibo(r.numero);
-  const texto = `Recibo ${rec} de FleteYa · Recarga ${PLANES[r.plan].toLowerCase()} de ${dinero(r.monto)} · Saldo nuevo ${dinero(r.saldoDespues)}${r.anulada ? " (ANULADO)" : ""}`;
+  const texto = `Recibo ${rec} de FleteYa · ${CONCEPTOS[r.concepto]} · ${dinero(r.monto)}${r.concepto === "RECARGA" ? ` · Saldo nuevo ${dinero(r.saldoDespues)}` : ""}${r.anulada ? " (ANULADO)" : ""}`;
 
   return (
     <main className="px-5 pt-6 pb-6">

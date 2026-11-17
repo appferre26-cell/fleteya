@@ -1,6 +1,6 @@
 # Términos y Condiciones para Motoristas — FleteYa
 
-> **BORRADOR (versión 0.1).** Este documento no es asesoría legal. Debe revisarlo un abogado de El Salvador antes de publicarlo. Los textos entre [corchetes] están pendientes de completar.
+> **BORRADOR (versión 0.2).** Este documento no es asesoría legal. Debe revisarlo un abogado de El Salvador antes de publicarlo. Los textos entre [corchetes] están pendientes de completar.
 
 **Última actualización:** [fecha]
 **Responsable:** [Razón social de FleteYa, NIT y dirección — pendiente del registro de la empresa]
@@ -15,24 +15,26 @@ FleteYa es una plataforma digital que conecta a personas que necesitan transport
 2.2. El motorista decide cuándo se conecta y qué viajes acepta.
 
 ## 3. Requisitos para ser motorista
-Para que su cuenta sea activada, el motorista debe presentar **únicamente**:
-1. DUI vigente
-2. Licencia de conducir vigente
-3. Tarjeta de circulación del vehículo con el que trabajará
+Para que su cuenta sea activada, el motorista debe presentar:
+1. DUI vigente (foto del frente y del reverso)
+2. Licencia de conducir vigente (foto del frente y del reverso)
+3. Tarjeta de circulación del vehículo con el que trabajará (foto del frente y del reverso)
+4. Cuatro fotos del vehículo: de frente, de atrás (con la placa visible) y de ambos costados
+5. El pago único del acceso a la plataforma (punto 5.1)
 
 No se pide cuenta bancaria: el motorista cobra cada viaje en efectivo directamente al cliente.
 
 El vehículo puede ser propio, prestado o alquilado. El motorista se compromete a mantener sus documentos vigentes y a avisar a FleteYa si alguno vence o cambia.
 
 ## 4. Cuenta de acceso
-4.1. Las cuentas de motorista las crea el equipo de FleteYa. No existe registro libre.
+4.1. El motorista puede registrarse él mismo desde la app, o el equipo de FleteYa puede registrarlo. En ambos casos la cuenta queda **pendiente** hasta que FleteYa reciba el pago del acceso y revise sus fotos. FleteYa puede rechazar o suspender una cuenta si los documentos no se leen, no coinciden o no están vigentes.
 4.2. El usuario y la contraseña son personales. El motorista no debe prestar su cuenta a otra persona.
 4.3. El motorista es responsable de lo que se haga con su cuenta.
 
 ## 5. Créditos y comisión
-5.1. Para recibir viajes, el motorista debe tener créditos recargados. Las recargas se pagan **por transferencia a la cuenta bancaria de FleteYa** (cuyos datos se muestran en la app) **o en efectivo** al equipo de FleteYa. Solo se aceptan pagos a esa cuenta o entregados en persona al equipo de FleteYa. FleteYa las registra en el sistema. Por cada recarga se entrega un recibo en la app:
-   - Plan semanal: **$20.00**
-   - Plan mensual: **$60.00**
+5.1. **Acceso a la plataforma:** para dar de alta su perfil, el motorista paga una sola vez **$10.00**. Este pago no se convierte en créditos y [no es reembolsable / política pendiente] una vez activada la cuenta.
+5.1.1. **Recargas:** para recibir viajes, el motorista debe tener créditos. No hay planes: el motorista recarga **el monto que quiera** (desde $1.00). Las recargas y el acceso se pagan **por transferencia a la cuenta bancaria de FleteYa** (cuyos datos se muestran en la app) **o en efectivo** al equipo de FleteYa; más adelante también **en línea con tarjeta** [proveedor de pagos pendiente: Wompi]. Solo se aceptan pagos a esa cuenta, entregados en persona al equipo de FleteYa o por el medio de pago en línea de la app.
+5.1.2. **Factura:** por el acceso y por cada recarga FleteYa emite el documento tributario que corresponda: factura de consumidor final o, si el motorista lo pide y da su NIT, NRC, nombre o razón social, giro y dirección, **comprobante de crédito fiscal**. [Pendiente: facturación electrónica (DTE) a partir del registro de la empresa.] Mientras tanto, la app entrega un comprobante interno de pago.
 5.2. Por cada viaje completado, FleteYa descuenta de sus créditos el **10% del valor del viaje** como comisión.
 5.3. Cuando sus créditos llegan a $0, el motorista no puede recibir viajes nuevos hasta que recargue.
 5.4. Si el saldo no alcanza para cubrir la comisión de un viaje, la app le permite terminarlo. La diferencia queda como saldo negativo y se descuenta de su siguiente recarga.

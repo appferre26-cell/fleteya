@@ -141,7 +141,7 @@ export default async function InicioPanel() {
             {recientes.map((h) => (
               <li key={h.id} className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 py-3">
                 <span><Link href={`/panel/motoristas/${h.motorista.id}`} className="font-semibold hover:text-naranja">{h.motorista.nombre}</Link>{" "}
-                  <span className="text-suave">— {textoAccion(h.accion)} por {h.propietario.nombre}</span></span>
+                  <span className="text-suave">— {textoAccion(h.accion)} por {h.propietario ? h.propietario.nombre : "el motorista"}</span></span>
                 <span className="text-xs text-suave">{fechaHora(h.fecha)}</span>
               </li>
             ))}

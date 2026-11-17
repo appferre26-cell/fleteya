@@ -20,7 +20,7 @@ async function crearMotorista(o: { saldo?: number; correo?: string } = {}) {
       nombre: `Recarga ${telefono.slice(-4)} Prueba`, telefono, passwordHash: await bcrypt.hash(CLAVE, 10), debeCambiarPassword: false,
       dui: `${azar(8)}-${azar(1)}`, licenciaNumero: azar(10), licenciaVence: new Date("2030-01-01"), correo: o.correo ?? null,
       placa: `P ${azar(6)}`, marca: "Isuzu", modelo: "D-Max", tipoVehiculo: "PICKUP", capacidadTon: 1.5,
-      estado: "ACTIVO", creadoPorId: prop.id, saldoCreditos: o.saldo ?? 0, terminosVersion: "0.1", terminosAceptadosEn: new Date(),
+      estado: "ACTIVO", creadoPorId: prop.id, saldoCreditos: o.saldo ?? 0, terminosVersion: "0.2", terminosAceptadosEn: new Date(),
     },
   });
 }
@@ -44,12 +44,12 @@ async function appMotorista(browser: Browser, telefono: string) {
   return app;
 }
 
-type Datos = { plan?: "Semanal" | "Mensual"; forma?: "Transferencia" | "Efectivo"; referencia?: string; revisado?: boolean };
+type Datos = { monto?: string; forma?: "Transferencia" | "Efectivo"; referencia?: string; revisado?: boolean };
 async function llenarRecarga(page: Page, motoristaId: string, d: Datos) {
   await page.goto(`/panel/creditos?m=${motoristaId}`);
   const f = page.getByTestId("form-recarga");
   await expect(f.locator("#motoristaId")).toHaveValue(motoristaId);
-  await f.locator("label", { hasText: d.plan ?? "Semanal" }).click();
+  await f.locator("#monto").fill(d.monto ?? "20");
   await f.locator("label", { hasText: d.forma ?? "Transferencia" }).click();
   if ((d.forma ?? "Transferencia") === "Transferencia") {
     if (d.referencia) await f.getByLabel("Número de referencia").fill(d.referencia);
@@ -62,10 +62,10 @@ const numeroDe = async (page: Page) => Number((await page.getByTestId("numero-re
 
 test.beforeAll(async () => {
   if (!CORREO || !PASSWORD) throw new Error("Define E2E_CORREO y E2E_PASSWORD");
-  await db.configuracion.update({ where: { id: 1 }, data: { planSemanal: 20, planMensual: 60, comisionPct: 10 } });
+  await db.configuracion.update({ where: { id: 1 }, data: { precioAcceso: 10, comisionPct: 10 } });
 });
 test.afterAll(async () => {
-  await db.configuracion.update({ where: { id: 1 }, data: { planSemanal: 20, planMensual: 60, comisionPct: 10 } });
+  await db.configuracion.update({ where: { id: 1 }, data: { precioAcceso: 10, comisionPct: 10 } });
   await db.motorista.updateMany({ where: { disponible: true }, data: { disponible: false } });
   await db.$disconnect();
 });
@@ -97,7 +97,7 @@ test("transferencia: valida referencia y revisión, descuenta la deuda y genera 
   await expect(page).toHaveURL(/\/panel\/creditos\/recibo\/\d+\?nuevo=1$/);
   await expect(page.getByTestId("aviso-nuevo")).toContainText("$19.30");
   await expect(page.getByTestId("sello")).toHaveText("PAGADO");
-  await expect(page.getByTestId("plan-recibo")).toHaveText("Semanal");
+  await expect(page.getByTestId("concepto-recibo")).toHaveText("Recarga de créditos");
   await expect(page.getByTestId("monto-recibo")).toHaveText("$20.00");
   await expect(page.getByTestId("saldo-anterior")).toHaveText("-$0.70");
   await expect(page.getByTestId("deuda-recibo")).toHaveText("-$0.70");
@@ -128,15 +128,15 @@ test("transferencia: valida referencia y revisión, descuenta la deuda y genera 
   await page.goto(`/panel/motoristas/${m.id}`);
   await expect(page.getByTestId("saldo-motorista")).toHaveText("$19.30");
   await expect(page.getByTestId("registrar-recarga")).toHaveAttribute("href", `/panel/creditos?m=${m.id}#registrar`);
-  await page.getByRole("link", { name: /REC-\d{6} · Semanal/ }).click();
+  await page.getByRole("link", { name: /REC-\d{6}/ }).click();
   await expect(page).toHaveURL(new RegExp(`/panel/creditos/recibo/${numeroDeuda}$`));
 });
 
-test("efectivo mensual, lista de recargas, búsqueda y exportar CSV", async ({ page }) => {
+test("efectivo con monto libre, lista de recargas, búsqueda y exportar CSV", async ({ page }) => {
   const m = await crearMotorista({ saldo: 3 });
   await entrarPanel(page);
-  await llenarRecarga(page, m.id, { plan: "Mensual", forma: "Efectivo" });
-  await expect(page.getByTestId("plan-recibo")).toHaveText("Mensual");
+  await llenarRecarga(page, m.id, { monto: "60", forma: "Efectivo" });
+  await expect(page.getByTestId("concepto-recibo")).toHaveText("Recarga de créditos");
   await expect(page.getByTestId("saldo-nuevo")).toHaveText("$63.00");
   await expect(page.getByTestId("deuda-recibo")).toHaveCount(0);
   await expect(page.getByTestId("recibo")).toContainText("Efectivo");
@@ -165,10 +165,10 @@ test("el motorista ve su saldo, el historial, el recibo y el PDF; solo los suyos
   const app = await appMotorista(browser, motoristaDeuda.telefono);
   await app.getByRole("link", { name: "Créditos", exact: true }).click();
   await expect(app.getByTestId("saldo")).toHaveText("$19.30");
-  await expect(app.getByTestId("plan-semanal")).toContainText("Tu plan actual");
+  await expect(app.getByTestId("montos-sugeridos")).toContainText("$10.00");
   const fila = app.getByTestId("recarga").first();
   const rec = `REC-${String(numeroDeuda).padStart(6, "0")}`;
-  await expect(fila).toContainText("Semanal · $20.00");
+  await expect(fila).toContainText("Recarga de créditos · $20.00");
   await expect(fila).toContainText(rec);
   await fila.getByRole("link", { name: `Ver recibo ${rec}` }).click();
   await expect(app).toHaveURL(new RegExp(`/motorista/creditos/recibo/${numeroDeuda}$`));
@@ -215,13 +215,13 @@ test("anular una recarga resta el monto y marca el recibo", async ({ page }) => 
   expect(Number(ajuste.monto)).toBe(-20);
 });
 
-test("datos y planes: validación, recibo nuevo y «¿Cómo recargo?»", async ({ page, browser }) => {
+test("datos y precios: validación, recibo nuevo y «¿Cómo recargo?»", async ({ page, browser }) => {
   await entrarPanel(page);
   await page.goto("/panel/creditos");
-  await page.getByRole("link", { name: /Datos y planes/ }).click();
+  await page.getByRole("link", { name: /Datos y precios/ }).click();
   await expect(page).toHaveURL(/\/panel\/creditos\/datos$/);
   await page.getByLabel("NIT").fill("abc");
-  await page.getByLabel("Plan semanal ($)").fill("0");
+  await page.getByLabel(/Acceso a la plataforma/).fill("0");
   await page.getByRole("button", { name: "Guardar cambios" }).click();
   await expect(page.getByText("Solo números y guiones")).toBeVisible();
   await expect(page.getByText("Mínimo $1")).toBeVisible();
@@ -233,7 +233,7 @@ test("datos y planes: validación, recibo nuevo y «¿Cómo recargo?»", async (
   await page.getByLabel("Tipo de cuenta").fill("Ahorro");
   await page.getByLabel("Número de cuenta").fill("0000-1234-5678");
   await page.getByLabel("Titular").fill("Socio Prueba FleteYa");
-  await page.getByLabel("Plan semanal ($)").fill("20");
+  await page.getByLabel(/Acceso a la plataforma/).fill("10");
   await page.getByRole("button", { name: "Guardar cambios" }).click();
   await expect(page.getByRole("status")).toContainText("Datos guardados");
 

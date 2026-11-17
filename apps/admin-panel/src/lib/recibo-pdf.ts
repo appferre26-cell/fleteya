@@ -1,7 +1,7 @@
 import "server-only";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import type { Recibo } from "./recargas";
-import { FORMAS_PAGO, PLANES, fechaRecibo, numeroRecibo } from "./recibo";
+import { CONCEPTOS, FORMAS_PAGO, fechaRecibo, numeroRecibo } from "./recibo";
 import { dinero } from "./tarifa";
 
 const NARANJA = rgb(1, 0.42, 0);
@@ -65,10 +65,12 @@ export async function reciboPdf(r: Recibo) {
   texto(pag, fechaRecibo(r.fecha), W - M, y, { f: negrita, t: 11, derecha: true });
 
   // Datos
+  const acceso = r.concepto === "ACCESO";
   y -= 14;
   const filas: [string, string][] = [
     ["Motorista", r.motorista.nombre],
-    ["Plan", `${PLANES[r.plan]} · ${dinero(r.monto)}`],
+    ["Concepto", CONCEPTOS[r.concepto] + (acceso ? " (pago único)" : "")],
+    ...(r.motorista.requiereCreditoFiscal ? [["Crédito fiscal", `NIT ${r.motorista.nit ?? "—"} · NRC ${r.motorista.nrc ?? "—"}`] as [string, string]] : []),
     ["Forma de pago", FORMAS_PAGO[r.formaPago]],
     ...(r.referencia ? [["Referencia", r.referencia] as [string, string]] : []),
     ["Registrado por", r.registradoPor],
@@ -82,9 +84,9 @@ export async function reciboPdf(r: Recibo) {
 
   // Montos
   y -= 24;
-  const alto = r.deuda > 0 ? 116 : 92;
+  const alto = acceso ? 44 : r.deuda > 0 ? 116 : 92;
   pag.drawRectangle({ x: M, y: y - alto + 12, width: W - 2 * M, height: alto, color: rgb(0.95, 0.95, 0.95) });
-  const montos: [string, string, ReturnType<typeof rgb>][] = [
+  const montos: [string, string, ReturnType<typeof rgb>][] = acceso ? [] : [
     ["Monto recargado", dinero(r.monto), NEGRO],
     ["Saldo anterior", dinero(r.saldoAntes), r.saldoAntes < 0 ? ROJO : NEGRO],
     ...(r.deuda > 0 ? [["Deuda descontada", `-${dinero(r.deuda)}`, ROJO] as [string, string, ReturnType<typeof rgb>]] : []),
@@ -96,18 +98,20 @@ export async function reciboPdf(r: Recibo) {
     y -= 20;
   }
   y -= 4;
-  texto(pag, "Saldo nuevo", M + 12, y, { f: negrita, t: 11 });
-  texto(pag, dinero(r.saldoDespues), W - M - 12, y - 2, { f: negrita, t: 17, c: NARANJA, derecha: true });
+  texto(pag, acceso ? "Total pagado" : "Saldo nuevo", M + 12, y, { f: negrita, t: 11 });
+  texto(pag, dinero(acceso ? r.monto : r.saldoDespues), W - M - 12, y - 2, { f: negrita, t: 17, c: NARANJA, derecha: true });
 
   y -= 40;
-  for (const l of envolver(`Los créditos se usan para recibir viajes en FleteYa. Por cada viaje completado se descuenta el ${r.comisionPct}% del valor del viaje.`, normal, 8.5, W - 2 * M)) {
+  const pie = acceso ? "Pago único por el acceso a la plataforma FleteYa. Para recibir viajes, además, necesitas créditos (recargas)."
+    : `Los créditos se usan para recibir viajes en FleteYa. Por cada viaje completado se descuenta el ${r.comisionPct}% del valor del viaje.`;
+  for (const l of envolver(`${pie} Comprobante interno de pago: no sustituye la factura electrónica.`, normal, 8.5, W - 2 * M)) {
     texto(pag, l, M, y, { t: 8.5, c: GRIS });
     y -= 12;
   }
   if (r.nota) { y -= 4; for (const l of envolver(`Nota: ${r.nota}`, normal, 8.5, W - 2 * M)) { texto(pag, l, M, y, { t: 8.5, c: GRIS }); y -= 12; } }
   if (r.anulada) {
     y -= 6;
-    for (const l of envolver(`Recibo anulado el ${fechaRecibo(r.anulada.en)} por ${r.anulada.por}. Motivo: ${r.anulada.motivo}. El monto se restó del saldo.`, negrita, 9, W - 2 * M)) {
+    for (const l of envolver(`Recibo anulado el ${fechaRecibo(r.anulada.en)} por ${r.anulada.por}. Motivo: ${r.anulada.motivo}. ${acceso ? "El acceso vuelve a quedar sin pagar." : "El monto se restó del saldo."}`, negrita, 9, W - 2 * M)) {
       texto(pag, l, M, y, { f: negrita, t: 9, c: ROJO });
       y -= 13;
     }

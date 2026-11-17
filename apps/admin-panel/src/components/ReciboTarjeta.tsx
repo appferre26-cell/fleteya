@@ -1,14 +1,16 @@
 import type { Recibo } from "@/lib/recargas";
-import { FORMAS_PAGO, PLANES, fechaRecibo, numeroRecibo } from "@/lib/recibo";
+import { CONCEPTOS, FORMAS_PAGO, fechaRecibo, numeroRecibo } from "@/lib/recibo";
 import { dinero } from "@/lib/tarifa";
 
-/** El recibo de una recarga, igual en el panel y en la app del motorista (tarjeta blanca, como el papel). */
+/** El recibo de una recarga o del pago de acceso, igual en el panel y en la app del motorista (tarjeta blanca, como el papel). */
 export function ReciboTarjeta({ r }: { r: Recibo }) {
   const fila = (k: string, v: React.ReactNode, testid?: string) => (
     <div className="flex items-baseline justify-between gap-4 border-b border-[#e8e8e8] py-2.5 last:border-0">
       <dt className="text-[#6b6b6b]">{k}</dt><dd className="text-right font-semibold break-all" data-testid={testid}>{v}</dd>
     </div>
   );
+  const acceso = r.concepto === "ACCESO";
+  const m = r.motorista;
   return (
     <article className="overflow-hidden rounded-2xl bg-white text-[#1a1a1a]" data-testid="recibo">
       <header className="border-b border-dashed border-[#d0d0d0] p-5">
@@ -39,11 +41,20 @@ export function ReciboTarjeta({ r }: { r: Recibo }) {
         </div>
         <dl className="mt-3 text-sm">
           {fila("Motorista", r.motorista.nombre)}
-          {fila("Plan", PLANES[r.plan], "plan-recibo")}
+          {fila("Concepto", CONCEPTOS[r.concepto] + (acceso ? " (pago único)" : ""), "concepto-recibo")}
+          {m.requiereCreditoFiscal && fila("Crédito fiscal", `${m.razonSocial ?? m.nombre} · NIT ${m.nit ?? "—"} · NRC ${m.nrc ?? "—"}`, "fiscal-recibo")}
           {fila("Forma de pago", FORMAS_PAGO[r.formaPago])}
           {r.referencia && fila("Referencia", <span className="font-mono">{r.referencia}</span>)}
           {fila("Registrado por", r.registradoPor)}
         </dl>
+        {acceso ? (
+          <dl className="mt-3 rounded-xl bg-[#f2f2f2] px-4 py-1 text-sm">
+            <div className="flex items-center justify-between gap-4 py-3">
+              <dt className="font-bold">Total pagado</dt>
+              <dd className="text-2xl font-extrabold text-naranja tabular-nums" data-testid="monto-recibo">{dinero(r.monto)}</dd>
+            </div>
+          </dl>
+        ) : (
         <dl className="mt-3 rounded-xl bg-[#f2f2f2] px-4 py-1 text-sm">
           {fila("Monto recargado", dinero(r.monto), "monto-recibo")}
           {fila("Saldo anterior", <span className={r.saldoAntes < 0 ? "text-[#c62828]" : ""}>{dinero(r.saldoAntes)}</span>, "saldo-anterior")}
@@ -53,11 +64,16 @@ export function ReciboTarjeta({ r }: { r: Recibo }) {
             <dd className="text-2xl font-extrabold text-naranja tabular-nums" data-testid="saldo-nuevo">{dinero(r.saldoDespues)}</dd>
           </div>
         </dl>
-        <p className="mt-3 text-[11px] leading-relaxed text-[#6b6b6b]">Los créditos se usan para recibir viajes en FleteYa. Por cada viaje completado se descuenta el {r.comisionPct}% del valor del viaje.</p>
+        )}
+        <p className="mt-3 text-[11px] leading-relaxed text-[#6b6b6b]">
+          {acceso ? "Pago único por el acceso a la plataforma FleteYa. Para recibir viajes, además, necesitas créditos (recargas)."
+            : `Los créditos se usan para recibir viajes en FleteYa. Por cada viaje completado se descuenta el ${r.comisionPct}% del valor del viaje.`}
+          {" "}Comprobante interno de pago: no sustituye la factura electrónica.
+        </p>
         {r.nota && <p className="mt-2 text-[11px] text-[#6b6b6b]">Nota: {r.nota}</p>}
         {r.anulada && (
           <p className="mt-3 rounded-lg bg-[#fde2e2] px-3 py-2 text-xs font-semibold text-[#c62828]" data-testid="anulacion">
-            Anulado el {fechaRecibo(r.anulada.en)} por {r.anulada.por}. Motivo: {r.anulada.motivo}. El monto se restó del saldo.
+            Anulado el {fechaRecibo(r.anulada.en)} por {r.anulada.por}. Motivo: {r.anulada.motivo}. {acceso ? "El acceso vuelve a quedar sin pagar." : "El monto se restó del saldo."}
           </p>
         )}
       </div>

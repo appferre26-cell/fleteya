@@ -9,10 +9,11 @@ export async function middleware(req: NextRequest) {
 
   if (pathname.startsWith("/motorista")) {
     const id = await verificarToken(req.cookies.get(COOKIE_MOTORISTA)?.value, "motorista");
-    const publica = pathname === "/motorista/entrar" || pathname.startsWith("/motorista/legal");
+    const registro = pathname === "/motorista/registro"; // el motorista nuevo se registra solo
+    const publica = pathname === "/motorista/entrar" || registro || pathname.startsWith("/motorista/legal");
     if (!id && pathname.startsWith("/motorista/api/")) return new NextResponse("No autorizado", { status: 401 });
     if (!id && !publica) return NextResponse.redirect(new URL("/motorista/entrar", req.url));
-    if (id && pathname === "/motorista/entrar") return NextResponse.redirect(new URL("/motorista", req.url));
+    if (id && (pathname === "/motorista/entrar" || registro)) return NextResponse.redirect(new URL("/motorista", req.url));
     return NextResponse.next();
   }
 

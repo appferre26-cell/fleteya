@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ReciboTarjeta } from "@/components/ReciboTarjeta";
 import { correoConfigurado } from "@/lib/correo";
 import { obtenerRecibo } from "@/lib/recargas";
-import { PLANES, fechaRecibo, leerNumeroRecibo, numeroRecibo } from "@/lib/recibo";
+import { CONCEPTOS, fechaRecibo, leerNumeroRecibo, numeroRecibo } from "@/lib/recibo";
 import { exigirPropietario } from "@/lib/sesion";
 import { dinero } from "@/lib/tarifa";
 import { formatoTelefono } from "@/lib/validacion";
@@ -20,7 +20,9 @@ export default async function ReciboPanel({ params, searchParams }: { params: Pr
   const rec = numeroRecibo(r.numero);
   const texto = r.anulada
     ? `Hola ${r.motorista.nombre}, el recibo ${rec} de FleteYa fue anulado. Motivo: ${r.anulada.motivo}.`
-    : `Hola ${r.motorista.nombre}, registramos tu recarga ${PLANES[r.plan].toLowerCase()} de ${dinero(r.monto)} en FleteYa. Recibo ${rec}. Saldo nuevo: ${dinero(r.saldoDespues)}. Lo ves en la app: Créditos → Historial de recargas.`;
+    : r.concepto === "ACCESO"
+      ? `Hola ${r.motorista.nombre}, recibimos tu pago de ${dinero(r.monto)} por el ${CONCEPTOS.ACCESO.toLowerCase()} de FleteYa. Recibo ${rec}. En cuanto revisemos tus documentos activamos tu perfil.`
+      : `Hola ${r.motorista.nombre}, registramos tu recarga de ${dinero(r.monto)} en FleteYa. Recibo ${rec}. Saldo nuevo: ${dinero(r.saldoDespues)}. Lo ves en la app: Créditos → Historial de recargas.`;
   const wa = `https://wa.me/503${r.motorista.telefono}?text=${encodeURIComponent(texto)}`;
 
   return (

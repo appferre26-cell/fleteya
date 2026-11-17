@@ -42,10 +42,29 @@ export const ESTADOS = {
 } as const;
 
 export const DOCUMENTOS = {
-  DUI: "DUI",
-  LICENCIA: "Licencia de conducir",
-  TARJETA_CIRCULACION: "Tarjeta de circulación",
+  DUI_FRENTE: "DUI (frente)",
+  DUI_REVERSO: "DUI (reverso)",
+  LICENCIA_FRENTE: "Licencia (frente)",
+  LICENCIA_REVERSO: "Licencia (reverso)",
+  TARJETA_FRENTE: "Tarjeta de circulación (frente)",
+  TARJETA_REVERSO: "Tarjeta de circulación (reverso)",
+  VEHICULO_FRENTE: "Vehículo de frente",
+  VEHICULO_ATRAS: "Vehículo de atrás",
+  VEHICULO_IZQUIERDA: "Vehículo lado izquierdo",
+  VEHICULO_DERECHA: "Vehículo lado derecho",
 } as const;
+
+export type TipoDoc = keyof typeof DOCUMENTOS;
+export const TIPOS_DOC = Object.keys(DOCUMENTOS) as TipoDoc[];
+export const TOTAL_DOCS = TIPOS_DOC.length;
+
+/** Cómo se agrupan las fotos en los formularios y en el detalle. */
+export const GRUPOS_DOC: { titulo: string; tipos: TipoDoc[] }[] = [
+  { titulo: "DUI", tipos: ["DUI_FRENTE", "DUI_REVERSO"] },
+  { titulo: "Licencia de conducir", tipos: ["LICENCIA_FRENTE", "LICENCIA_REVERSO"] },
+  { titulo: "Tarjeta de circulación", tipos: ["TARJETA_FRENTE", "TARJETA_REVERSO"] },
+  { titulo: "Fotos del vehículo", tipos: ["VEHICULO_FRENTE", "VEHICULO_ATRAS", "VEHICULO_IZQUIERDA", "VEHICULO_DERECHA"] },
+];
 
 export const MIME_PERMITIDOS = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 export const MAX_DOC_BYTES = 4 * 1024 * 1024;
@@ -80,6 +99,30 @@ export const esquemaMotorista = z.object({
     .max(40, "Máximo 40 ton")
     .transform((n) => Math.round(n * 10) / 10),
 });
+
+/** NIT (14 dígitos) o DUI usado como NIT; NRC de 1 a 8 dígitos con guion opcional. */
+const nitValido = (t: string) => /^[\d-]+$/.test(t) && [9, 14].includes(t.replace(/-/g, "").length);
+const opcional = (max: number) => z.string().trim().max(max, "Es demasiado largo").transform((t) => t || null);
+
+/** Datos para la factura. Solo se exigen si el motorista pide crédito fiscal. */
+export const esquemaFiscal = z.object({
+  requiereCreditoFiscal: z.string().transform((v) => v === "on" || v === "true"),
+  nit: opcional(17),
+  nrc: opcional(10),
+  razonSocial: opcional(120),
+  giro: opcional(120),
+  direccionFiscal: opcional(200),
+}).superRefine((d, ctx) => {
+  if (d.nit && !nitValido(d.nit)) ctx.addIssue({ code: "custom", path: ["nit"], message: "NIT de 14 dígitos (o DUI de 9)" });
+  if (d.nrc && !/^\d{1,7}-?\d$/.test(d.nrc)) ctx.addIssue({ code: "custom", path: ["nrc"], message: "NRC no válido (ej. 123456-7)" });
+  if (!d.requiereCreditoFiscal) return;
+  if (!d.nit) ctx.addIssue({ code: "custom", path: ["nit"], message: "Escribe tu NIT" });
+  if (!d.nrc) ctx.addIssue({ code: "custom", path: ["nrc"], message: "Escribe tu NRC (registro de IVA)" });
+  if (!d.razonSocial || d.razonSocial.length < 3) ctx.addIssue({ code: "custom", path: ["razonSocial"], message: "Nombre o razón social como en tu tarjeta de IVA" });
+  if (!d.giro || d.giro.length < 3) ctx.addIssue({ code: "custom", path: ["giro"], message: "Escribe tu giro o actividad económica" });
+  if (!d.direccionFiscal || d.direccionFiscal.length < 5) ctx.addIssue({ code: "custom", path: ["direccionFiscal"], message: "Escribe tu dirección" });
+});
+export const CAMPOS_FISCALES = ["requiereCreditoFiscal", "nit", "nrc", "razonSocial", "giro", "direccionFiscal"] as const;
 
 export type ErroresCampos = Partial<Record<string, string>>;
 

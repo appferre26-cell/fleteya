@@ -4,9 +4,11 @@ import { db } from "@/lib/db";
 import { dinero, numeroViaje } from "@/lib/tarifa";
 import { textoAccion } from "@/lib/historial";
 import { exigirPropietario } from "@/lib/sesion";
-import { DOCUMENTOS, TIPOS_VEHICULO, diasParaVencer, fechaCorta, fechaHora, formatoTelefono } from "@/lib/validacion";
+import { DOCUMENTOS, GRUPOS_DOC, TIPOS_VEHICULO, TOTAL_DOCS, diasParaVencer, fechaCorta, fechaHora, formatoTelefono } from "@/lib/validacion";
 import { Estado, Iniciales } from "../piezas";
 import { AccionesMotorista } from "./AccionesMotorista";
+import { PagoAcceso } from "./PagoAcceso";
+import { obtenerConfig } from "@/lib/config";
 import { promedioMotorista } from "@/lib/calificaciones";
 import { EstrellasFijas, Promedio } from "@/components/Estrellas";
 
@@ -25,12 +27,14 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
     },
   });
   if (!m) notFound();
-  const [entregados, movimientos, enCurso, calif, opiniones] = await Promise.all([
+  const [entregados, movimientos, enCurso, calif, opiniones, cfg, reciboAcceso] = await Promise.all([
     db.viaje.aggregate({ where: { motoristaId: m.id, estado: "ENTREGADO" }, _count: true, _sum: { comision: true } }),
     db.movimientoCredito.findMany({ where: { motoristaId: m.id }, orderBy: { creadoEn: "desc" }, take: 8, include: { recarga: { select: { numero: true } } } }),
     db.viaje.findFirst({ where: { motoristaId: m.id, estado: { in: ["ASIGNADO", "EN_CAMINO", "CARGANDO", "EN_RUTA"] } }, select: { id: true, numero: true } }),
     promedioMotorista(m.id),
     db.viaje.findMany({ where: { motoristaId: m.id, estrellasMotorista: { not: null } }, orderBy: { motoristaCalificadoEn: "desc" }, take: 6, select: { id: true, numero: true, clienteNombre: true, estrellasMotorista: true, comentarioMotorista: true, motoristaCalificadoEn: true } }),
+    obtenerConfig(),
+    db.recarga.findFirst({ where: { motoristaId: id, concepto: "ACCESO", anuladaEn: null }, orderBy: { creadoEn: "desc" }, select: { numero: true } }),
   ]);
   const saldo = Number(m.saldoCreditos);
   const enLinea = m.disponible && m.vistoEn && Date.now() - m.vistoEn.getTime() < 2 * 60_000;
@@ -51,7 +55,7 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
             <h1 className="text-[24px] leading-tight font-extrabold lg:text-[28px]">{m.nombre}</h1>
             <Estado estado={m.estado} />
           </div>
-          <p className="mt-1 text-sm text-suave">Registrado el {fechaCorta(m.creadoEn)} por {m.creadoPor.nombre}
+          <p className="mt-1 text-sm text-suave">Registrado el {fechaCorta(m.creadoEn)} {m.creadoPor ? `por ${m.creadoPor.nombre}` : "por él mismo desde la app"}
             {m.aprobadoEn && m.aprobadoPor ? ` · aprobado el ${fechaCorta(m.aprobadoEn)} por ${m.aprobadoPor.nombre}` : ""}</p>
         </div>
         <div className="flex w-full gap-2 sm:w-auto [&>a]:flex-1 sm:[&>a]:flex-none">
@@ -85,12 +89,27 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
               {dato("Marca y modelo", `${m.marca} ${m.modelo}`)}
               {dato("Placa", m.placa)}
             </dl>
+            <div className="mt-4 border-t border-borde pt-3 text-sm" data-testid="datos-fiscales">
+              {m.requiereCreditoFiscal ? (
+                <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  {dato("Factura", "Crédito fiscal (CCF)")}
+                  {dato("NIT", <span className="tabular-nums">{m.nit}</span>)}
+                  {dato("NRC", <span className="tabular-nums">{m.nrc}</span>)}
+                  {dato("Razón social", m.razonSocial)}
+                  {dato("Giro", m.giro)}
+                  {dato("Dirección fiscal", m.direccionFiscal)}
+                </dl>
+              ) : <p className="text-xs text-suave"><i className="fa-solid fa-file-invoice mr-1.5" />Factura como consumidor final (no pidió crédito fiscal).</p>}
+            </div>
           </section>
 
           <section className="tarjeta p-5">
-            <h2 className="seccion-titulo">Documentos ({m.documentos.length}/3)</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-3">
-              {(Object.keys(DOCUMENTOS) as (keyof typeof DOCUMENTOS)[]).map((t) => {
+            <h2 className="seccion-titulo">Fotos y documentos ({m.documentos.length}/{TOTAL_DOCS})</h2>
+            {GRUPOS_DOC.map((g) => (
+            <div key={g.titulo} className="mt-4">
+            <p className="text-xs font-semibold text-suave uppercase">{g.titulo}</p>
+            <div className="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {g.tipos.map((t) => {
                 const d = m.documentos.find((x) => x.tipo === t);
                 return (
                   <div key={t}>
@@ -115,6 +134,8 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
                 );
               })}
             </div>
+            </div>
+            ))}
           </section>
 
           <section className="tarjeta p-5" data-testid="app-motorista">
@@ -126,7 +147,7 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
               {dato("Último ingreso a la app", m.ultimoAcceso ? fechaHora(m.ultimoAcceso) : <span className="font-normal text-suave">Nunca</span>)}
             </dl>
             <p className="mt-3 text-xs text-suave">
-              {m.terminosAceptadosEn ? `Aceptó los Términos para Motoristas (v${m.terminosVersion}) el ${fechaHora(m.terminosAceptadosEn)}.` : "Aún no acepta los Términos para Motoristas (se le piden al entrar por primera vez)."}
+              {m.terminosAceptadosEn ? `Aceptó los Términos para Motoristas (v${m.terminosVersion}) el ${fechaHora(m.terminosAceptadosEn)}` : "Aún no acepta los Términos para Motoristas (se le piden al entrar por primera vez)."}
             </p>
             {m.estado !== "SUSPENDIDO" && (
               <Link href={`/panel/creditos?m=${m.id}#registrar`} className="btn-primario mt-3 h-10 w-full sm:w-auto sm:px-5" data-testid="registrar-recarga">
@@ -167,7 +188,7 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
             <ul className="mt-3 divide-y divide-borde text-sm">
               {m.historial.map((h) => (
                 <li key={h.id} className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 py-2.5">
-                  <span><span className="font-semibold">{textoAccion(h.accion).replace(/^./, (c) => c.toUpperCase())}</span> <span className="text-suave">por {h.propietario.nombre}{h.detalle && h.accion !== "DOCUMENTO_ACTUALIZADO" ? ` — ${h.detalle}` : ""}{h.accion === "DOCUMENTO_ACTUALIZADO" && h.detalle ? ` — ${DOCUMENTOS[h.detalle as keyof typeof DOCUMENTOS] ?? h.detalle}` : ""}</span></span>
+                  <span><span className="font-semibold">{textoAccion(h.accion).replace(/^./, (c) => c.toUpperCase())}</span> <span className="text-suave">por {h.propietario ? h.propietario.nombre : "el motorista"}{h.detalle && h.accion !== "DOCUMENTO_ACTUALIZADO" ? ` — ${h.detalle}` : ""}{h.accion === "DOCUMENTO_ACTUALIZADO" && h.detalle ? ` — ${DOCUMENTOS[h.detalle as keyof typeof DOCUMENTOS] ?? h.detalle}` : ""}</span></span>
                   <span className="text-xs text-suave">{fechaHora(h.fecha)}</span>
                 </li>
               ))}
@@ -175,7 +196,10 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
           </section>
         </div>
 
-        <AccionesMotorista id={m.id} nombre={m.nombre} telefono={m.telefono} estado={m.estado} documentos={m.documentos.length} licenciaVencida={venc < 0} />
+        <AccionesMotorista id={m.id} nombre={m.nombre} telefono={m.telefono} estado={m.estado} documentos={m.documentos.length} licenciaVencida={venc < 0} accesoPagado={!!m.accesoPagadoEn}>
+          <PagoAcceso id={m.id} precio={cfg.precioAcceso} pagado={m.accesoPagadoEn ? fechaCorta(m.accesoPagadoEn) : null} recibo={reciboAcceso?.numero ?? null}
+            avisoReferencia={m.accesoReferencia} avisoFecha={m.accesoAvisadoEn ? fechaHora(m.accesoAvisadoEn) : null} />
+        </AccionesMotorista>
       </div>
     </>
   );

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { EstadoMotorista, Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
-import { ESTADOS, TIPOS_VEHICULO, diasParaVencer, fechaCorta, formatoTelefono, normalizarTelefono } from "@/lib/validacion";
+import { ESTADOS, TIPOS_VEHICULO, TOTAL_DOCS, diasParaVencer, fechaCorta, formatoTelefono, normalizarTelefono } from "@/lib/validacion";
 import { Estado, Iniciales } from "./piezas";
 
 export const metadata = { title: "Motoristas — FleteYa" };
@@ -36,7 +36,7 @@ export default async function Motoristas({ searchParams }: { searchParams: Promi
     db.motorista.findMany({
       where, orderBy: [{ estado: "asc" }, { nombre: "asc" }],
       select: { id: true, nombre: true, telefono: true, placa: true, marca: true, modelo: true, tipoVehiculo: true,
-        capacidadTon: true, estado: true, creadoEn: true, licenciaVence: true, _count: { select: { documentos: true } } },
+        capacidadTon: true, estado: true, creadoEn: true, licenciaVence: true, autoRegistro: true, accesoPagadoEn: true, accesoAvisadoEn: true, _count: { select: { documentos: true } } },
     }),
     db.motorista.groupBy({ by: ["estado"], _count: true }),
   ]);
@@ -59,7 +59,7 @@ export default async function Motoristas({ searchParams }: { searchParams: Promi
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-naranja/15"><i className="fa-solid fa-file-circle-check text-naranja" /></div>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold">{pendientes === 1 ? "1 motorista espera aprobación" : `${pendientes} motoristas esperan aprobación`}</p>
-            <p className="mt-0.5 text-xs text-suave">Revisa DUI, licencia y tarjeta de circulación antes de activarlos.</p>
+            <p className="mt-0.5 text-xs text-suave">Revisa las fotos (DUI, licencia, tarjeta y vehículo) y registra su pago de acceso antes de activarlos.</p>
           </div>
           <Link href={url("pendientes")} className="text-sm font-semibold text-naranja">Ver pendientes <i className="fa-solid fa-arrow-right ml-1 text-xs" /></Link>
         </section>
@@ -111,7 +111,7 @@ export default async function Motoristas({ searchParams }: { searchParams: Promi
                       <td className="py-3 pl-5">
                         <div className="flex items-center gap-3">
                           <Iniciales nombre={m.nombre} pendiente={m.estado === "PENDIENTE"} />
-                          <div><p className="font-semibold">{m.nombre}</p><p className="text-[11px] text-suave">Desde {fechaCorta(m.creadoEn)}</p></div>
+                          <div><p className="font-semibold">{m.nombre}</p><p className="text-[11px] text-suave">Desde {fechaCorta(m.creadoEn)}{m.autoRegistro ? " · se registró solo" : ""}</p></div>
                         </div>
                       </td>
                       <td className="py-3 text-[#c8c8c8] tabular-nums">{formatoTelefono(m.telefono)}</td>
@@ -120,7 +120,12 @@ export default async function Motoristas({ searchParams }: { searchParams: Promi
                         <p className="text-[11px] text-suave">{m.marca} {m.modelo} · {m.placa}</p>
                       </td>
                       <td className="py-3">
-                        <p className={m._count.documentos < 3 ? "font-semibold text-naranja" : ""}>{m._count.documentos}/3 fotos</p>
+                        <p className={m._count.documentos < TOTAL_DOCS ? "font-semibold text-naranja" : ""}>{m._count.documentos}/{TOTAL_DOCS} fotos</p>
+                        {m.estado === "PENDIENTE" && (
+                          <p className={`text-[11px] ${m.accesoPagadoEn ? "text-exito" : "text-naranja"}`} data-testid="estado-acceso">
+                            {m.accesoPagadoEn ? "Acceso pagado" : m.accesoAvisadoEn ? "Avisó su pago" : "Acceso sin pagar"}
+                          </p>
+                        )}
                         {venc <= 30 && <p className={`text-[11px] ${venc < 0 ? "text-error" : "text-naranja"}`}>{venc < 0 ? "Licencia vencida" : "Licencia vence pronto"}</p>}
                       </td>
                       <td className="py-3"><Estado estado={m.estado} /></td>

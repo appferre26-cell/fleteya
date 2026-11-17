@@ -1,9 +1,13 @@
+import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { obtenerConfig } from "@/lib/config";
+import { dinero } from "@/lib/tarifa";
 import { FormEntrar } from "./FormEntrar";
 
 export const metadata = { title: "Entrar — FleteYa Motorista" };
 
-export default function EntrarMotorista() {
+export default async function EntrarMotorista() {
+  const cfg = await obtenerConfig();
   return (
     <main className="flex min-h-dvh flex-col px-5 pt-8 pb-8">
       <Logo sub="Motoristas" />
@@ -12,13 +16,14 @@ export default function EntrarMotorista() {
           <i className="fa-solid fa-truck" />Solo motoristas
         </span>
         <h1 className="mt-4 text-[28px] leading-tight font-extrabold">Entra a tu cuenta</h1>
-        <p className="mt-2 text-sm text-suave">Usa tu número de teléfono y la contraseña que te dio FleteYa.</p>
+        <p className="mt-2 text-sm text-suave">Usa tu número de teléfono y tu contraseña.</p>
       </div>
       <FormEntrar />
-      <div className="tarjeta mt-auto flex gap-3 p-4 text-xs leading-relaxed text-suave">
-        <i className="fa-solid fa-circle-info mt-0.5" />
-        <p><span className="font-semibold text-texto">¿Quieres manejar con FleteYa?</span> No hay registro en la app: FleteYa revisa tu DUI, licencia y tarjeta de circulación y te da tu acceso.</p>
-      </div>
+      <Link href="/motorista/registro" className="tarjeta mt-auto flex items-center gap-3 p-4 text-xs leading-relaxed text-suave hover:border-naranja" data-testid="ir-registro">
+        <i className="fa-solid fa-user-plus text-base text-naranja" />
+        <p className="flex-1"><span className="font-semibold text-texto">¿Eres motorista nuevo? Regístrate aquí.</span> Sube tus datos y fotos y paga {dinero(cfg.precioAcceso)} de acceso (una sola vez).</p>
+        <i className="fa-solid fa-chevron-right" />
+      </Link>
     </main>
   );
 }

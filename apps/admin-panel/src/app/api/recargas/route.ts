@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { FORMAS_PAGO, PLANES, numeroRecibo } from "@/lib/recibo";
+import { CONCEPTOS, FORMAS_PAGO, numeroRecibo } from "@/lib/recibo";
 import { propietarioActual } from "@/lib/sesion";
 import { fechaHoraCsv, respuestaCsv } from "@/lib/csv";
 
@@ -12,15 +12,16 @@ export async function GET(req: Request) {
   const recargas = await db.recarga.findMany({
     where: { creadoEn: { gte: desde, lte: hasta } },
     orderBy: { numero: "asc" },
-    include: { motorista: { select: { nombre: true, telefono: true, dui: true } }, registradoPor: { select: { nombre: true } } },
+    include: { motorista: { select: { nombre: true, telefono: true, dui: true, requiereCreditoFiscal: true, nit: true, nrc: true, razonSocial: true } }, registradoPor: { select: { nombre: true } } },
   });
   const fh = fechaHoraCsv;
   const filas = [
-    ["Recibo", "Fecha", "Motorista", "Teléfono", "DUI", "Plan", "Monto", "Forma de pago", "Referencia", "Saldo anterior", "Deuda descontada", "Saldo nuevo", "Registrado por", "Estado", "Motivo anulación"],
+    ["Recibo", "Fecha", "Motorista", "Teléfono", "DUI", "Concepto", "Monto", "Forma de pago", "Referencia", "Saldo anterior", "Deuda descontada", "Saldo nuevo", "Registrado por", "Estado", "Motivo anulación", "Crédito fiscal", "NIT", "NRC", "Razón social"],
     ...recargas.map((r) => [
-      numeroRecibo(r.numero), fh(r.creadoEn), r.motorista.nombre, r.motorista.telefono, r.motorista.dui, PLANES[r.plan], Number(r.monto).toFixed(2),
+      numeroRecibo(r.numero), fh(r.creadoEn), r.motorista.nombre, r.motorista.telefono, r.motorista.dui, CONCEPTOS[r.concepto], Number(r.monto).toFixed(2),
       FORMAS_PAGO[r.formaPago], r.referencia, Number(r.saldoAntes).toFixed(2), Number(r.deudaDescontada).toFixed(2), Number(r.saldoDespues).toFixed(2),
       r.registradoPor.nombre, r.anuladaEn ? "Anulada" : "Pagada", r.motivoAnulacion,
+      r.motorista.requiereCreditoFiscal ? "Sí" : "No", r.motorista.nit, r.motorista.nrc, r.motorista.razonSocial,
     ]),
   ];
   return respuestaCsv(filas, "recargas-fleteya.csv");

@@ -25,7 +25,7 @@ async function crearMotorista(o: OpcMotorista = {}) {
       debeCambiarPassword: !o.listo, dui: `${azar(8)}-${azar(1)}`, licenciaNumero: azar(10), licenciaVence: new Date("2030-01-01"),
       placa: `P ${azar(6)}`, marca: "Toyota", modelo: "Hilux", tipoVehiculo: "PICKUP", capacidadTon: o.capacidadTon ?? 1.5,
       estado: o.estado ?? "ACTIVO", creadoPorId: prop.id, saldoCreditos: o.saldo ?? 20,
-      terminosVersion: o.listo ? "0.1" : null, terminosAceptadosEn: o.listo ? new Date() : null,
+      terminosVersion: o.listo ? "0.2" : null, terminosAceptadosEn: o.listo ? new Date() : null,
     },
   });
   return { ...m, clave: o.listo ? CLAVE : "TMP-1234" };
@@ -89,7 +89,7 @@ test("las sesiones de motorista y propietario están separadas", async ({ page, 
   // Sin sesión
   await page.goto("/motorista");
   await expect(page).toHaveURL(/\/motorista\/entrar$/);
-  await expect(page.getByText("No hay registro en la app")).toBeVisible();
+  await expect(page.getByTestId("ir-registro")).toHaveAttribute("href", "/motorista/registro");
   expect((await request.get("/motorista/api/estado")).status()).toBe(401);
   await page.goto("/motorista/legal/terminos");
   await expect(page.locator(".legal h1, .legal h2").first()).toBeVisible();
@@ -153,7 +153,7 @@ test("primer ingreso: contraseña incorrecta, cambio obligatorio y términos", a
   await expect(app).toHaveURL(/\/motorista$/);
   await entrarPanel(page);
   await page.goto(`/panel/motoristas/${m.id}`);
-  await expect(page.getByTestId("app-motorista")).toContainText("Aceptó los Términos para Motoristas (v0.1)");
+  await expect(page.getByTestId("app-motorista")).toContainText("Aceptó los Términos para Motoristas (v0.2)");
   await expect(page.getByTestId("saldo-motorista")).toHaveText("$0.00");
   await app.context().close();
 });

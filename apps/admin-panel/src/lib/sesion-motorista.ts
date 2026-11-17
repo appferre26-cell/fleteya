@@ -6,7 +6,7 @@ import { db } from "./db";
 import { COOKIE_MOTORISTA, firmarToken, verificarToken } from "./token";
 
 /** Versión de los Términos para Motoristas. Si cambia, se le piden de nuevo al entrar. */
-export const VERSION_TERMINOS = "0.1";
+export const VERSION_TERMINOS = "0.2"; // 0.2: acceso de pago único, recargas libres, fotos del vehículo y datos de facturación
 
 const SEGUNDOS = 60 * 60 * 24 * 60; // 60 días: el motorista no debería tener que entrar a cada rato
 

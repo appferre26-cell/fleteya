@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Prisma } from "@prisma/client";
 import { obtenerConfig } from "@/lib/config";
 import { db } from "@/lib/db";
-import { FORMAS_PAGO, PLANES, leerNumeroRecibo, numeroRecibo } from "@/lib/recibo";
+import { CONCEPTOS, FORMAS_PAGO, leerNumeroRecibo, numeroRecibo } from "@/lib/recibo";
 import { exigirPropietario } from "@/lib/sesion";
 import { dinero } from "@/lib/tarifa";
 import { fechaHora, normalizarTelefono } from "@/lib/validacion";
@@ -40,16 +40,17 @@ export default async function Creditos({ searchParams }: { searchParams: Promise
     ];
   }
 
-  const [motoristas, recargas, delMes, comisionSemana, ultimosPlanes] = await Promise.all([
+  const [motoristas, recargas, delMes, comisionSemana, ultimas] = await Promise.all([
     db.motorista.findMany({ orderBy: [{ saldoCreditos: "asc" }, { nombre: "asc" }], select: { id: true, nombre: true, telefono: true, saldoCreditos: true, estado: true } }),
     db.recarga.findMany({ where, orderBy: { numero: "desc" }, take: 50, include: { motorista: { select: { nombre: true, correo: true } } } }),
-    db.recarga.groupBy({ by: ["plan"], where: { creadoEn: { gte: mes }, anuladaEn: null }, _sum: { monto: true }, _count: true }),
+    db.recarga.groupBy({ by: ["concepto"], where: { creadoEn: { gte: mes }, anuladaEn: null }, _sum: { monto: true }, _count: true }),
     db.movimientoCredito.aggregate({ where: { tipo: "COMISION", creadoEn: { gte: semana } }, _sum: { monto: true } }),
-    db.recarga.findMany({ where: { anuladaEn: null }, orderBy: { numero: "desc" }, distinct: ["motoristaId"], select: { motoristaId: true, plan: true } }),
+    db.recarga.findMany({ where: { anuladaEn: null, concepto: "RECARGA" }, orderBy: { numero: "desc" }, distinct: ["motoristaId"], select: { motoristaId: true, creadoEn: true, monto: true } }),
   ]);
-  const planDe = new Map(ultimosPlanes.map((x) => [x.motoristaId, x.plan]));
-  const totalMes = delMes.reduce((s, g) => s + Number(g._sum.monto ?? 0), 0);
-  const cuentaPlan = (p: "SEMANAL" | "MENSUAL") => delMes.find((g) => g.plan === p)?._count ?? 0;
+  const ultimaDe = new Map(ultimas.map((x) => [x.motoristaId, x]));
+  const delConcepto = (c: "RECARGA" | "ACCESO") => delMes.find((g) => g.concepto === c);
+  const totalMes = Number(delConcepto("RECARGA")?._sum.monto ?? 0);
+  const accesoMes = delConcepto("ACCESO");
   const activos = motoristas.filter((m) => m.estado === "ACTIVO");
   const bajos = activos.filter((m) => Number(m.saldoCreditos) > 0 && Number(m.saldoCreditos) < SALDO_BAJO).length;
   const sinSaldo = activos.filter((m) => Number(m.saldoCreditos) <= 0).length;
@@ -81,20 +82,20 @@ export default async function Creditos({ searchParams }: { searchParams: Promise
           <p className="mt-1 text-sm text-suave">Saldo de cada motorista, registro de recargas (efectivo o transferencia) y recibos.</p>
         </div>
         <div className="flex w-full gap-2 sm:w-auto [&>a]:flex-1 sm:[&>a]:flex-none">
-          <Link href="/panel/creditos/datos" className="btn-secundario h-10"><i className="fa-solid fa-gear text-suave" />Datos y planes</Link>
+          <Link href="/panel/creditos/datos" className="btn-secundario h-10"><i className="fa-solid fa-gear text-suave" />Datos y precios</Link>
           <a href="/api/recargas" className="btn-secundario h-10" data-testid="exportar"><i className="fa-solid fa-file-csv text-suave" />Exportar</a>
         </div>
       </div>
 
       <section className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        {tarjeta("Recargas este mes", dinero(totalMes), `${cuentaPlan("SEMANAL")} semanales · ${cuentaPlan("MENSUAL")} mensuales`, "fa-coins", "bg-naranja/15 text-naranja", "recargas-mes")}
+        {tarjeta("Recargas este mes", dinero(totalMes), `${delConcepto("RECARGA")?._count ?? 0} recargas · accesos: ${accesoMes?._count ?? 0} (${dinero(Number(accesoMes?._sum.monto ?? 0))})`, "fa-coins", "bg-naranja/15 text-naranja", "recargas-mes")}
         {tarjeta("Comisión descontada (semana)", dinero(-Number(comisionSemana._sum.monto ?? 0)), `${cfg.comisionPct}% de cada viaje completado`, "fa-percent", "bg-exito/15 text-exito", "comision-semana")}
         {tarjeta("Saldo bajo", String(bajos), `Menos de ${dinero(SALDO_BAJO)} en créditos`, "fa-battery-quarter", "bg-naranja/15 text-naranja", "saldo-bajo")}
         {tarjeta("Sin saldo", String(sinSaldo), "No reciben viajes hasta recargar", "fa-lock", "bg-error/15 text-error", "sin-saldo")}
       </section>
 
       <div className="mt-5">
-        <FormRecarga key={inicial ?? ""} inicial={inicial} faltanDatos={faltanDatos} planes={{ SEMANAL: cfg.planSemanal, MENSUAL: cfg.planMensual }}
+        <FormRecarga key={inicial ?? ""} inicial={inicial} faltanDatos={faltanDatos}
           motoristas={motoristas.filter((m) => m.estado !== "SUSPENDIDO" || m.id === inicial).map((m) => ({ id: m.id, nombre: m.nombre, telefono: m.telefono, saldo: Number(m.saldoCreditos), estado: m.estado }))} />
       </div>
 
@@ -105,13 +106,13 @@ export default async function Creditos({ searchParams }: { searchParams: Promise
             <ul className="max-h-[36rem] divide-y divide-borde overflow-y-auto">
               {motoristas.map((m) => {
                 const s = Number(m.saldoCreditos);
-                const plan = planDe.get(m.id);
+                const ult = ultimaDe.get(m.id);
                 return (
                   <li key={m.id} className="flex items-center gap-3 px-4 py-3 sm:px-5" data-testid="fila-saldo">
                     <Iniciales nombre={m.nombre} pendiente={m.estado === "PENDIENTE"} />
                     <div className="min-w-0 flex-1">
                       <Link href={`/panel/motoristas/${m.id}`} className="block truncate text-sm font-semibold hover:text-naranja">{m.nombre}</Link>
-                      <p className="text-xs text-suave">{plan ? `Plan ${PLANES[plan].toLowerCase()}` : "Sin recargas"}</p>
+                      <p className="text-xs text-suave">{ult ? `Última recarga ${dinero(Number(ult.monto))} · ${fechaHora(ult.creadoEn)}` : "Sin recargas"}</p>
                     </div>
                     <span className={`text-sm font-bold tabular-nums ${s <= 0 ? "text-error" : ""}`}>{dinero(s)}</span>
                     <span className="hidden sm:block">{estadoSaldo(m)}</span>
@@ -152,7 +153,7 @@ export default async function Creditos({ searchParams }: { searchParams: Promise
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{r.motorista.nombre}</p>
-                    <p className="truncate text-xs text-suave">{PLANES[r.plan]} · {FORMAS_PAGO[r.formaPago]}{r.referencia ? ` · ${r.referencia}` : ""}</p>
+                    <p className="truncate text-xs text-suave">{r.concepto === "ACCESO" ? <span className="font-semibold text-naranja">{CONCEPTOS.ACCESO}</span> : CONCEPTOS.RECARGA} · {FORMAS_PAGO[r.formaPago]}{r.referencia ? ` · ${r.referencia}` : ""}</p>
                   </div>
                   <span className="text-sm font-bold tabular-nums">{dinero(Number(r.monto))}</span>
                   {r.anuladaEn && <span className="rounded-full bg-error/15 px-2 py-0.5 text-[11px] font-semibold text-error">Anulada</span>}
