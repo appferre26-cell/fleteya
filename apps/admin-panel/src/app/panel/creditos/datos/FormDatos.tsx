@@ -5,7 +5,7 @@ import { guardarDatosCreditos, type EstadoForm } from "../acciones";
 type Datos = {
   emisorNombre: string | null; emisorNit: string | null; emisorDireccion: string | null;
   bancoNombre: string | null; bancoTipoCuenta: string | null; bancoNumero: string | null; bancoTitular: string | null;
-  planSemanal: number; planMensual: number; comisionPct: number;
+  precioAcceso: number; comisionPct: number;
 };
 
 export function FormDatos({ d }: { d: Datos }) {
@@ -28,7 +28,7 @@ export function FormDatos({ d }: { d: Datos }) {
         {campo("emisorNombre", "Nombre del socio inscrito", { placeholder: "Nombre como aparece en Hacienda" })}
         {campo("emisorNit", "NIT", { inputMode: "numeric", placeholder: "0000-000000-000-0" })}
         {campo("emisorDireccion", "Dirección", { placeholder: "Lourdes, Colón, La Libertad" })}
-        <p className="rounded-lg bg-fondo p-3 text-xs text-suave">Los recibos ya emitidos guardan los datos con los que se hicieron. Pendiente de confirmar con el contador si además hace falta factura electrónica (DTE).</p>
+        <p className="rounded-lg bg-fondo p-3 text-xs text-suave">Los recibos ya emitidos guardan los datos con los que se hicieron. El contador confirmó que el acceso y las recargas llevan factura electrónica (DTE): se conectará cuando la empresa esté inscrita. Mientras tanto el recibo es un comprobante interno.</p>
       </section>
 
       <section className="tarjeta space-y-4 p-5">
@@ -43,13 +43,12 @@ export function FormDatos({ d }: { d: Datos }) {
       </section>
 
       <section className="tarjeta space-y-4 p-5 lg:col-span-2">
-        <h2 className="font-bold"><i className="fa-solid fa-coins mr-2 text-naranja" />Planes y comisión</h2>
-        <div className="grid gap-3 sm:grid-cols-3">
-          {campo("planSemanal", "Plan semanal ($)", nro)}
-          {campo("planMensual", "Plan mensual ($)", nro)}
+        <h2 className="font-bold"><i className="fa-solid fa-coins mr-2 text-naranja" />Acceso y comisión</h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {campo("precioAcceso", "Acceso a la plataforma ($, pago único)", nro, "Lo paga el motorista nuevo al registrarse.")}
           {campo("comisionPct", "Comisión por viaje (%)", { ...nro, step: "0.5" }, "Se descuenta del saldo al entregar cada viaje.")}
         </div>
-        <p className="text-xs text-suave">Los precios nuevos aplican a las recargas que registres desde ahora; los recibos anteriores no cambian.</p>
+        <p className="text-xs text-suave">No hay planes: el motorista recarga el monto que quiera y necesita saldo a favor para recibir viajes. Los recibos anteriores no cambian.</p>
       </section>
 
       <div className="lg:col-span-2">

@@ -1,56 +1,13 @@
 "use server";
 import bcrypt from "bcryptjs";
-import { Prisma, type TipoDocumento } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
 import { avisarMotoristas, despues } from "@/lib/avisos";
-import {
-  MAX_DOC_BYTES, contrasenaTemporal, erroresDe, esquemaMotorista, type ErroresCampos,
-} from "@/lib/validacion";
+import { CAMPOS_FISCALES, TOTAL_DOCS, contrasenaTemporal, erroresDe, esquemaFiscal, esquemaMotorista, type ErroresCampos } from "@/lib/validacion";
+import { datosDe, errorDuplicado, leerDocumentos } from "@/lib/documentos";
 
-const TIPOS_DOC: TipoDocumento[] = ["DUI", "LICENCIA", "TARJETA_CIRCULACION"];
-
-/** Revisa el contenido real del archivo (no solo su nombre). */
-function detectarMime(b: Buffer): string | null {
-  if (b.length < 12) return null;
-  if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "image/jpeg";
-  if (b.subarray(0, 4).toString("hex") === "89504e47") return "image/png";
-  if (b.subarray(0, 4).toString() === "RIFF" && b.subarray(8, 12).toString() === "WEBP") return "image/webp";
-  if (b.subarray(0, 4).toString() === "%PDF") return "application/pdf";
-  return null;
-}
-
-async function leerDocumentos(form: FormData) {
-  const docs: { tipo: TipoDocumento; mime: string; datos: Uint8Array<ArrayBuffer> }[] = [];
-  const errores: ErroresCampos = {};
-  for (const tipo of TIPOS_DOC) {
-    const f = form.get(`doc_${tipo}`);
-    if (!(f instanceof File) || f.size === 0) continue;
-    if (f.size > MAX_DOC_BYTES) { errores[`doc_${tipo}`] = "El archivo pesa más de 4 MB"; continue; }
-    const datos = new Uint8Array(await f.arrayBuffer());
-    const mime = detectarMime(Buffer.from(datos.buffer));
-    if (!mime) { errores[`doc_${tipo}`] = "Sube una foto (JPG, PNG) o un PDF"; continue; }
-    docs.push({ tipo, mime, datos });
-  }
-  return { docs, errores };
-}
-
-function errorDuplicado(e: unknown): ErroresCampos | null {
-  if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-    const campos = String((e.meta?.target as string[] | undefined)?.join(",") ?? "");
-    if (campos.includes("telefono")) return { telefono: "Ya hay un motorista con este teléfono" };
-    if (campos.includes("dui")) return { dui: "Ya hay un motorista con este DUI" };
-    if (campos.includes("placa")) return { placa: "Ya hay un motorista con esta placa" };
-    return { general: "Uno de los datos ya está registrado" };
-  }
-  return null;
-}
-
-function datosDe(form: FormData) {
-  const keys = ["nombre", "telefono", "correo", "dui", "licenciaNumero", "licenciaVence", "placa", "marca", "modelo", "tipoVehiculo", "capacidadTon"];
-  return Object.fromEntries(keys.map((k) => [k, String(form.get(k) ?? "")]));
-}
+const valoresDe = (form: FormData) => ({ ...datosDe(form), ...Object.fromEntries(CAMPOS_FISCALES.map((k) => [k, String(form.get(k) ?? "")])) });
 
 export type EstadoFormMotorista = {
   errores?: ErroresCampos;
@@ -61,11 +18,12 @@ export type EstadoFormMotorista = {
 
 export async function crearMotorista(_: EstadoFormMotorista, form: FormData): Promise<EstadoFormMotorista> {
   const yo = await exigirPropietario();
-  const valores = datosDe(form);
+  const valores = valoresDe(form);
   const r = esquemaMotorista.safeParse(valores);
+  const f = esquemaFiscal.safeParse(valores);
   const { docs, errores: errDocs } = await leerDocumentos(form);
-  if (!r.success || Object.keys(errDocs).length) {
-    return { errores: { ...(r.success ? {} : erroresDe(r.error)), ...errDocs }, valores };
+  if (!r.success || !f.success || Object.keys(errDocs).length) {
+    return { errores: { ...(r.success ? {} : erroresDe(r.error)), ...(f.success ? {} : erroresDe(f.error)), ...errDocs }, valores };
   }
 
   const password = contrasenaTemporal();
@@ -73,10 +31,11 @@ export async function crearMotorista(_: EstadoFormMotorista, form: FormData): Pr
     const m = await db.motorista.create({
       data: {
         ...r.data,
+        ...f.data,
         passwordHash: await bcrypt.hash(password, 10),
         creadoPorId: yo.id,
         documentos: { create: docs },
-        historial: { create: { propietarioId: yo.id, accion: "CREADO", detalle: `${docs.length}/3 documentos` } },
+        historial: { create: { propietarioId: yo.id, accion: "CREADO", detalle: `${docs.length}/${TOTAL_DOCS} fotos` } },
       },
     });
     revalidatePath("/panel", "layout");
@@ -90,15 +49,16 @@ export async function crearMotorista(_: EstadoFormMotorista, form: FormData): Pr
 
 export async function editarMotorista(id: string, _: EstadoFormMotorista, form: FormData): Promise<EstadoFormMotorista> {
   const yo = await exigirPropietario();
-  const valores = datosDe(form);
+  const valores = valoresDe(form);
   const r = esquemaMotorista.safeParse(valores);
+  const f = esquemaFiscal.safeParse(valores);
   const { docs, errores: errDocs } = await leerDocumentos(form);
-  if (!r.success || Object.keys(errDocs).length) {
-    return { errores: { ...(r.success ? {} : erroresDe(r.error)), ...errDocs }, valores };
+  if (!r.success || !f.success || Object.keys(errDocs).length) {
+    return { errores: { ...(r.success ? {} : erroresDe(r.error)), ...(f.success ? {} : erroresDe(f.error)), ...errDocs }, valores };
   }
   try {
     await db.$transaction(async (tx) => {
-      await tx.motorista.update({ where: { id }, data: r.data });
+      await tx.motorista.update({ where: { id }, data: { ...r.data, ...f.data } });
       await tx.historialMotorista.create({ data: { motoristaId: id, propietarioId: yo.id, accion: "EDITADO" } });
       for (const d of docs) {
         await tx.documento.upsert({
@@ -120,14 +80,18 @@ export async function editarMotorista(id: string, _: EstadoFormMotorista, form: 
 
 export type EstadoAccion = { error?: string; ok?: string; password?: string };
 
+/** Casillas que el propietario marca al aprobar (deben coincidir con AccionesMotorista). */
+const REVISIONES = [["revisoDui"], ["revisoLicencia"], ["revisoTarjeta"], ["revisoVehiculo"]] as const;
+
 export async function aprobarMotorista(id: string, _: EstadoAccion, form: FormData): Promise<EstadoAccion> {
   const yo = await exigirPropietario();
   const m = await db.motorista.findUnique({ where: { id }, include: { _count: { select: { documentos: true } } } });
   if (!m) return { error: "No se encontró el motorista." };
   if (m.estado !== "PENDIENTE") return { error: "Este motorista ya no está pendiente." };
-  if (m._count.documentos < 3) return { error: "Faltan fotos de documentos. Súbelas en «Editar datos» antes de aprobar." };
-  if (!["revisoDui", "revisoLicencia", "revisoTarjeta"].every((k) => form.get(k) === "on")) {
-    return { error: "Marca las tres casillas para confirmar que revisaste los documentos." };
+  if (m._count.documentos < TOTAL_DOCS) return { error: `Faltan fotos (${m._count.documentos}/${TOTAL_DOCS}). Súbelas en «Editar datos» antes de aprobar.` };
+  if (!m.accesoPagadoEn) return { error: "Falta el pago del acceso a la plataforma. Regístralo antes de aprobar." };
+  if (!REVISIONES.every(([k]) => form.get(k) === "on")) {
+    return { error: "Marca todas las casillas para confirmar que revisaste los documentos y el vehículo." };
   }
   await db.motorista.update({
     where: { id },
@@ -136,9 +100,9 @@ export async function aprobarMotorista(id: string, _: EstadoAccion, form: FormDa
       historial: { create: { propietarioId: yo.id, accion: "APROBADO" } },
     },
   });
-  despues(() => avisarMotoristas([id], { titulo: "¡Tu cuenta de FleteYa fue aprobada!", cuerpo: "Ya puedes conectarte y recibir viajes cuando tengas créditos.", url: "/motorista", tag: "fleteya-cuenta" }));
+  despues(() => avisarMotoristas([id], { titulo: "¡Tu perfil de FleteYa está activo!", cuerpo: "Recarga créditos y conéctate para recibir viajes.", url: "/motorista", tag: "fleteya-cuenta" }));
   revalidatePath("/panel", "layout");
-  return { ok: "Motorista aprobado. Ya puede recibir viajes cuando la app del motorista esté lista." };
+  return { ok: "Motorista aprobado. Recibirá viajes en cuanto tenga créditos." };
 }
 
 export async function suspenderMotorista(id: string, _: EstadoAccion, form: FormData): Promise<EstadoAccion> {

@@ -2,6 +2,7 @@
 import type { EstadoMotorista } from "@prisma/client";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import { Credenciales } from "@/components/Credenciales";
+import { TOTAL_DOCS } from "@/lib/validacion";
 import {
   aprobarMotorista, reactivarMotorista, restablecerContrasena, suspenderMotorista, type EstadoAccion,
 } from "../acciones";
@@ -10,8 +11,9 @@ function Aviso({ e }: { e: EstadoAccion }) {
   return e.error ? <p role="alert" className="mt-3 rounded-lg bg-error/10 px-3 py-2.5 text-xs text-error">{e.error}</p> : null;
 }
 
-export function AccionesMotorista({ id, nombre, telefono, estado, documentos, licenciaVencida }: {
+export function AccionesMotorista({ id, nombre, telefono, estado, documentos, licenciaVencida, accesoPagado, children }: {
   id: string; nombre: string; telefono: string; estado: EstadoMotorista; documentos: number; licenciaVencida: boolean;
+  accesoPagado: boolean; children?: React.ReactNode; // children: tarjeta del pago de acceso
 }) {
   const [aprob, aprobar, aprobando] = useActionState<EstadoAccion, FormData>(aprobarMotorista.bind(null, id), {});
   const [susp, suspender, suspendiendo] = useActionState<EstadoAccion, FormData>(suspenderMotorista.bind(null, id), {});
@@ -39,8 +41,10 @@ export function AccionesMotorista({ id, nombre, telefono, estado, documentos, li
       {estado === "PENDIENTE" && (
         <section className="tarjeta border-naranja/40 p-5">
           <h2 className="flex items-center gap-2 font-bold"><i className="fa-solid fa-file-circle-check text-naranja" />Aprobar motorista</h2>
-          {documentos < 3 ? (
-            <p className="mt-2 text-sm text-suave">Faltan {3 - documentos} foto(s) de documentos. Súbelas en <span className="text-texto">Editar datos</span> para poder aprobarlo.</p>
+          {documentos < TOTAL_DOCS ? (
+            <p className="mt-2 text-sm text-suave">Faltan {TOTAL_DOCS - documentos} de {TOTAL_DOCS} fotos. Súbelas en <span className="text-texto">Editar datos</span> para poder aprobarlo.</p>
+          ) : !accesoPagado ? (
+            <p className="mt-2 text-sm text-suave" data-testid="falta-acceso">Primero registra su <span className="text-texto">pago de acceso</span> (abajo). Sin ese pago no se puede dar de alta.</p>
           ) : (
             <form action={aprobar} className="mt-3 space-y-2.5 text-sm">
               <p className="text-xs text-suave">Confirma que revisaste las fotos:</p>
@@ -48,6 +52,7 @@ export function AccionesMotorista({ id, nombre, telefono, estado, documentos, li
                 ["revisoDui", "El DUI es legible y coincide con el nombre"],
                 ["revisoLicencia", "La licencia está vigente"],
                 ["revisoTarjeta", "La tarjeta de circulación coincide con la placa"],
+                ["revisoVehiculo", "Las 4 fotos del vehículo coinciden con la placa y el tipo"],
               ].map(([n, t]) => (
                 <label key={n} className="flex cursor-pointer items-start gap-2.5">
                   <input type="checkbox" name={n} className="mt-0.5 h-4 w-4 shrink-0 accent-naranja" />{t}
@@ -60,6 +65,7 @@ export function AccionesMotorista({ id, nombre, telefono, estado, documentos, li
           <Aviso e={aprob} />
         </section>
       )}
+      {children}
 
       {estado === "SUSPENDIDO" ? (
         <section className="tarjeta p-5">

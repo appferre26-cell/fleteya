@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { correoConfigurado, enviarReciboPorCorreo } from "@/lib/correo";
 import { db } from "@/lib/db";
-import { ErrorRecarga, anularRecarga, registrarRecarga } from "@/lib/recargas";
-import { numeroRecibo } from "@/lib/recibo";
+import { ErrorRecarga, anularRecarga, registrarPagoAcceso, registrarRecarga } from "@/lib/recargas";
+import { RECARGA_MAX, RECARGA_MIN, numeroRecibo } from "@/lib/recibo";
 import { dinero } from "@/lib/tarifa";
 import { exigirPropietario } from "@/lib/sesion";
 import { avisarMotoristas, despues } from "@/lib/avisos";
@@ -13,22 +13,29 @@ import { erroresDe, type ErroresCampos } from "@/lib/validacion";
 
 export type EstadoForm = { errores?: ErroresCampos; error?: string; ok?: string; valores?: Record<string, string> };
 
-const esquemaRecarga = z.object({
-  motoristaId: z.string().min(1, "Elige al motorista"),
-  plan: z.enum(["SEMANAL", "MENSUAL"], { message: "Elige el plan" }),
+const esquemaPago = {
   formaPago: z.enum(["EFECTIVO", "TRANSFERENCIA"], { message: "Elige la forma de pago" }),
   referencia: z.string().trim().max(40, "Máximo 40 caracteres"),
   revisado: z.string(),
   nota: z.string().trim().max(200, "Máximo 200 caracteres"),
-}).superRefine((d, ctx) => {
+};
+const revisarTransferencia = (d: { formaPago: string; referencia: string; revisado: string }, ctx: z.RefinementCtx) => {
   if (d.formaPago !== "TRANSFERENCIA") return;
   if (!/^[A-Za-z0-9-]{3,40}$/.test(d.referencia.replace(/\s+/g, ""))) ctx.addIssue({ code: "custom", path: ["referencia"], message: "Escribe el número de referencia de la transferencia" });
   if (d.revisado !== "on") ctx.addIssue({ code: "custom", path: ["revisado"], message: "Confirma que viste el dinero en la cuenta" });
-});
+};
+
+// Ya no hay planes: el propietario escribe cuánto pagó el motorista.
+const esquemaRecarga = z.object({
+  motoristaId: z.string().min(1, "Elige al motorista"),
+  monto: z.string().trim().refine((t) => /^\d{1,4}(\.\d{1,2})?$/.test(t), "Escribe el monto (ej. 15 o 12.50)").transform(Number)
+    .refine((n) => n >= RECARGA_MIN && n <= RECARGA_MAX, `Entre $${RECARGA_MIN} y $${RECARGA_MAX}`),
+  ...esquemaPago,
+}).superRefine(revisarTransferencia);
 
 export async function registrarRecargaAccion(_: EstadoForm, form: FormData): Promise<EstadoForm> {
   const p = await exigirPropietario();
-  const valores = Object.fromEntries(["motoristaId", "plan", "formaPago", "referencia", "revisado", "nota"].map((k) => [k, String(form.get(k) ?? "")]));
+  const valores = Object.fromEntries(["motoristaId", "monto", "formaPago", "referencia", "revisado", "nota"].map((k) => [k, String(form.get(k) ?? "")]));
   const r = esquemaRecarga.safeParse(valores);
   if (!r.success) return { errores: erroresDe(r.error), valores };
   const d = r.data;
@@ -37,7 +44,7 @@ export async function registrarRecargaAccion(_: EstadoForm, form: FormData): Pro
   let conCorreo = false;
   try {
     const rec = await registrarRecarga({
-      motoristaId: d.motoristaId, plan: d.plan, formaPago: d.formaPago, propietarioId: p.id,
+      motoristaId: d.motoristaId, monto: d.monto, formaPago: d.formaPago, propietarioId: p.id,
       referencia: d.formaPago === "TRANSFERENCIA" ? d.referencia : null, nota: d.nota || null,
     });
     numero = rec.numero;
@@ -55,6 +62,33 @@ export async function registrarRecargaAccion(_: EstadoForm, form: FormData): Pro
   if (conCorreo) await enviarReciboPorCorreo(numero); // si falla, el recibo muestra el error y se puede reenviar
   revalidatePath("/panel", "layout");
   redirect(`/panel/creditos/recibo/${numero}?nuevo=1`);
+}
+
+const esquemaAcceso = z.object(esquemaPago).superRefine(revisarTransferencia);
+
+/** El motorista pagó su acceso a la plataforma en efectivo o por transferencia (mientras no hay pago en línea). */
+export async function registrarPagoAccesoAccion(motoristaId: string, _: EstadoForm, form: FormData): Promise<EstadoForm> {
+  const p = await exigirPropietario();
+  const valores = Object.fromEntries(["formaPago", "referencia", "revisado", "nota"].map((k) => [k, String(form.get(k) ?? "")]));
+  const r = esquemaAcceso.safeParse(valores);
+  if (!r.success) return { errores: erroresDe(r.error), valores };
+  const d = r.data;
+  let numero: number;
+  try {
+    const rec = await registrarPagoAcceso({
+      motoristaId, formaPago: d.formaPago, propietarioId: p.id,
+      referencia: d.formaPago === "TRANSFERENCIA" ? d.referencia : null, nota: d.nota || null,
+    });
+    numero = rec.numero;
+  } catch (e) {
+    if (e instanceof ErrorRecarga) return { error: e.message, valores };
+    throw e;
+  }
+  const m = await db.motorista.findUnique({ where: { id: motoristaId }, select: { correo: true } });
+  if (m?.correo && correoConfigurado()) await enviarReciboPorCorreo(numero);
+  despues(() => avisarMotoristas([motoristaId], { titulo: "Recibimos tu pago de acceso", cuerpo: "Estamos revisando tus documentos. Te avisamos cuando tu perfil quede activo.", url: "/motorista/alta", tag: "fleteya-cuenta" }));
+  revalidatePath("/panel", "layout");
+  return { ok: `Pago de acceso registrado (${numeroRecibo(numero)}). Ya puedes aprobarlo cuando revises sus documentos.` };
 }
 
 export async function anularRecargaAccion(id: string, _: EstadoForm, form: FormData): Promise<EstadoForm> {
@@ -89,8 +123,7 @@ const esquemaDatos = z.object({
   bancoTipoCuenta: texto(30),
   bancoNumero: z.string().trim().refine((t) => t === "" || /^[\d -]{6,30}$/.test(t), "Solo números, espacios o guiones").transform((t) => t || null),
   bancoTitular: texto(100),
-  planSemanal: num("Escribe el precio").min(1, "Mínimo $1").max(500, "Máximo $500"),
-  planMensual: num("Escribe el precio").min(1, "Mínimo $1").max(1000, "Máximo $1000"),
+  precioAcceso: num("Escribe el precio").min(1, "Mínimo $1").max(500, "Máximo $500"),
   comisionPct: num("Escribe el porcentaje").min(0, "Mínimo 0 %").max(50, "Máximo 50 %"),
 });
 

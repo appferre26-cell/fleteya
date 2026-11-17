@@ -49,7 +49,7 @@ model Motorista {
   passwordHash         String
   debeCambiarPassword  Boolean         @default(true)
 
-  // Documentos (únicamente DUI, licencia y tarjeta de circulación)
+  // Documentos: DUI, licencia y tarjeta de circulación (frente y reverso) + 4 fotos del vehículo
   dui                  String          @unique // formato 00000000-0
   licenciaNumero       String
   licenciaVence        DateTime        @db.Date
@@ -66,8 +66,9 @@ model Motorista {
   aprobadoEn           DateTime?
   aprobadoPorId        String?
   aprobadoPor          Propietario?    @relation("AprobadoPor", fields: [aprobadoPorId], references: [id])
-  creadoPorId          String
-  creadoPor            Propietario     @relation("CreadoPor", fields: [creadoPorId], references: [id])
+  creadoPorId          String?         // vacío = se registró él mismo desde la app
+  creadoPor            Propietario?    @relation("CreadoPor", fields: [creadoPorId], references: [id])
+  autoRegistro         Boolean         @default(false)
   creadoEn             DateTime        @default(now())
   actualizadoEn        DateTime        @updatedAt
 
@@ -90,12 +91,30 @@ model Motorista {
   movimientos          MovimientoCredito[]
   recargas             Recarga[]
   avisos               SuscripcionAviso[]
+
+  // Parte 10: acceso a la plataforma (pago único) y datos para la factura
+  accesoPagadoEn       DateTime?       // sin esto no se puede aprobar
+  accesoReferencia     String?         // referencia de transferencia que avisó el motorista desde su app
+  accesoAvisadoEn      DateTime?
+  requiereCreditoFiscal Boolean        @default(false)
+  nit                  String?
+  nrc                  String?
+  razonSocial          String?
+  giro                 String?
+  direccionFiscal      String?
 }
 
 enum TipoDocumento {
-  DUI
-  LICENCIA
-  TARJETA_CIRCULACION
+  DUI_FRENTE
+  DUI_REVERSO
+  LICENCIA_FRENTE
+  LICENCIA_REVERSO
+  TARJETA_FRENTE
+  TARJETA_REVERSO
+  VEHICULO_FRENTE
+  VEHICULO_ATRAS
+  VEHICULO_IZQUIERDA
+  VEHICULO_DERECHA
 }
 
 model Documento {
@@ -114,9 +133,9 @@ model HistorialMotorista {
   id            String      @id @default(cuid())
   motoristaId   String
   motorista     Motorista   @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
-  propietarioId String
-  propietario   Propietario @relation(fields: [propietarioId], references: [id])
-  accion        String      // CREADO, APROBADO, SUSPENDIDO, REACTIVADO, EDITADO, CONTRASENA_RESTABLECIDA, DOCUMENTO_ACTUALIZADO
+  propietarioId String?     // vacío = lo hizo el motorista desde su app
+  propietario   Propietario? @relation(fields: [propietarioId], references: [id])
+  accion        String      // CREADO, AUTOREGISTRO, PAGO_ACCESO, AVISO_PAGO, APROBADO, SUSPENDIDO, REACTIVADO, EDITADO, CONTRASENA_RESTABLECIDA, DOCUMENTO_ACTUALIZADO
   detalle       String?
   fecha         DateTime    @default(now())
 
@@ -163,8 +182,8 @@ model Configuracion {
   zonaRadioKm    Decimal  @default(8) @db.Decimal(5, 1)
   whatsappAyuda  String?  // 8 dígitos; vacío = no se muestra el botón "Ayuda"
   comisionPct    Decimal  @default(10) @db.Decimal(5, 2) // % de cada viaje que se descuenta de los créditos
-  planSemanal    Decimal  @default(20) @db.Decimal(8, 2)
-  planMensual    Decimal  @default(60) @db.Decimal(8, 2)
+  // Parte 10: ya no hay planes; el motorista recarga el monto que quiera y paga una sola vez el acceso
+  precioAcceso   Decimal  @default(10) @db.Decimal(8, 2)
   // Parte 4: datos que salen en los recibos y la cuenta donde el motorista paga
   emisorNombre    String? // socio inscrito en Hacienda
   emisorNit       String?
@@ -323,9 +342,10 @@ model MovimientoCredito {
 
 // ───────────── Parte 4: recargas de créditos ─────────────
 
-enum PlanRecarga {
-  SEMANAL
-  MENSUAL
+// RECARGA suma al saldo; ACCESO es el pago único para darse de alta (no suma créditos).
+enum ConceptoPago {
+  RECARGA
+  ACCESO
 }
 
 enum FormaPago {
@@ -340,7 +360,7 @@ model Recarga {
   numero          Int         @unique @default(autoincrement())
   motoristaId     String
   motorista       Motorista   @relation(fields: [motoristaId], references: [id])
-  plan            PlanRecarga
+  concepto        ConceptoPago @default(RECARGA)
   monto           Decimal     @db.Decimal(8, 2)
   formaPago       FormaPago
   referencia      String?     // número de la transferencia

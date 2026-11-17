@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useActionState, useMemo } from "react";
 import { Credenciales } from "@/components/Credenciales";
 import { DocumentoInput } from "@/components/DocumentoInput";
-import { DOCUMENTOS, TIPOS_VEHICULO } from "@/lib/validacion";
+import { DOCUMENTOS, GRUPOS_DOC, TIPOS_VEHICULO, TOTAL_DOCS, type TipoDoc } from "@/lib/validacion";
+import { CamposFiscales } from "@/components/CamposFiscales";
 import type { EstadoFormMotorista } from "./acciones";
 
 type Accion = (s: EstadoFormMotorista, f: FormData) => Promise<EstadoFormMotorista>;
@@ -11,7 +12,7 @@ type Accion = (s: EstadoFormMotorista, f: FormData) => Promise<EstadoFormMotoris
 export function FormMotorista({ accion, inicial = {}, documentos = {}, cancelar }: {
   accion: Accion;
   inicial?: Record<string, string>;
-  documentos?: Partial<Record<keyof typeof DOCUMENTOS, string>>; // tipo → url de la foto actual
+  documentos?: Partial<Record<TipoDoc, string>>; // tipo → url de la foto actual
   cancelar: string;
 }) {
   const [estado, enviar, enviando] = useActionState<EstadoFormMotorista, FormData>(accion, {});
@@ -30,7 +31,7 @@ export function FormMotorista({ accion, inicial = {}, documentos = {}, cancelar 
         <h2 className="mt-4 text-xl font-extrabold">{c.nombre} quedó registrado</h2>
         <p className="mt-1 text-sm text-suave">
           Está <span className="font-semibold text-naranja">pendiente de aprobación</span>.
-          {c.documentos < 3 ? ` Faltan ${3 - c.documentos} foto(s) de documentos; súbelas antes de aprobarlo.` : " Revisa sus documentos y apruébalo para que pueda recibir viajes."}
+          {c.documentos < TOTAL_DOCS ? ` Faltan ${TOTAL_DOCS - c.documentos} foto(s); súbelas antes de aprobarlo.` : " Registra su pago de acceso, revisa sus fotos y apruébalo."}
         </p>
         <div className="mt-5"><Credenciales nombre={c.nombre} telefono={c.telefono} password={c.password} /></div>
         <div className="mt-6 flex flex-wrap gap-2">
@@ -105,13 +106,24 @@ export function FormMotorista({ accion, inicial = {}, documentos = {}, cancelar 
       </section>
 
       <section className="tarjeta p-5">
-        <h2 className="seccion-titulo">Fotos de documentos</h2>
-        <p className="mt-1 text-xs text-suave">Únicamente DUI, licencia y tarjeta de circulación. Puedes subirlas ahora o después; sin las 3 no se puede aprobar.</p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          {(Object.keys(DOCUMENTOS) as (keyof typeof DOCUMENTOS)[]).map((t) => (
-            <DocumentoInput key={`${t}-${intento}`} nombre={`doc_${t}`} etiqueta={DOCUMENTOS[t]} existente={documentos[t]} error={err[`doc_${t}`]} />
-          ))}
-        </div>
+        <h2 className="seccion-titulo">Fotos ({TOTAL_DOCS})</h2>
+        <p className="mt-1 text-xs text-suave">DUI, licencia y tarjeta de circulación por los dos lados, y el vehículo de frente, de atrás y de ambos costados. Puedes subirlas ahora o después; sin todas no se puede aprobar.</p>
+        {GRUPOS_DOC.map((g) => (
+          <div key={g.titulo} className="mt-4">
+            <p className="text-xs font-semibold text-suave uppercase">{g.titulo}</p>
+            <div className="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {g.tipos.map((t) => (
+                <DocumentoInput key={`${t}-${intento}`} nombre={`doc_${t}`} etiqueta={DOCUMENTOS[t]} existente={documentos[t]} error={err[`doc_${t}`]} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <section className="tarjeta p-5">
+        <h2 className="seccion-titulo">Facturación</h2>
+        <p className="mt-1 text-xs text-suave">Solo si el motorista pide crédito fiscal por el acceso y las recargas.</p>
+        <div className="mt-4"><CamposFiscales valores={v} errores={err} /></div>
       </section>
 
       <div className="flex flex-wrap gap-2">

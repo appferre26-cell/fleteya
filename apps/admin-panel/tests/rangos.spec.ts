@@ -22,7 +22,7 @@ async function crearMotorista(capacidadTon: number, nombre?: string) {
       nombre: nombre ?? `Motorista ${telefono.slice(-4)} Rangos`, telefono, passwordHash: await bcrypt.hash(CLAVE, 10),
       debeCambiarPassword: false, dui: `${azar(8)}-${azar(1)}`, licenciaNumero: azar(10), licenciaVence: new Date("2030-01-01"),
       placa: `C ${azar(6)}`, marca: "Isuzu", modelo: "NPR", tipoVehiculo: capacidadTon > 3 ? "CAMION_MEDIANO_GRANDE" : "CAMION_LIVIANO",
-      capacidadTon, estado: "ACTIVO", creadoPorId: prop.id, saldoCreditos: 20, terminosVersion: "0.1", terminosAceptadosEn: new Date(),
+      capacidadTon, estado: "ACTIVO", creadoPorId: prop.id, saldoCreditos: 20, terminosVersion: "0.2", terminosAceptadosEn: new Date(),
     },
   });
   creados.push(m.id);

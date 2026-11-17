@@ -26,7 +26,7 @@ async function crearMotorista(nombre: string) {
       nombre, telefono, passwordHash: await bcrypt.hash(CLAVE, 10),
       debeCambiarPassword: false, dui: `${azar(8)}-${azar(1)}`, licenciaNumero: azar(10), licenciaVence: new Date("2030-01-01"),
       placa: `C ${azar(6)}`, marca: "Isuzu", modelo: "NPR", tipoVehiculo: "CAMION_LIVIANO",
-      capacidadTon: 3, estado: "ACTIVO", creadoPorId: prop.id, saldoCreditos: 20, terminosVersion: "0.1", terminosAceptadosEn: new Date(),
+      capacidadTon: 3, estado: "ACTIVO", creadoPorId: prop.id, saldoCreditos: 20, terminosVersion: "0.2", terminosAceptadosEn: new Date(),
     },
   });
   creados.push(m.id);

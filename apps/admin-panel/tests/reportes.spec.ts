@@ -75,7 +75,7 @@ test("reportes: viajes, comisión y recargas del periodo; por motorista", async 
       nombre: NOMBRE, telefono: `7${azar(7)}`, passwordHash: await bcrypt.hash("clave-segura-1", 10), debeCambiarPassword: false,
       dui: `${azar(8)}-${azar(1)}`, licenciaNumero: azar(10), licenciaVence: new Date("2030-01-01"), placa: `C ${azar(6)}`,
       marca: "Isuzu", modelo: "NPR", tipoVehiculo: "CAMION_LIVIANO", capacidadTon: 3, estado: "ACTIVO", creadoPorId: prop.id, saldoCreditos: 15,
-      terminosVersion: "0.1", terminosAceptadosEn: new Date(),
+      terminosVersion: "0.2", terminosAceptadosEn: new Date(),
     },
   });
   const ahora = new Date();
@@ -86,7 +86,7 @@ test("reportes: viajes, comisión y recargas del periodo; por motorista", async 
   // Uno entregado hace 40 días: no entra en «hoy».
   viajesIds.push((await viaje({ estado: "ENTREGADO", motoristaId: motorista.id, precioFinal: 99, comision: 9.9, creadoEn: new Date(Date.now() - 40 * 86400000), entregadoEn: new Date(Date.now() - 40 * 86400000) })).id);
   recargaId = (await db.recarga.create({
-    data: { motoristaId: motorista.id, plan: "SEMANAL", monto: 20, formaPago: "EFECTIVO", saldoAntes: -5, deudaDescontada: 5, saldoDespues: 15, registradoPorId: prop.id },
+    data: { motoristaId: motorista.id, concepto: "RECARGA", monto: 20, formaPago: "EFECTIVO", saldoAntes: -5, deudaDescontada: 5, saldoDespues: 15, registradoPorId: prop.id },
   })).id;
 
   await page.reload();

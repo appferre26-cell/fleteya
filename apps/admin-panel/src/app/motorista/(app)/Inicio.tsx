@@ -199,6 +199,7 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
               <p className="font-bold text-error"><i className="fa-solid fa-circle-exclamation mr-2" />No puedes recibir viajes</p>
               <p className="mt-1">{d.puede.motivo}</p>
               {d.puede.codigo === "SALDO" && <a href="/motorista/creditos" className="btn-primario mt-3 h-10 w-full">Ver cómo recargar</a>}
+              {d.puede.codigo === "PENDIENTE" && <a href="/motorista/alta" className="btn-primario mt-3 h-10 w-full" data-testid="ir-alta">Ver mi alta y pago de acceso</a>}
             </div>
           ) : (
             <>

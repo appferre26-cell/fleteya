@@ -1,6 +1,10 @@
 // Utilidades de recargas y recibos que se pueden usar en el servidor y en el navegador.
 
-export const PLANES = { SEMANAL: "Semanal", MENSUAL: "Mensual" } as const;
+export const CONCEPTOS = { RECARGA: "Recarga de créditos", ACCESO: "Acceso a la plataforma" } as const;
+export const RECARGA_MIN = 1;
+export const RECARGA_MAX = 500;
+/** Montos rápidos en el formulario de recarga (el propietario puede escribir cualquier otro). */
+export const MONTOS_RAPIDOS = [5, 10, 20, 50];
 export const FORMAS_PAGO = { EFECTIVO: "Efectivo", TRANSFERENCIA: "Transferencia", EN_LINEA: "En línea" } as const;
 
 export const numeroRecibo = (n: number) => `REC-${String(n).padStart(6, "0")}`;

@@ -28,7 +28,7 @@ export function puedeRecibir(m: MotoristaBase): { ok: true } | { ok: false; moti
   if (m.estado === "PENDIENTE") return { ok: false, codigo: "PENDIENTE", motivo: "Tu cuenta está en revisión. FleteYa te avisa cuando quede aprobada." };
   if (m.estado === "SUSPENDIDO") return { ok: false, codigo: "SUSPENDIDO", motivo: "Tu cuenta está suspendida. Comunícate con FleteYa." };
   if (diasParaVencer(m.licenciaVence) < 0) return { ok: false, codigo: "LICENCIA", motivo: "Tu licencia está vencida. Renuévala y avisa a FleteYa para actualizarla." };
-  if (Number(m.saldoCreditos) <= 0) return { ok: false, codigo: "SALDO", motivo: "No tienes créditos. Recarga tu plan para recibir viajes." };
+  if (Number(m.saldoCreditos) <= 0) return { ok: false, codigo: "SALDO", motivo: "No tienes créditos. Recarga para recibir viajes." };
   return { ok: true };
 }
 

@@ -1,21 +1,24 @@
 "use client";
 import { useActionState, useState } from "react";
 import { centavos, dinero } from "@/lib/tarifa";
+import { MONTOS_RAPIDOS, RECARGA_MAX, RECARGA_MIN } from "@/lib/recibo";
 import { registrarRecargaAccion, type EstadoForm } from "./acciones";
 
 type M = { id: string; nombre: string; telefono: string; saldo: number; estado: string };
 
-export function FormRecarga({ motoristas, planes, inicial, faltanDatos }: {
-  motoristas: M[]; planes: { SEMANAL: number; MENSUAL: number }; inicial?: string; faltanDatos: boolean;
+export function FormRecarga({ motoristas, inicial, faltanDatos }: {
+  motoristas: M[]; inicial?: string; faltanDatos: boolean;
 }) {
   const [e, accion, enviando] = useActionState<EstadoForm, FormData>(registrarRecargaAccion, {});
   const v = e.valores ?? {};
   const [mid, setMid] = useState(v.motoristaId ?? inicial ?? "");
-  const [plan, setPlan] = useState<"SEMANAL" | "MENSUAL">((v.plan as "MENSUAL") || "SEMANAL");
+  const [monto, setMonto] = useState(v.monto ?? "");
   const [forma, setForma] = useState<"EFECTIVO" | "TRANSFERENCIA">((v.formaPago as "TRANSFERENCIA") || "TRANSFERENCIA");
   const err = e.errores ?? {};
   const m = motoristas.find((x) => x.id === mid);
-  const nuevo = m ? centavos(m.saldo + planes[plan]) : null;
+  const n = Number(monto);
+  const montoOk = /^\d{1,4}(\.\d{1,2})?$/.test(monto) && n >= RECARGA_MIN && n <= RECARGA_MAX;
+  const nuevo = m && montoOk ? centavos(m.saldo + n) : null;
 
   const opcion = (activa: boolean) => `flex h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border px-3 text-sm font-semibold has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-naranja ${activa ? "border-naranja bg-naranja/10 text-naranja" : "border-borde bg-fondo text-suave"}`;
 
@@ -23,7 +26,7 @@ export function FormRecarga({ motoristas, planes, inicial, faltanDatos }: {
     <form action={accion} id="registrar" className="tarjeta scroll-mt-24 border-naranja/50 p-5" data-testid="form-recarga">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-bold"><i className="fa-solid fa-hand-holding-dollar mr-2 text-naranja" />Registrar recarga</h2>
-        <p className="text-xs text-suave">El motorista te pagó en efectivo o por transferencia → regístralo aquí y el recibo se genera solo.</p>
+        <p className="text-xs text-suave">Sin planes: el motorista recarga lo que quiera. Registra lo que te pagó y el recibo se genera solo.</p>
       </div>
       {faltanDatos && (
         <p className="mt-3 rounded-lg bg-naranja/10 px-3 py-2 text-xs text-naranja">
@@ -42,17 +45,17 @@ export function FormRecarga({ motoristas, planes, inicial, faltanDatos }: {
           </select>
           {err.motoristaId && <p className="mt-1 text-[11px] text-error">{err.motoristaId}</p>}
         </div>
-        <fieldset>
-          <legend className="etiqueta">Plan</legend>
-          <div className="flex gap-2">
-            {(["SEMANAL", "MENSUAL"] as const).map((p) => (
-              <label key={p} className={opcion(plan === p)}>
-                <input type="radio" name="plan" value={p} checked={plan === p} onChange={() => setPlan(p)} className="sr-only" />
-                <span className="whitespace-nowrap">{p === "SEMANAL" ? "Semanal" : "Mensual"} <span className="font-normal">{dinero(planes[p])}</span></span>
-              </label>
+        <div>
+          <label className="etiqueta" htmlFor="monto">Monto que pagó ($)</label>
+          <input id="monto" name="monto" value={monto} onChange={(x) => setMonto(x.target.value.replace(",", "."))} inputMode="decimal" placeholder="Ej. 15" autoComplete="off"
+            className={`campo h-11 tabular-nums ${err.monto ? "border-error" : ""}`} />
+          <div className="mt-1.5 flex gap-1.5">
+            {MONTOS_RAPIDOS.map((x) => (
+              <button key={x} type="button" onClick={() => setMonto(String(x))} className={`h-7 flex-1 rounded-md border text-xs font-semibold ${monto === String(x) ? "border-naranja text-naranja" : "border-borde text-suave"}`}>${x}</button>
             ))}
           </div>
-        </fieldset>
+          {err.monto && <p className="mt-1 text-[11px] text-error">{err.monto}</p>}
+        </div>
         <fieldset>
           <legend className="etiqueta">Forma de pago</legend>
           <div className="flex gap-2">
@@ -91,15 +94,15 @@ export function FormRecarga({ motoristas, planes, inicial, faltanDatos }: {
 
       <div className="mt-5 flex flex-col gap-3 border-t border-borde pt-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm" data-testid="vista-saldo">
-          {m ? (
+          {m && nuevo !== null ? (
             <>
               <span className="text-suave">Saldo nuevo: </span>
               <span className={m.saldo < 0 ? "text-error" : "text-suave"}>{dinero(m.saldo)}</span>
-              <span className="text-suave"> + {dinero(planes[plan])} = </span>
+              <span className="text-suave"> + {dinero(n)} = </span>
               <b className="text-exito">{dinero(nuevo!)}</b>
               {m.saldo < 0 && <p className="mt-0.5 text-xs text-suave">Se descuentan primero los {dinero(-m.saldo)} que debía.</p>}
             </>
-          ) : <span className="text-suave">Elige al motorista para ver su saldo nuevo.</span>}
+          ) : <span className="text-suave">{m ? `Escribe el monto (de ${dinero(RECARGA_MIN)} a ${dinero(RECARGA_MAX)}) para ver su saldo nuevo.` : "Elige al motorista para ver su saldo nuevo."}</span>}
         </div>
         <button type="submit" disabled={enviando} className="btn-primario h-12 sm:px-8"><i className="fa-solid fa-receipt" />{enviando ? "Registrando…" : "Registrar y generar recibo"}</button>
       </div>

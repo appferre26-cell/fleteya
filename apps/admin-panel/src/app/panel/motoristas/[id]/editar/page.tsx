@@ -17,6 +17,8 @@ export default async function EditarMotorista({ params }: { params: Promise<{ id
     nombre: m.nombre, telefono: m.telefono, correo: m.correo ?? "", dui: m.dui, licenciaNumero: m.licenciaNumero,
     licenciaVence: m.licenciaVence.toISOString().slice(0, 10), placa: m.placa, marca: m.marca, modelo: m.modelo,
     tipoVehiculo: m.tipoVehiculo, capacidadTon: m.capacidadTon.toString(),
+    requiereCreditoFiscal: m.requiereCreditoFiscal ? "on" : "", nit: m.nit ?? "", nrc: m.nrc ?? "",
+    razonSocial: m.razonSocial ?? "", giro: m.giro ?? "", direccionFiscal: m.direccionFiscal ?? "",
   };
   // Solo se muestran como vista previa las imágenes (los PDF se abren desde el detalle).
   const documentos = Object.fromEntries(m.documentos.filter((d) => d.mime.startsWith("image/")).map((d) => [d.tipo, `/api/documentos/${d.id}`]));

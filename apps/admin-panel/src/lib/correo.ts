@@ -2,7 +2,7 @@ import "server-only";
 import nodemailer from "nodemailer";
 import { db } from "./db";
 import { obtenerRecibo } from "./recargas";
-import { FORMAS_PAGO, PLANES, fechaRecibo, numeroRecibo } from "./recibo";
+import { CONCEPTOS, FORMAS_PAGO, fechaRecibo, numeroRecibo } from "./recibo";
 import { reciboPdf } from "./recibo-pdf";
 import { dinero } from "./tarifa";
 
@@ -26,11 +26,11 @@ export async function enviarReciboPorCorreo(numero: number): Promise<{ ok: boole
     await t.sendMail({
       from: process.env.CORREO_REMITENTE ?? "FleteYa <no-responder@fleteya.app>",
       to: r.motorista.correo,
-      subject: `${r.anulada ? "Recibo anulado" : "Recibo de recarga"} ${n} — FleteYa`,
+      subject: `${r.anulada ? "Recibo anulado" : r.concepto === "ACCESO" ? "Recibo de acceso" : "Recibo de recarga"} ${n} — FleteYa`,
       text: [
         `Hola, ${r.motorista.nombre}:`,
         "",
-        r.anulada ? `El recibo ${n} fue anulado. Motivo: ${r.anulada.motivo}.` : `Registramos tu recarga ${PLANES[r.plan].toLowerCase()} de ${dinero(r.monto)} (${FORMAS_PAGO[r.formaPago].toLowerCase()}).`,
+        r.anulada ? `El recibo ${n} fue anulado. Motivo: ${r.anulada.motivo}.` : `Registramos tu pago de ${dinero(r.monto)} por «${CONCEPTOS[r.concepto]}» (${FORMAS_PAGO[r.formaPago].toLowerCase()}).`,
         `Fecha: ${fechaRecibo(r.fecha)}`,
         `Saldo anterior: ${dinero(r.saldoAntes)}${r.deuda > 0 ? ` · deuda descontada: ${dinero(r.deuda)}` : ""}`,
         `Saldo nuevo: ${dinero(r.saldoDespues)}`,

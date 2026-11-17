@@ -26,7 +26,7 @@ Cada tipo de usuario tiene su **propia entrada y su propio perfil**. No comparte
 | Acceso | Dónde entra | Cómo se identifica | ¿Se registra? |
 |--------|-------------|--------------------|---------------|
 | **Propietarios** | Panel admin (computadora y celular, dirección propia) | Correo + contraseña de propietario | No hay registro público: las cuentas las crean los propios propietarios |
-| **Motoristas** | App del motorista | Teléfono + contraseña de motorista | No hay registro libre: el motorista lo da de alta un propietario y recibe sus credenciales |
+| **Motoristas** | App del motorista | Teléfono + contraseña de motorista | Se registra él mismo en la app (datos + 10 fotos + pago de acceso de $10) o lo registra un propietario. Queda pendiente hasta que un propietario confirma el pago y revisa las fotos |
 | **Clientes** | Link web para pedir viaje | Solo nombre y teléfono en cada pedido | **No se registra** — sin cuenta ni contraseña |
 
 - **Decisión: dos apps separadas (Opción A).** La app **FleteYa Motorista** solo tiene el inicio de sesión de motoristas; el **panel de propietarios** es otra app aparte, con su propio inicio de sesión, que se abre en la computadora o se instala en el celular desde su link. Los motoristas no ven ningún botón ni acceso a la parte de propietarios.
@@ -160,7 +160,7 @@ Peso estimado:            1,109 kg (≈ 1.1 ton)
 
 **Mis créditos**
 - Saldo actual (en rojo si está en negativo)
-- Cómo recargar: paga el plan (semanal $20 o mensual $60) **por transferencia a la cuenta de FleteYa o en efectivo al propietario**; el propietario la registra y el saldo se actualiza solo
+- Cómo recargar: **sin planes**, recarga el monto que quiera **por transferencia a la cuenta de FleteYa o en efectivo al propietario**; el propietario la registra y el saldo se actualiza solo. Sin saldo no recibe viajes
 - Movimientos: recargas y descuentos del 10% por viaje
 - **Historial de recargas con recibos:** ver, descargar en PDF o compartir (ver sección 8)
 
@@ -206,7 +206,7 @@ El panel de propietarios funciona **en computadora y en el celular**:
 - Tarifa mínima (hoy $10)
 - Distancia incluida (hoy 5 km)
 - Comisión de FleteYa descontada de créditos (hoy 10%)
-- Precio de las recargas (hoy $20 semanal / $60 mensual)
+- Precio del acceso a la plataforma para motoristas (hoy $10, pago único). Las recargas no tienen precio fijo
 
 **Clientes**
 - Historial de clientes (por número de teléfono)
@@ -303,19 +303,29 @@ Cuando el destino está a más de 5 km del punto de salida:
 
 El motorista trabaja con un **saldo de créditos prepagados**. FleteYa gana de dos formas:
 
-#### 1. Suscripción (recarga de créditos)
+#### 1. Acceso a la plataforma y recargas de créditos
 
-| Plan | Precio |
-|------|--------|
-| Semanal | $20.00 |
-| Mensual | $60.00 |
+**Decisión (16 nov 2026):** se eliminan los planes semanal y mensual (no tenía sentido pagar una semana y gastar el crédito en 3 días).
 
-El motorista recarga antes de poder recibir viajes. Como no habrá pagos en línea, **la recarga se hace así:**
+| Concepto | Precio |
+|----------|--------|
+| Acceso a la plataforma | **$10.00, una sola vez** (al registrarse). No se convierte en créditos |
+| Recarga de créditos | **El monto que quiera el motorista** (de $1 a $500). Sin saldo no recibe viajes |
 
-1. El motorista paga el plan por **transferencia a la cuenta de FleteYa** (opción principal) o **en efectivo** al propietario.
+**Registro y alta del motorista:**
+1. El motorista entra a la app → **«¿Eres motorista nuevo? Regístrate»** y llena 6 pasos: sus datos y contraseña, licencia, vehículo, **10 fotos** (DUI, licencia y tarjeta de circulación por ambos lados; vehículo de frente, de atrás y de ambos costados), facturación (opcional, para crédito fiscal) y aceptación de términos.
+2. Al final toca **«Pagar $10 y activar mi perfil»**: se guardan sus datos y pasa a la pantalla **Mi alta**, con los pasos (fotos ✓, pago, revisión), la cuenta para transferir, la opción de efectivo, el botón de WhatsApp y un campo para avisar el número de referencia.
+3. El propietario ve en el panel «Avisó su pago», confirma en el banco y registra el **pago de acceso** en el detalle del motorista (se genera el comprobante).
+4. Con las 10 fotos, el pago de acceso y las 4 casillas de revisión, el propietario lo **aprueba**. El motorista recarga y empieza a recibir viajes.
+
+> **Pendiente para cuando FleteYa tenga el registro de la empresa y la cuenta de Wompi:** el botón «Pagar en línea con tarjeta» (ya visible, desactivado) abrirá el enlace de pago de Wompi y el acceso o la recarga se acreditarán solos.
+
+**Recargas (mientras no hay pago en línea):**
+
+1. El motorista paga el monto que quiera por **transferencia a la cuenta de FleteYa** (opción principal) o **en efectivo** al propietario.
 2. Si fue transferencia, el motorista manda la captura del comprobante por WhatsApp.
-3. El propietario revisa que el dinero esté en la cuenta y entra al panel → **Créditos y recargas → Registrar recarga**: elige al motorista, el plan y anota el número de referencia.
-4. El saldo del motorista se actualiza al instante y **el recibo se genera solo**.
+3. El propietario revisa que el dinero esté en la cuenta y entra al panel → **Créditos y recargas → Registrar recarga**: elige al motorista, escribe el monto (o toca $5 / $10 / $20 / $50) y anota el número de referencia.
+4. El saldo del motorista se actualiza al instante y **el comprobante se genera solo**.
 
 **Cuenta de FleteYa:**
 - Una cuenta de ahorro **solo para FleteYa**, a nombre del socio inscrito en Hacienda (no se mezcla con dinero personal).
@@ -334,7 +344,7 @@ El motorista recarga antes de poder recibir viajes. Como no habrá pagos en lín
 #### Flujo del crédito
 
 ```
-Motorista recarga ($20 semana o $60 mes)
+Motorista paga el acceso ($10, una vez) y recarga el monto que quiera
         ↓
   Recibe viajes normalmente
         ↓
@@ -365,22 +375,22 @@ Cada recarga genera un **recibo automático**. El motorista lo puede ver de dos 
    - **Descargarlo en PDF**.
    - **Compartirlo** por WhatsApp.
 2. **Por correo (opcional):** si el motorista tiene correo, el recibo también le llega por correo al momento de recargar.
-   - El correo es un dato **opcional** que el propietario anota al crear la cuenta. No es un documento más: los documentos siguen siendo solo DUI, licencia y tarjeta de circulación.
+   - El correo es un dato **opcional** que el propietario anota al crear la cuenta. No es un documento más.
 
 **Qué dice el recibo:**
 - Número correlativo (ej. **REC-000123**), fecha y hora.
 - Datos de FleteYa: nombre del socio inscrito, NIT y dirección.
-- Nombre del motorista.
-- Plan recargado (semanal $20 o mensual $60) y forma de pago (efectivo o transferencia, con número de referencia si es transferencia).
+- Nombre y DUI del motorista; si pidió crédito fiscal, su NIT, NRC y razón social.
+- Concepto (recarga de créditos o acceso a la plataforma), monto y forma de pago (efectivo o transferencia, con número de referencia si es transferencia).
 - Quién registró la recarga.
 - Saldo anterior, deuda descontada (si estaba en negativo) y saldo nuevo.
 
 **En el panel de propietarios:** en **Créditos y recargas** se ven todas las recargas, y desde ahí se puede volver a enviar o descargar cualquier recibo.
 
-> **Por confirmar con el contador:** si además del recibo de la app hay que emitir **factura electrónica (DTE)** de Hacienda por cada recarga. Si es así, la app guarda y muestra también ese documento junto al recibo, sin cambiar la pantalla.
+> **Confirmado con el contador (16 nov 2026):** hay que emitir **factura** por el acceso y por cada recarga; algunos motoristas tienen **crédito fiscal**. La app ya guarda los datos fiscales del motorista (NIT, NRC, razón social, giro, dirección) y el comprobante dice que es interno y no sustituye la factura. **Pendiente** (cuando exista el registro de la empresa): emitir la factura electrónica (DTE) o el crédito fiscal desde la app y guardarlo junto al comprobante.
 
 ### A futuro: pagos en línea (no en Fase 1)
-- Por ahora **no se usará** ningún proveedor de pagos en línea. Todo es en efectivo.
+- **Actualización (16 nov 2026):** FleteYa contratará **Wompi** para que los motoristas paguen el acceso y las recargas en línea. Se conecta cuando esté el registro de la empresa; los viajes de los clientes siguen en efectivo.
 - Si más adelante se activan (por ejemplo con Wompi, 3.5% + IVA por pago, sin que el cliente cree cuenta), se agregaría:
   - Botón "Pagar en línea" en el link del cliente y recargas en línea desde la app del motorista.
   - El dinero llegaría primero a FleteYa y se pagaría a los motoristas cada lunes (corte el domingo).
@@ -421,10 +431,11 @@ Se aceptan **desde pick-ups en adelante**: pick-ups, camiones livianos, medianos
 - Igual se registra la **tarjeta de circulación** del vehículo con el que trabaja (de ahí salen la placa y los datos del vehículo).
 
 ### Documentos que se piden a cada motorista
-Únicamente estos tres:
-1. **DUI**
-2. **Licencia de conducir**
-3. **Tarjeta de circulación** del vehículo
+**Actualización (16 nov 2026):** 10 fotos, todas obligatorias para aprobar:
+1. **DUI** — frente y reverso
+2. **Licencia de conducir** — frente y reverso
+3. **Tarjeta de circulación** del vehículo — frente y reverso
+4. **Vehículo** — de frente, de atrás y de ambos costados
 
 No se pide carta del dueño cuando el vehículo es prestado o alquilado.
 
@@ -492,7 +503,7 @@ Una sección sencilla **"Puntos QR"**:
 
 1. **Zona de lanzamiento** — Lourdes, Colón. La zona se configura desde el panel antes de abrir el servicio.
 2. **Captación de motoristas** — Sin motoristas, no hay servicio. Plan de reclutamiento antes del lanzamiento.
-3. **Verificación de motoristas** — Documentos: únicamente DUI, licencia y tarjeta de circulación. No se pide cuenta de banco.
+3. **Verificación de motoristas** — DUI, licencia y tarjeta de circulación por ambos lados y 4 fotos del vehículo. No se pide cuenta de banco.
 4. **QR en ferreterías** — Pedir permiso a las ferreterías de Lourdes para pegar el QR de FleteYa antes del lanzamiento.
 5. **Soporte al cliente** — WhatsApp Business o número directo para quejas/incidencias.
 6. **Sistema de calificaciones** — Protege tanto al cliente como al motorista.
