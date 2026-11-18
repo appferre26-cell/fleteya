@@ -27,8 +27,13 @@ if [ -z "${DATABASE_URL:-}" ] && ! command -v psql >/dev/null; then
 fi
 
 paso "2/7 Código ($RAMA)"
-if [ -d "$DIR/.git" ]; then git -C "$DIR" fetch -q origin "$RAMA" && git -C "$DIR" checkout -q "$RAMA" && git -C "$DIR" reset -q --hard "origin/$RAMA"
-else git clone -q --depth=50 --branch "$RAMA" "$REPO" "$DIR"; fi
+if [ -d "$DIR/.git" ]; then
+  git -C "$DIR" fetch -q --depth=50 origin "+refs/heads/$RAMA:refs/remotes/origin/$RAMA"
+  git -C "$DIR" checkout -q -B "$RAMA" "origin/$RAMA"
+else
+  git clone -q --depth=50 --branch "$RAMA" "$REPO" "$DIR"
+fi
+git -C "$DIR" log --oneline -1
 
 paso "3/7 Configuración (.env)"
 if [ ! -f "$APP/.env" ]; then
