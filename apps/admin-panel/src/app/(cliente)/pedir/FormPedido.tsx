@@ -7,6 +7,7 @@ import { dinero, distanciaKm, kg, precioPorPeso, type Tarifa } from "@/lib/tarif
 import { RANGOS, TON_EXTRA, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import type { ErroresCampos } from "@/lib/validacion";
 import { dentroDeZona, type Zona } from "@/lib/zona";
+import { buscarDireccion, type ResultadoDireccion } from "@/lib/buscar-direccion";
 import { solicitarViaje } from "./acciones";
 
 type Material = { id: string; nombre: string; unidad: string; pesoKg: number };
@@ -46,6 +47,9 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
   const [enviando, iniciar] = useTransition();
   const [ubicando, setUbicando] = useState(false);
   const [ultimo, setUltimo] = useState<string | null>(null);
+  const [consulta, setConsulta] = useState("");
+  const [resultados, setResultados] = useState<ResultadoDireccion[] | null>(null);
+  const [buscandoDir, setBuscandoDir] = useState(false);
 
   // Recordar nombre y teléfono en este celular (no se crea cuenta)
   useEffect(() => {
@@ -65,6 +69,31 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
     } else {
       setDestino((d) => ({ ...p, direccion: d?.direccion ?? "" }));
     }
+  };
+
+  // Buscar una dirección escrita y mostrar coincidencias.
+  const buscarDir = () => {
+    const q = consulta.trim();
+    if (q.length < 3) { setResultados([]); return; }
+    setBuscandoDir(true);
+    buscarDireccion(q)
+      .then((r) => setResultados(r))
+      .finally(() => setBuscandoDir(false));
+  };
+
+  // Al elegir una coincidencia, se coloca el punto y se guarda la dirección.
+  const elegirDireccion = (r: ResultadoDireccion) => {
+    const punto = { lat: r.lat, lng: r.lng, direccion: r.direccion };
+    if (modo === "origen") {
+      if (qr) return;
+      setOrigen(punto);
+      if (!destino) setModo("destino");
+    } else {
+      setDestino(punto);
+    }
+    setResultados(null);
+    setConsulta("");
+    setErrores((e) => ({ ...e, [modo]: undefined }));
   };
 
   const miUbicacion = () => {
@@ -160,8 +189,43 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
             </button>
           ))}
         </div>
+        {!(modo === "origen" && qr) && (
+          <div className="mb-3">
+            <div className="flex gap-2">
+              <input
+                className="campo h-11 flex-1"
+                value={consulta}
+                onChange={(e) => setConsulta(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); buscarDir(); } }}
+                placeholder={modo === "origen" ? "Escribe la dirección de recogida" : "Escribe la dirección de destino"}
+                aria-label={modo === "origen" ? "Buscar dirección de recogida" : "Buscar dirección de destino"} />
+              <button type="button" onClick={buscarDir} disabled={buscandoDir || consulta.trim().length < 3}
+                className="flex h-11 w-12 shrink-0 items-center justify-center rounded-lg border border-naranja bg-naranja/10 text-naranja disabled:border-borde disabled:text-suave"
+                aria-label="Buscar dirección">
+                <i className={`fa-solid ${buscandoDir ? "fa-spinner fa-spin" : "fa-magnifying-glass"}`} />
+              </button>
+            </div>
+            {resultados !== null && (
+              resultados.length > 0 ? (
+                <ul className="mt-2 max-h-56 overflow-y-auto rounded-xl border border-borde bg-tarjeta">
+                  {resultados.map((r, i) => (
+                    <li key={`${r.lat},${r.lng},${i}`} className="border-b border-borde last:border-0">
+                      <button type="button" onClick={() => elegirDireccion(r)}
+                        className="flex w-full items-start gap-2.5 px-3 py-2.5 text-left text-sm hover:bg-tarjeta-2">
+                        <i className="fa-solid fa-location-dot mt-0.5 text-naranja" />
+                        <span className="min-w-0 flex-1">{r.direccion}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 text-xs text-suave">No encontramos esa dirección. Prueba con otra referencia o tócala directamente en el mapa.</p>
+              )
+            )}
+          </div>
+        )}
         <p className="mb-2 text-xs text-suave">
-          {modo === "origen" ? "Toca el mapa donde recogemos la carga." : "Toca el mapa a dónde la llevamos."}
+          {modo === "origen" ? "Escribe la dirección o toca el mapa donde recogemos la carga." : "Escribe la dirección o toca el mapa a dónde la llevamos."}
         </p>
         <Mapa centro={qr ?? zona} zoom={qr ? 15 : 14} puntos={puntos} zona={zona}
           onClick={marcar} className="h-64" etiqueta="Mapa para marcar recogida y destino" />
