@@ -37,7 +37,7 @@ git -C "$DIR" log --oneline -1
 
 paso "3/7 Configuración (.env)"
 if [ ! -f "$APP/.env" ]; then
-  : "${ADMIN_CORREO:?Falta ADMIN_CORREO}" "${PUBLIC_URL:?Falta PUBLIC_URL (la dirección pública de la app)}"
+  : "${ADMIN_CORREO:?Falta ADMIN_CORREO}"
   if [ -z "${DATABASE_URL:-}" ]; then
     CLAVE_BD="$(openssl rand -hex 16)"
     $SUDO service postgresql start >/dev/null 2>&1 || true
@@ -52,7 +52,7 @@ if [ ! -f "$APP/.env" ]; then
   cat > "$APP/.env" <<EOF
 DATABASE_URL="$DATABASE_URL"
 SESSION_SECRET="$(openssl rand -hex 32)"
-PUBLIC_URL="${PUBLIC_URL%/}"
+PUBLIC_URL="${PUBLIC_URL:+${PUBLIC_URL%/}}"
 GOOGLE_MAPS_API_KEY="${GOOGLE_MAPS_API_KEY:-}"
 VAPID_PUBLIC_KEY="$(node -p "JSON.parse(process.argv[1]).publicKey" "$VAPID")"
 VAPID_PRIVATE_KEY="$(node -p "JSON.parse(process.argv[1]).privateKey" "$VAPID")"
