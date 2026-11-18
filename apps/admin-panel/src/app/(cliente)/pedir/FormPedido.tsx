@@ -47,9 +47,12 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
   const [enviando, iniciar] = useTransition();
   const [ubicando, setUbicando] = useState(false);
   const [ultimo, setUltimo] = useState<string | null>(null);
-  const [consulta, setConsulta] = useState("");
-  const [resultados, setResultados] = useState<ResultadoDireccion[] | null>(null);
-  const [buscandoDir, setBuscandoDir] = useState(false);
+  // Texto escrito en cada campo mientras aún no se ha elegido un punto.
+  const [qOrigen, setQOrigen] = useState("");
+  const [qDestino, setQDestino] = useState("");
+  // Resultados de búsqueda por campo y cuál se está buscando.
+  const [resultados, setResultados] = useState<{ cual: "origen" | "destino"; lista: ResultadoDireccion[] } | null>(null);
+  const [buscandoCual, setBuscandoCual] = useState<"origen" | "destino" | null>(null);
 
   // Recordar nombre y teléfono en este celular (no se crea cuenta)
   useEffect(() => {
@@ -71,29 +74,30 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
     }
   };
 
-  // Buscar una dirección escrita y mostrar coincidencias.
-  const buscarDir = () => {
-    const q = consulta.trim();
-    if (q.length < 3) { setResultados([]); return; }
-    setBuscandoDir(true);
+  // Buscar la dirección escrita en un campo y mostrar coincidencias debajo de ese campo.
+  const buscarDir = (cual: "origen" | "destino") => {
+    const q = (cual === "origen" ? qOrigen : qDestino).trim();
+    if (q.length < 3) { setResultados({ cual, lista: [] }); return; }
+    setBuscandoCual(cual);
     buscarDireccion(q)
-      .then((r) => setResultados(r))
-      .finally(() => setBuscandoDir(false));
+      .then((lista) => setResultados({ cual, lista }))
+      .finally(() => setBuscandoCual(null));
   };
 
-  // Al elegir una coincidencia, se coloca el punto y se guarda la dirección.
-  const elegirDireccion = (r: ResultadoDireccion) => {
+  // Al elegir una coincidencia, se coloca el punto, se guarda la dirección y se limpia la búsqueda.
+  const elegirDireccion = (cual: "origen" | "destino", r: ResultadoDireccion) => {
     const punto = { lat: r.lat, lng: r.lng, direccion: r.direccion };
-    if (modo === "origen") {
+    if (cual === "origen") {
       if (qr) return;
       setOrigen(punto);
+      setQOrigen("");
       if (!destino) setModo("destino");
     } else {
       setDestino(punto);
+      setQDestino("");
     }
     setResultados(null);
-    setConsulta("");
-    setErrores((e) => ({ ...e, [modo]: undefined }));
+    setErrores((e) => ({ ...e, [cual]: undefined }));
   };
 
   const miUbicacion = () => {
@@ -189,43 +193,8 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
             </button>
           ))}
         </div>
-        {!(modo === "origen" && qr) && (
-          <div className="mb-3">
-            <div className="flex gap-2">
-              <input
-                className="campo h-11 flex-1"
-                value={consulta}
-                onChange={(e) => setConsulta(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); buscarDir(); } }}
-                placeholder={modo === "origen" ? "Escribe la dirección de recogida" : "Escribe la dirección de destino"}
-                aria-label={modo === "origen" ? "Buscar dirección de recogida" : "Buscar dirección de destino"} />
-              <button type="button" onClick={buscarDir} disabled={buscandoDir || consulta.trim().length < 3}
-                className="flex h-11 w-12 shrink-0 items-center justify-center rounded-lg border border-naranja bg-naranja/10 text-naranja disabled:border-borde disabled:text-suave"
-                aria-label="Buscar dirección">
-                <i className={`fa-solid ${buscandoDir ? "fa-spinner fa-spin" : "fa-magnifying-glass"}`} />
-              </button>
-            </div>
-            {resultados !== null && (
-              resultados.length > 0 ? (
-                <ul className="mt-2 max-h-56 overflow-y-auto rounded-xl border border-borde bg-tarjeta">
-                  {resultados.map((r, i) => (
-                    <li key={`${r.lat},${r.lng},${i}`} className="border-b border-borde last:border-0">
-                      <button type="button" onClick={() => elegirDireccion(r)}
-                        className="flex w-full items-start gap-2.5 px-3 py-2.5 text-left text-sm hover:bg-tarjeta-2">
-                        <i className="fa-solid fa-location-dot mt-0.5 text-naranja" />
-                        <span className="min-w-0 flex-1">{r.direccion}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-2 text-xs text-suave">No encontramos esa dirección. Prueba con otra referencia o tócala directamente en el mapa.</p>
-              )
-            )}
-          </div>
-        )}
         <p className="mb-2 text-xs text-suave">
-          {modo === "origen" ? "Escribe la dirección o toca el mapa donde recogemos la carga." : "Escribe la dirección o toca el mapa a dónde la llevamos."}
+          {modo === "origen" ? "Escribe la dirección abajo o toca el mapa donde recogemos la carga." : "Escribe la dirección abajo o toca el mapa a dónde la llevamos."}
         </p>
         <Mapa centro={qr ?? zona} zoom={qr ? 15 : 14} puntos={puntos} zona={zona}
           onClick={marcar} className="h-64" etiqueta="Mapa para marcar recogida y destino" />
@@ -241,9 +210,38 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
               Recogida
               {qr && <span className="rounded-full bg-exito/15 px-2 py-0.5 text-[10px] font-semibold text-exito"><i className="fa-solid fa-qrcode mr-1" />Desde QR</span>}
             </label>
-            <input id="origen-dir" className="campo" value={origen?.direccion ?? ""} readOnly={!!qr} disabled={!origen}
-              placeholder={origen ? "Dirección o referencia" : "Primero márcala en el mapa"}
-              onChange={(e) => setOrigen((o) => (o ? { ...o, direccion: e.target.value } : o))} />
+            <div className="flex gap-2">
+              <input id="origen-dir" className="campo flex-1" readOnly={!!qr}
+                value={origen ? origen.direccion : qOrigen}
+                placeholder="Escribe la dirección de recogida"
+                onFocus={() => setModo("origen")}
+                onChange={(e) => { const v = e.target.value; if (origen) setOrigen({ ...origen, direccion: v }); else setQOrigen(v); }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); buscarDir("origen"); } }} />
+              {!qr && (
+                <button type="button" onClick={() => buscarDir("origen")}
+                  disabled={buscandoCual === "origen" || (origen ? origen.direccion : qOrigen).trim().length < 3}
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-naranja bg-naranja/10 text-naranja disabled:border-borde disabled:text-suave"
+                  aria-label="Buscar dirección de recogida">
+                  <i className={`fa-solid ${buscandoCual === "origen" ? "fa-spinner fa-spin" : "fa-magnifying-glass"}`} />
+                </button>
+              )}
+            </div>
+            {resultados?.cual === "origen" && (
+              resultados.lista.length > 0 ? (
+                <ul className="mt-2 max-h-56 overflow-y-auto rounded-xl border border-borde bg-tarjeta">
+                  {resultados.lista.map((r, i) => (
+                    <li key={`o-${r.lat},${r.lng},${i}`} className="border-b border-borde last:border-0">
+                      <button type="button" onClick={() => elegirDireccion("origen", r)}
+                        className="flex w-full items-start gap-2.5 px-3 py-2.5 text-left text-sm hover:bg-tarjeta-2">
+                        <i className="fa-solid fa-location-dot mt-0.5 text-naranja" /><span className="min-w-0 flex-1">{r.direccion}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 text-xs text-suave">No encontramos esa dirección. Prueba con otra referencia o tócala en el mapa.</p>
+              )
+            )}
             {fueraZona && <Aviso m={`Ese punto está fuera de la zona de servicio (${zona.nombre}).`} />}
             <Aviso m={errores.origen} />
           </div>
@@ -251,9 +249,36 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
             <label htmlFor="destino-dir" className="etiqueta flex items-center justify-between">
               Destino {km !== null && <span className="font-normal">{km.toFixed(1)} km en línea recta</span>}
             </label>
-            <input id="destino-dir" className="campo" value={destino?.direccion ?? ""} disabled={!destino}
-              placeholder={destino ? "Colonia, pasaje, casa y referencia" : "Primero márcalo en el mapa"}
-              onChange={(e) => setDestino((d) => (d ? { ...d, direccion: e.target.value } : d))} />
+            <div className="flex gap-2">
+              <input id="destino-dir" className="campo flex-1"
+                value={destino ? destino.direccion : qDestino}
+                placeholder="Escribe la dirección de destino"
+                onFocus={() => setModo("destino")}
+                onChange={(e) => { const v = e.target.value; if (destino) setDestino({ ...destino, direccion: v }); else setQDestino(v); }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); buscarDir("destino"); } }} />
+              <button type="button" onClick={() => buscarDir("destino")}
+                disabled={buscandoCual === "destino" || (destino ? destino.direccion : qDestino).trim().length < 3}
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-naranja bg-naranja/10 text-naranja disabled:border-borde disabled:text-suave"
+                aria-label="Buscar dirección de destino">
+                <i className={`fa-solid ${buscandoCual === "destino" ? "fa-spinner fa-spin" : "fa-magnifying-glass"}`} />
+              </button>
+            </div>
+            {resultados?.cual === "destino" && (
+              resultados.lista.length > 0 ? (
+                <ul className="mt-2 max-h-56 overflow-y-auto rounded-xl border border-borde bg-tarjeta">
+                  {resultados.lista.map((r, i) => (
+                    <li key={`d-${r.lat},${r.lng},${i}`} className="border-b border-borde last:border-0">
+                      <button type="button" onClick={() => elegirDireccion("destino", r)}
+                        className="flex w-full items-start gap-2.5 px-3 py-2.5 text-left text-sm hover:bg-tarjeta-2">
+                        <i className="fa-solid fa-location-dot mt-0.5 text-naranja" /><span className="min-w-0 flex-1">{r.direccion}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 text-xs text-suave">No encontramos esa dirección. Prueba con otra referencia o tócala en el mapa.</p>
+              )
+            )}
             <Aviso m={errores.destino} />
           </div>
           <p className="text-xs text-suave"><i className="fa-regular fa-lightbulb mr-1 text-naranja" />Agrega un punto de referencia: “frente a la iglesia”, “portón negro”.</p>
