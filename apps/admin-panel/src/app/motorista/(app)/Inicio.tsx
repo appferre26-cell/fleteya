@@ -30,6 +30,10 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
   const [ahora, setAhora] = useState(() => Date.now());
   const [sinInternet, setSinInternet] = useState(false);
   const [yo, setYo] = useState<{ lat: number; lng: number } | null>(null);
+  // Estado de "compartir ubicación en vivo" para avisar al motorista si algo falla.
+  const [estadoGps, setEstadoGps] = useState<"pidiendo" | "ok" | "permiso" | "sinSenal" | "lento" | null>(null);
+  const [envioFalla, setEnvioFalla] = useState(false); // la posición se obtiene pero el envío al servidor falla
+  const [reintentoGps, setReintentoGps] = useState(0); // fuerza re-montar el watchPosition al reintentar
   const [ocupado, iniciar] = useTransition();
   const vistas = useRef(new Set(inicial.solicitudes.map((s) => s.id)));
   const wake = useRef<WakeLockSentinel | null>(null);
@@ -93,22 +97,61 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
 
   // Ubicación: solo mientras está disponible o lleva un viaje.
   const compartir = d.motorista.disponible || !!d.activo;
+
+  // Traduce el código de error del navegador a nuestro estado sencillo.
+  const marcarErrorGps = useCallback((error: GeolocationPositionError) => {
+    if (error.code === error.PERMISSION_DENIED) setEstadoGps("permiso");
+    else if (error.code === error.POSITION_UNAVAILABLE) setEstadoGps("sinSenal");
+    else setEstadoGps("lento"); // TIMEOUT
+  }, []);
+
+  // Pide el permiso de ubicación de forma proactiva (al ponerse en línea, al entrar un viaje,
+  // o cuando el motorista toca «Activar ubicación»). Si lo concede, re-monta el watchPosition.
+  const pedirPermiso = useCallback(() => {
+    if (!("geolocation" in navigator)) { setEstadoGps("sinSenal"); return; }
+    setEstadoGps((e) => (e === "ok" ? e : "pidiendo"));
+    navigator.geolocation.getCurrentPosition(
+      (p) => { setYo({ lat: p.coords.latitude, lng: p.coords.longitude }); setReintentoGps((n) => n + 1); },
+      marcarErrorGps,
+      { enableHighAccuracy: true, timeout: 20000 },
+    );
+  }, [marcarErrorGps]);
+
+  // Al empezar a compartir, pide el permiso cuanto antes para que el navegador muestre el prompt.
   useEffect(() => {
-    if (!compartir || !("geolocation" in navigator)) return;
+    if (!compartir) { setEstadoGps(null); setEnvioFalla(false); return; }
+    pedirPermiso();
+  }, [compartir, pedirPermiso]);
+
+  useEffect(() => {
+    if (!compartir) return;
+    if (!("geolocation" in navigator)) { setEstadoGps("sinSenal"); return; }
     let ultimo = 0;
+    let fallosEnvio = 0;
     const id = navigator.geolocation.watchPosition(
       (p) => {
         const pos = { lat: p.coords.latitude, lng: p.coords.longitude };
         setYo(pos);
         if (Date.now() - ultimo < 20000) return;
         ultimo = Date.now();
-        void fetch("/motorista/api/ubicacion", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pos) }).catch(() => {});
+        void fetch("/motorista/api/ubicacion", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pos) })
+          .then((r) => {
+            if (!r.ok) throw new Error("respuesta no-ok");
+            // Solo marcamos "ok" cuando la posición de verdad llegó al servidor.
+            fallosEnvio = 0;
+            setEnvioFalla(false);
+            setEstadoGps("ok");
+          })
+          .catch(() => {
+            fallosEnvio += 1;
+            if (fallosEnvio >= 2) setEnvioFalla(true); // falla repetida: no está llegando al cliente
+          });
       },
-      () => {},
+      marcarErrorGps,
       { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 },
     );
     return () => navigator.geolocation.clearWatch(id);
-  }, [compartir]);
+  }, [compartir, reintentoGps, marcarErrorGps]);
 
   // Pantalla encendida mientras está disponible.
   useEffect(() => {
@@ -159,6 +202,30 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
           <span className={`h-1.5 w-1.5 rounded-full ${a ? "bg-naranja" : m.disponible ? "bg-exito" : "bg-suave"}`} />{a ? "En viaje" : m.disponible ? "En línea" : "Desconectado"}
         </span>
       </header>
+
+      {/* Estado de "compartir ubicación en vivo": que el motorista sepa si el cliente lo ve o no. */}
+      {compartir && estadoGps === "ok" && !envioFalla && (
+        <p data-testid="gps-ok" className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-exito/15 px-3 py-1 text-xs font-semibold text-exito">
+          <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-exito" />Compartiendo tu ubicación en vivo ✓
+        </p>
+      )}
+      {compartir && estadoGps === "permiso" && (
+        <div role="alert" data-testid="gps-permiso" className="mt-3 rounded-2xl border border-error/50 bg-error/10 p-4 text-sm">
+          <p className="font-bold text-error"><i className="fa-solid fa-location-dot mr-2" />El permiso de ubicación está desactivado</p>
+          <p className="mt-1 text-texto">Actívalo para que el cliente te vea en el mapa en vivo durante el viaje.</p>
+          <button type="button" onClick={pedirPermiso} className="btn-primario mt-3 h-10 w-full"><i className="fa-solid fa-location-crosshairs" />Activar ubicación</button>
+          <p className="mt-2 text-xs text-suave">Si no aparece la opción, actívala desde los ajustes del navegador para este sitio.</p>
+        </div>
+      )}
+      {compartir && (estadoGps === "sinSenal" || estadoGps === "lento") && (
+        <div role="alert" data-testid="gps-sinsenal" className="mt-3 rounded-2xl border border-amarillo/50 bg-amarillo/10 p-4 text-sm">
+          <p className="font-bold text-amarillo"><i className="fa-solid fa-triangle-exclamation mr-2" />No se pudo obtener tu ubicación</p>
+          <p className="mt-1 text-texto">Revisa que el GPS esté encendido y que tengas buena señal. Seguimos intentando…</p>
+        </div>
+      )}
+      {compartir && estadoGps === "ok" && envioFalla && (
+        <p role="status" data-testid="gps-sinenvio" className="mt-3 rounded-lg bg-amarillo/10 px-3 py-2.5 text-sm text-amarillo"><i className="fa-solid fa-wifi mr-1.5" />Sin conexión: tu ubicación no está llegando al cliente.</p>
+      )}
 
       {sinInternet && <p role="status" className="mt-3 rounded-lg bg-error/10 px-3 py-2 text-xs text-error"><i className="fa-solid fa-wifi mr-1.5" />Sin conexión. Reintentando…</p>}
       {aviso && (
