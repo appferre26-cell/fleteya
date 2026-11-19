@@ -66,12 +66,15 @@ export async function crearMapaGoogle(caja: HTMLDivElement, clave: string, centr
   }
 
   let objetos: { setMap(m: google.maps.Map | null): void }[] = [];
+  let yaAjusto = false;
+  let ultimoN = -1;
 
-  function dibujar({ puntos, circulo, zona, vertices }: DatosMapa) {
+  function dibujar({ puntos, circulo, zona, vertices, ruta, vivo }: DatosMapa) {
     objetos.forEach((o) => o.setMap(null));
     objetos = [];
     const pon = <T extends { setMap(m: google.maps.Map | null): void }>(o: T) => { o.setMap(m); objetos.push(o); return o; };
     const borde = { strokeColor: NARANJA, strokeWeight: 1.5, strokeOpacity: 0.9, fillColor: NARANJA, fillOpacity: 0.05, clickable: false };
+    if (ruta && ruta.length >= 2) pon(new g.Polyline({ path: ruta, strokeColor: NARANJA, strokeWeight: 4, strokeOpacity: 0.85, clickable: false }));
     const hayArea = !!(zona?.poligono && zona.poligono.length >= 3);
     if (hayArea) pon(new g.Polygon({ ...borde, paths: zona!.poligono! }));
     const circ = circulo ?? (zona && !hayArea ? zona : undefined);
@@ -89,14 +92,19 @@ export async function crearMapaGoogle(caja: HTMLDivElement, clave: string, centr
         `<div style="background:${p.color}" class="flex h-8 w-8 -translate-x-1/2 -translate-y-full items-center justify-center rounded-full border-[3px] border-[#121212] shadow-lg"><i class="fa-solid ${p.icono} text-[12px] text-[#121212]"></i></div>`,
         p.etiqueta));
     }
-    if (puntos.length >= 2) {
-      const b = new g.LatLngBounds();
-      puntos.forEach((p) => b.extend(p));
-      m.fitBounds(b, 40);
-      g.event.addListenerOnce(m, "idle", () => { if ((m.getZoom() ?? 0) > 16) m.setZoom(16); });
-    } else if (puntos.length === 1) {
-      m.setCenter(puntos[0]);
-      m.setZoom(Math.max(m.getZoom() ?? 15, 15));
+    const debeAjustar = !vivo || !yaAjusto || puntos.length !== ultimoN;
+    ultimoN = puntos.length;
+    if (debeAjustar) {
+      if (puntos.length >= 2) {
+        const b = new g.LatLngBounds();
+        puntos.forEach((p) => b.extend(p));
+        m.fitBounds(b, 40);
+        g.event.addListenerOnce(m, "idle", () => { if ((m.getZoom() ?? 0) > 16) m.setZoom(16); });
+      } else if (puntos.length === 1) {
+        m.setCenter(puntos[0]);
+        m.setZoom(Math.max(m.getZoom() ?? 15, 15));
+      }
+      yaAjusto = true;
     }
   }
 

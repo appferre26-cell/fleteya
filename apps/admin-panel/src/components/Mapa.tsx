@@ -15,6 +15,10 @@ export type DatosMapa = {
   zona?: LatLng & { radioKm: number; poligono: LatLng[] | null };
   /** Puntos del área que se está dibujando (no mueven el mapa). */
   vertices?: LatLng[];
+  /** Línea que une puntos en orden (p. ej. motorista → destino). */
+  ruta?: LatLng[];
+  /** Modo en vivo: encuadra el mapa una sola vez y no vuelve a saltar al mover el marcador. */
+  vivo?: boolean;
 };
 export type MotorMapa = { dibujar: (d: DatosMapa) => void; destruir: () => void };
 
@@ -39,9 +43,12 @@ async function crearMapaOsm(caja: HTMLDivElement, centro: LatLng, zoom: number, 
   }).addTo(m);
   m.on("click", (e: L.LeafletMouseEvent) => onClick({ lat: e.latlng.lat, lng: e.latlng.lng }));
   const g = Lx.layerGroup().addTo(m);
+  let yaAjusto = false;
+  let ultimoN = -1;
 
-  function dibujar({ puntos, circulo, zona, vertices }: DatosMapa) {
+  function dibujar({ puntos, circulo, zona, vertices, ruta, vivo }: DatosMapa) {
     g.clearLayers();
+    if (ruta && ruta.length >= 2) Lx.polyline(ruta.map((p) => [p.lat, p.lng] as [number, number]), { color: "#FF6B00", weight: 4, opacity: 0.85, interactive: false }).addTo(g);
     const estilo = { color: "#FF6B00", weight: 1.5, fillOpacity: 0.05, dashArray: "6 6", interactive: false };
     const hayArea = !!(zona?.poligono && zona.poligono.length >= 3);
     if (hayArea) Lx.polygon(zona!.poligono!.map((p) => [p.lat, p.lng] as [number, number]), estilo).addTo(g);
@@ -61,32 +68,37 @@ async function crearMapaOsm(caja: HTMLDivElement, centro: LatLng, zoom: number, 
       const mk = Lx.marker([p.lat, p.lng], { icon: icono, keyboard: false }).addTo(g);
       if (p.etiqueta) mk.bindTooltip(p.etiqueta, { direction: "top", offset: [0, -30] });
     }
-    if (puntos.length >= 2) m.fitBounds(Lx.latLngBounds(puntos.map((p) => [p.lat, p.lng])), { padding: [40, 40], maxZoom: 16 });
-    else if (puntos.length === 1) m.setView([puntos[0].lat, puntos[0].lng], Math.max(m.getZoom(), 15));
+    const debeAjustar = !vivo || !yaAjusto || puntos.length !== ultimoN;
+    ultimoN = puntos.length;
+    if (debeAjustar) {
+      if (puntos.length >= 2) m.fitBounds(Lx.latLngBounds(puntos.map((p) => [p.lat, p.lng])), { padding: [40, 40], maxZoom: 16 });
+      else if (puntos.length === 1) m.setView([puntos[0].lat, puntos[0].lng], Math.max(m.getZoom(), 15));
+      yaAjusto = true;
+    }
   }
   return { dibujar, destruir: () => m.remove() };
 }
 
-export function Mapa({ centro, zoom = 14, puntos, circulo, zona, vertices, onClick, className = "h-64", etiqueta = "Mapa" }: Props) {
+export function Mapa({ centro, zoom = 14, puntos, circulo, zona, vertices, ruta, vivo, onClick, className = "h-64", etiqueta = "Mapa" }: Props) {
   const caja = useRef<HTMLDivElement>(null);
   const motor = useRef<MotorMapa | null>(null);
   const clic = useRef(onClick);
   clic.current = onClick;
   const datos = useRef<DatosMapa>({ puntos });
-  datos.current = { puntos, circulo, zona, vertices };
+  datos.current = { puntos, circulo, zona, vertices, ruta, vivo };
 
   // Crear el mapa una sola vez
   useEffect(() => {
-    let vivo = true;
+    let montado = true;
     const alClic = (p: LatLng) => clic.current?.(p);
     const montar = (m: MotorMapa) => {
-      if (!vivo) return m.destruir();
+      if (!montado) return m.destruir();
       motor.current?.destruir();
       motor.current = m;
       m.dibujar(datos.current);
     };
     const usarOsm = () => {
-      if (!vivo || !caja.current) return;
+      if (!montado || !caja.current) return;
       motor.current?.destruir();
       motor.current = null;
       const nueva = document.createElement("div");
@@ -95,7 +107,7 @@ export function Mapa({ centro, zoom = 14, puntos, circulo, zona, vertices, onCli
       crearMapaOsm(nueva, centro, zoom, alClic).then(montar);
     };
     claveGoogle().then((clave) => {
-      if (!vivo || !caja.current) return;
+      if (!montado || !caja.current) return;
       if (!clave) return usarOsm();
       const div = document.createElement("div");
       div.className = "h-full w-full";
@@ -106,7 +118,7 @@ export function Mapa({ centro, zoom = 14, puntos, circulo, zona, vertices, onCli
       import("./mapa-google").then(({ crearMapaGoogle }) => crearMapaGoogle(div, clave, centro, zoom, alClic)).then(montar).catch(usarOsm);
     });
     return () => {
-      vivo = false;
+      montado = false;
       window.removeEventListener("fy-gmaps-fallo", usarOsm);
       motor.current?.destruir();
       motor.current = null;
@@ -114,7 +126,7 @@ export function Mapa({ centro, zoom = 14, puntos, circulo, zona, vertices, onCli
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const firma = JSON.stringify([puntos, circulo, zona, vertices]);
+  const firma = JSON.stringify([puntos, circulo, zona, vertices, ruta, vivo]);
   useEffect(() => { motor.current?.dibujar(datos.current); }, [firma]);
 
   return <div ref={caja} role="application" aria-label={etiqueta} className={`z-0 overflow-hidden rounded-xl border border-borde bg-[#17191c] ${className}`} />;

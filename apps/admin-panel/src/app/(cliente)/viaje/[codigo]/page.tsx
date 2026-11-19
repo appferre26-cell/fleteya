@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { obtenerConfig } from "@/lib/config";
-import { Mapa, type PuntoMapa } from "@/components/Mapa";
+import { MapaViaje } from "./MapaViaje";
 import { textoRango } from "@/lib/rangos";
 import { ESTADOS_VIAJE, centavos, dinero, distanciaKm, kg, numeroViaje } from "@/lib/tarifa";
 import { TIPOS_VEHICULO, fechaHora, formatoTelefono } from "@/lib/validacion";
@@ -50,14 +50,9 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
   const m = v.motorista;
   const precio = Number(v.precioFinal ?? v.precioBase);
   const paso = PASOS.findIndex(([k]) => k === v.estado);
-  // La ubicación del motorista solo se muestra mientras va a recoger y si es reciente (10 min).
-  const verUbicacion = m && (v.estado === "ASIGNADO" || v.estado === "EN_CAMINO") && m.lat != null && m.lng != null
-    && m.ubicacionEn && Date.now() - m.ubicacionEn.getTime() < 10 * 60_000;
-  const puntos: PuntoMapa[] = [
-    { id: "o", lat: v.origenLat, lng: v.origenLng, color: "#FF6B00", icono: "fa-box", etiqueta: "Recogida" },
-    { id: "d", lat: v.destinoLat, lng: v.destinoLng, color: "#F5F5F5", icono: "fa-flag-checkered", etiqueta: "Destino" },
-  ];
-  if (verUbicacion) puntos.push({ id: "m", lat: m.lat!, lng: m.lng!, color: "#4CAF50", icono: "fa-truck", etiqueta: m.nombre.split(" ")[0] });
+  // La ubicación del motorista se muestra mientras el viaje está activo (va a recoger o en ruta) y si es reciente (10 min).
+  const verUbicacion = !!(m && ["ASIGNADO", "EN_CAMINO", "CARGANDO", "EN_RUTA"].includes(v.estado) && m.lat != null && m.lng != null
+    && m.ubicacionEn && Date.now() - m.ubicacionEn.getTime() < 10 * 60_000);
   const ofertas = v.estado === "BUSCANDO" ? v.ofertas.map((o) => ({
     id: o.id, precio: Number(o.precio), nombre: o.motorista.nombre.split(" ")[0],
     vehiculo: `${TIPOS_VEHICULO[o.motorista.tipoVehiculo].nombre} ${o.motorista.marca}`,
@@ -127,8 +122,17 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
               })}
             </ol>
           )}
-          {activo && <Mapa centro={verUbicacion ? { lat: m.lat!, lng: m.lng! } : { lat: v.origenLat, lng: v.origenLng }} puntos={puntos} className="mt-3 h-52" etiqueta="Mapa del viaje" />}
-          {activo && (v.estado === "ASIGNADO" || v.estado === "EN_CAMINO") && !verUbicacion && <p className="mt-2 text-xs text-suave">La ubicación del motorista aparece cuando su teléfono la comparte.</p>}
+          {activo && (
+            <MapaViaje
+              codigo={v.codigo}
+              origen={{ lat: v.origenLat, lng: v.origenLng }}
+              destino={{ lat: v.destinoLat, lng: v.destinoLng }}
+              estadoInicial={v.estado}
+              motoristaInicial={verUbicacion ? { lat: m!.lat!, lng: m!.lng!, nombre: m!.nombre.split(" ")[0] } : null}
+              className="mt-3 h-52"
+            />
+          )}
+          {activo && !verUbicacion && <p className="mt-2 text-xs text-suave">La ubicación del motorista aparece en vivo cuando su teléfono la comparte.</p>}
         </section>
       )}
 
