@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Mapa, type PuntoMapa } from "@/components/Mapa";
 import { dinero, distanciaKm, kg, precioPorPeso, precioViaje, type Tarifa } from "@/lib/tarifa";
 import { RANGOS, TON_EXTRA, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import type { ErroresCampos } from "@/lib/validacion";
 import { dentroDeZona, type Zona } from "@/lib/zona";
-import { buscarDireccion, type ResultadoDireccion } from "@/lib/buscar-direccion";
+import { buscarDireccion, direccionDe, type ResultadoDireccion } from "@/lib/buscar-direccion";
 import { solicitarViaje } from "./acciones";
 
 type Material = { id: string; nombre: string; unidad: string; pesoKg: number };
@@ -64,6 +64,42 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
     } catch { /* sin datos guardados */ }
   }, []);
 
+  // Autocompletado en vivo: mientras se escribe la dirección (origen o destino) y aún no se ha
+  // elegido un punto, buscar coincidencias con un pequeño retardo (debounce) para no saturar.
+  useEffect(() => {
+    const q = qOrigen.trim();
+    if (q.length < 3) { setResultados((r) => (r?.cual === "origen" ? null : r)); return; }
+    setBuscandoCual("origen");
+    const t = setTimeout(() => {
+      buscarDireccion(q)
+        .then((lista) => setResultados({ cual: "origen", lista }))
+        .finally(() => setBuscandoCual((c) => (c === "origen" ? null : c)));
+    }, 320);
+    return () => clearTimeout(t);
+  }, [qOrigen]);
+
+  useEffect(() => {
+    const q = qDestino.trim();
+    if (q.length < 3) { setResultados((r) => (r?.cual === "destino" ? null : r)); return; }
+    setBuscandoCual("destino");
+    const t = setTimeout(() => {
+      buscarDireccion(q)
+        .then((lista) => setResultados({ cual: "destino", lista }))
+        .finally(() => setBuscandoCual((c) => (c === "destino" ? null : c)));
+    }, 320);
+    return () => clearTimeout(t);
+  }, [qDestino]);
+
+  // Cierra el dropdown al perder el foco del campo, con un pequeño retardo para que el toque
+  // sobre una coincidencia alcance a registrarse antes de ocultar la lista.
+  const cerrarTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cerrarResultados = (cual: "origen" | "destino") => {
+    if (cerrarTimer.current) clearTimeout(cerrarTimer.current);
+    cerrarTimer.current = setTimeout(() => {
+      setResultados((r) => (r?.cual === cual ? null : r));
+    }, 160);
+  };
+
   const marcar = (p: { lat: number; lng: number }) => {
     if (modo === "origen") {
       if (qr) return;
@@ -101,11 +137,31 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
   };
 
   const miUbicacion = () => {
-    if (!navigator.geolocation) return;
+    // Si el origen viene de un QR no se puede cambiar la recogida.
+    if (modo === "origen" && qr) return;
+    if (!navigator.geolocation) {
+      setErrores((e) => ({ ...e, [modo]: "Tu celular no permite ubicarte. Toca el mapa para marcar el punto." }));
+      return;
+    }
     setUbicando(true);
     navigator.geolocation.getCurrentPosition(
-      (pos) => { setUbicando(false); marcar({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
-      () => { setUbicando(false); setErrores((e) => ({ ...e, [modo]: "No pudimos ver tu ubicación. Toca el mapa para marcarla." })); },
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        let direccion = "";
+        try { direccion = await direccionDe(lat, lng); } catch { /* seguimos con el respaldo de abajo */ }
+        if (!direccion) direccion = `Mi ubicación (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
+        const punto = { lat, lng, direccion };
+        if (modo === "origen") { setOrigen(punto); setQOrigen(""); if (!destino) setModo("destino"); }
+        else { setDestino(punto); setQDestino(""); }
+        setResultados(null);
+        setErrores((e) => ({ ...e, [modo]: undefined }));
+        setUbicando(false);
+      },
+      () => {
+        setUbicando(false);
+        setErrores((e) => ({ ...e, [modo]: "No pudimos ver tu ubicación. Revisa el permiso de ubicación del navegador o toca el mapa para marcarla." }));
+      },
       { enableHighAccuracy: true, timeout: 10000 },
     );
   };
@@ -221,6 +277,7 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
                 value={origen ? origen.direccion : qOrigen}
                 placeholder="Escribe la dirección de recogida"
                 onFocus={() => setModo("origen")}
+                onBlur={() => cerrarResultados("origen")}
                 onChange={(e) => { const v = e.target.value; if (origen) setOrigen({ ...origen, direccion: v }); else setQOrigen(v); }}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); buscarDir("origen"); } }} />
               {!qr && (
@@ -232,7 +289,10 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
                 </button>
               )}
             </div>
-            {resultados?.cual === "origen" && (
+            {buscandoCual === "origen" && (
+              <p className="mt-2 text-xs text-suave"><i className="fa-solid fa-spinner fa-spin mr-1.5 text-naranja" />Buscando…</p>
+            )}
+            {buscandoCual !== "origen" && resultados?.cual === "origen" && (
               resultados.lista.length > 0 ? (
                 <ul className="mt-2 max-h-56 overflow-y-auto rounded-xl border border-borde bg-tarjeta">
                   {resultados.lista.map((r, i) => (
@@ -260,6 +320,7 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
                 value={destino ? destino.direccion : qDestino}
                 placeholder="Escribe la dirección de destino"
                 onFocus={() => setModo("destino")}
+                onBlur={() => cerrarResultados("destino")}
                 onChange={(e) => { const v = e.target.value; if (destino) setDestino({ ...destino, direccion: v }); else setQDestino(v); }}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); buscarDir("destino"); } }} />
               <button type="button" onClick={() => buscarDir("destino")}
@@ -269,7 +330,10 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
                 <i className={`fa-solid ${buscandoCual === "destino" ? "fa-spinner fa-spin" : "fa-magnifying-glass"}`} />
               </button>
             </div>
-            {resultados?.cual === "destino" && (
+            {buscandoCual === "destino" && (
+              <p className="mt-2 text-xs text-suave"><i className="fa-solid fa-spinner fa-spin mr-1.5 text-naranja" />Buscando…</p>
+            )}
+            {buscandoCual !== "destino" && resultados?.cual === "destino" && (
               resultados.lista.length > 0 ? (
                 <ul className="mt-2 max-h-56 overflow-y-auto rounded-xl border border-borde bg-tarjeta">
                   {resultados.lista.map((r, i) => (

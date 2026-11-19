@@ -45,6 +45,43 @@ async function buscarOsm(texto: string): Promise<ResultadoDireccion[]> {
     .filter((d) => Number.isFinite(d.lat) && Number.isFinite(d.lng));
 }
 
+async function reversaGoogle(g: GMaps, lat: number, lng: number): Promise<string> {
+  const geocoder = new g.Geocoder();
+  const { results } = await geocoder.geocode({ location: { lat, lng } });
+  return results && results.length ? results[0].formatted_address : "";
+}
+
+async function reversaOsm(lat: number, lng: number): Promise<string> {
+  const url =
+    "https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=es" +
+    `&lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lng))}`;
+  const r = await fetch(url, { headers: { "Accept-Language": "es" } });
+  if (!r.ok) return "";
+  const data = (await r.json()) as { display_name?: string };
+  return data?.display_name ?? "";
+}
+
+/**
+ * Convierte unas coordenadas en una dirección en texto (geocodificación inversa).
+ * Prefiere Google; si no está o falla, usa OpenStreetMap. Devuelve "" si no encuentra nada.
+ */
+export async function direccionDe(lat: number, lng: number): Promise<string> {
+  const g = googleMaps();
+  if (g) {
+    try {
+      const d = await reversaGoogle(g, lat, lng);
+      if (d) return d;
+    } catch {
+      /* el buscador de Google no está disponible; se usa OpenStreetMap */
+    }
+  }
+  try {
+    return await reversaOsm(lat, lng);
+  } catch {
+    return "";
+  }
+}
+
 /** Busca la dirección escrita. Prefiere Google; si no está o falla, usa OpenStreetMap. */
 export async function buscarDireccion(texto: string): Promise<ResultadoDireccion[]> {
   const q = texto.trim();
