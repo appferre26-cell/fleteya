@@ -35,13 +35,18 @@ export async function leerDocumentos(form: FormData, opciones: { exigirTodas?: b
 const MIME_FOTO_PERFIL = ["image/jpeg", "image/png", "image/webp"];
 
 /**
- * Lee la foto de perfil OPCIONAL del formulario (campo `foto_perfil`).
+ * Lee la foto de perfil del formulario (campo `foto_perfil`).
  * Acepta solo imágenes (JPG, PNG, WEBP), máx. 4 MB, validando el contenido real.
- * Si no viene archivo no es error (devuelve {}). No entra en los documentos obligatorios.
+ * Con `obligatoria`, la falta del archivo es error; sin ella, no viene archivo = {} (se mantiene la foto existente).
  */
-export async function leerFotoPerfil(form: FormData): Promise<{ foto?: { mime: string; datos: Uint8Array<ArrayBuffer> }; error?: string }> {
+export async function leerFotoPerfil(
+  form: FormData,
+  opciones: { obligatoria?: boolean } = {},
+): Promise<{ foto?: { mime: string; datos: Uint8Array<ArrayBuffer> }; error?: string }> {
   const f = form.get("foto_perfil");
-  if (!(f instanceof File) || f.size === 0) return {};
+  if (!(f instanceof File) || f.size === 0) {
+    return opciones.obligatoria ? { error: "La foto de perfil es obligatoria." } : {};
+  }
   if (f.size > MAX_DOC_BYTES) return { error: "La foto pesa más de 4 MB" };
   const datos = new Uint8Array(await f.arrayBuffer());
   const mime = detectarMime(Buffer.from(datos.buffer));

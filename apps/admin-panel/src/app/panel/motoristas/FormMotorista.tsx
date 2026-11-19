@@ -109,8 +109,12 @@ export function FormMotorista({ accion, inicial = {}, documentos = {}, fotoPerfi
 
       <section className="tarjeta p-5">
         <h2 className="seccion-titulo">Foto de perfil</h2>
-        <p className="mt-1 mb-3 text-xs text-suave">Opcional: la ve el cliente para saber quién le atenderá. Puedes subirla o reemplazarla cuando quieras.</p>
-        <FotoPerfilInput key={`fp-${intento}`} existente={fotoPerfil} error={err.foto_perfil} />
+        <p className="mt-1 mb-3 text-xs text-suave">
+          {fotoPerfil
+            ? "La ve el cliente para saber quién le atenderá. Ya tiene una; puedes reemplazarla si quieres."
+            : "Obligatoria: la ve el cliente para saber quién le atenderá. Sube una imagen (JPG, PNG o WEBP)."}
+        </p>
+        <FotoPerfilInput key={`fp-${intento}`} existente={fotoPerfil} error={err.foto_perfil} obligatoria={!fotoPerfil} />
       </section>
 
       <section className="tarjeta p-5">

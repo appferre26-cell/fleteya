@@ -44,6 +44,13 @@ export default async function PerfilMotorista() {
         <div><p className="text-lg font-bold">{m.nombre}</p><span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${ESTADOS[m.estado].clase}`}>{ESTADOS[m.estado].nombre}</span></div>
       </div>
 
+      {!foto && (
+        <div role="alert" className="mt-4 flex items-start gap-3 rounded-xl border border-naranja/50 bg-naranja/10 px-4 py-3 text-sm text-naranja">
+          <i className="fa-solid fa-triangle-exclamation mt-0.5" />
+          <p><span className="font-semibold">Tu foto de perfil es obligatoria.</span> La ven los clientes para saber quién les atenderá. Súbela abajo para completar tu perfil.</p>
+        </div>
+      )}
+
       <FormFotoPerfil tieneFoto={!!foto} src={fotoSrc} />
 
       <section className="tarjeta mt-4 p-4 text-sm" data-testid="mi-calificacion">

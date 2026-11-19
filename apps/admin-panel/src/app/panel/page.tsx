@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
-import { diasParaVencer, fechaCorta, fechaHora } from "@/lib/validacion";
+import { TOTAL_REQUISITOS, diasParaVencer, fechaCorta, fechaHora } from "@/lib/validacion";
 import { textoAccion } from "@/lib/historial";
 import { obtenerConfig, zonaDe } from "@/lib/config";
 import { datosEnVivo } from "@/lib/en-vivo";
@@ -19,7 +19,7 @@ export default async function InicioPanel() {
   const [grupos, pendientes, licencias, recientes, buscando] = await Promise.all([
     db.motorista.groupBy({ by: ["estado"], _count: true }),
     db.motorista.findMany({ where: { estado: "PENDIENTE" }, orderBy: { creadoEn: "asc" }, take: 5,
-      select: { id: true, nombre: true, creadoEn: true, _count: { select: { documentos: { where: { tipo: { not: "FOTO_PERFIL" } } } } } } }),
+      select: { id: true, nombre: true, creadoEn: true, _count: { select: { documentos: true } } } }),
     db.motorista.findMany({
       where: { estado: { not: "SUSPENDIDO" }, licenciaVence: { lte: new Date(Date.now() + 30 * 86400000) } },
       orderBy: { licenciaVence: "asc" }, select: { id: true, nombre: true, licenciaVence: true },
@@ -103,7 +103,7 @@ export default async function InicioPanel() {
               {pendientes.map((m) => (
                 <li key={m.id}>
                   <Link href={`/panel/motoristas/${m.id}`} className="flex items-center justify-between gap-3 py-3 text-sm">
-                    <span><span className="font-semibold">{m.nombre}</span><span className="block text-xs text-suave">Registrado el {fechaCorta(m.creadoEn)} · {m._count.documentos}/3 documentos</span></span>
+                    <span><span className="font-semibold">{m.nombre}</span><span className="block text-xs text-suave">Registrado el {fechaCorta(m.creadoEn)} · {m._count.documentos}/{TOTAL_REQUISITOS} documentos</span></span>
                     <span className="text-xs font-semibold text-naranja">Revisar <i className="fa-solid fa-arrow-right ml-1" /></span>
                   </Link>
                 </li>

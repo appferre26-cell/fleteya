@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
 import { avisarMotoristas, despues } from "@/lib/avisos";
-import { CAMPOS_FISCALES, TOTAL_DOCS, contrasenaTemporal, erroresDe, esquemaFiscal, esquemaMotorista, type ErroresCampos } from "@/lib/validacion";
+import { CAMPOS_FISCALES, TOTAL_DOCS, TOTAL_REQUISITOS, contrasenaTemporal, erroresDe, esquemaFiscal, esquemaMotorista, type ErroresCampos } from "@/lib/validacion";
 import { datosDe, errorDuplicado, leerDocumentos, leerFotoPerfil } from "@/lib/documentos";
 
 const valoresDe = (form: FormData) => ({ ...datosDe(form), ...Object.fromEntries(CAMPOS_FISCALES.map((k) => [k, String(form.get(k) ?? "")])) });
@@ -22,7 +22,7 @@ export async function crearMotorista(_: EstadoFormMotorista, form: FormData): Pr
   const r = esquemaMotorista.safeParse(valores);
   const f = esquemaFiscal.safeParse(valores);
   const { docs, errores: errDocs } = await leerDocumentos(form);
-  const { foto, error: errFoto } = await leerFotoPerfil(form);
+  const { foto, error: errFoto } = await leerFotoPerfil(form, { obligatoria: true });
   if (errFoto) errDocs.foto_perfil = errFoto;
   if (!r.success || !f.success || Object.keys(errDocs).length) {
     return { errores: { ...(r.success ? {} : erroresDe(r.error)), ...(f.success ? {} : erroresDe(f.error)), ...errDocs }, valores };
@@ -55,12 +55,14 @@ export async function editarMotorista(id: string, _: EstadoFormMotorista, form: 
   const r = esquemaMotorista.safeParse(valores);
   const f = esquemaFiscal.safeParse(valores);
   const { docs, errores: errDocs } = await leerDocumentos(form);
-  const { foto, error: errFoto } = await leerFotoPerfil(form);
+  // Si ya tiene foto, no se obliga a re-subirla; si no la tiene, se exige.
+  const fotoActual = await db.documento.findUnique({ where: { motoristaId_tipo: { motoristaId: id, tipo: "FOTO_PERFIL" } }, select: { id: true } });
+  const { foto, error: errFoto } = await leerFotoPerfil(form, { obligatoria: !fotoActual });
   if (errFoto) errDocs.foto_perfil = errFoto;
   if (!r.success || !f.success || Object.keys(errDocs).length) {
     return { errores: { ...(r.success ? {} : erroresDe(r.error)), ...(f.success ? {} : erroresDe(f.error)), ...errDocs }, valores };
   }
-  // La foto de perfil (opcional) se trata como un documento más, con upsert.
+  // La foto de perfil se trata como un documento más, con upsert.
   const todos = foto ? [...docs, { tipo: "FOTO_PERFIL" as const, mime: foto.mime, datos: foto.datos }] : docs;
   try {
     await db.$transaction(async (tx) => {
@@ -91,11 +93,11 @@ const REVISIONES = [["revisoDui"], ["revisoLicencia"], ["revisoTarjeta"], ["revi
 
 export async function aprobarMotorista(id: string, _: EstadoAccion, form: FormData): Promise<EstadoAccion> {
   const yo = await exigirPropietario();
-  // Solo cuentan los documentos obligatorios; la foto de perfil (FOTO_PERFIL) es opcional y no suma.
-  const m = await db.motorista.findUnique({ where: { id }, include: { _count: { select: { documentos: { where: { tipo: { not: "FOTO_PERFIL" } } } } } } });
+  // Todos los requisitos de fotos cuentan: los documentos obligatorios y la foto de perfil (ahora obligatoria).
+  const m = await db.motorista.findUnique({ where: { id }, include: { _count: { select: { documentos: true } } } });
   if (!m) return { error: "No se encontró el motorista." };
   if (m.estado !== "PENDIENTE") return { error: "Este motorista ya no está pendiente." };
-  if (m._count.documentos < TOTAL_DOCS) return { error: `Faltan fotos (${m._count.documentos}/${TOTAL_DOCS}). Súbelas en «Editar datos» antes de aprobar.` };
+  if (m._count.documentos < TOTAL_REQUISITOS) return { error: `Faltan fotos (${m._count.documentos}/${TOTAL_REQUISITOS}). Súbelas en «Editar datos» antes de aprobar.` };
   if (!m.accesoPagadoEn) return { error: "Falta el pago del acceso a la plataforma. Regístralo antes de aprobar." };
   if (!REVISIONES.every(([k]) => form.get(k) === "on")) {
     return { error: "Marca todas las casillas para confirmar que revisaste los documentos y el vehículo." };

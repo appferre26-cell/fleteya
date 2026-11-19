@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { dinero, numeroViaje } from "@/lib/tarifa";
 import { textoAccion } from "@/lib/historial";
 import { exigirPropietario } from "@/lib/sesion";
-import { DOCUMENTOS, GRUPOS_DOC, TIPOS_VEHICULO, TOTAL_DOCS, diasParaVencer, fechaCorta, fechaHora, formatoTelefono } from "@/lib/validacion";
+import { DOCUMENTOS, GRUPOS_DOC, TIPOS_VEHICULO, TOTAL_REQUISITOS, diasParaVencer, fechaCorta, fechaHora, formatoTelefono } from "@/lib/validacion";
 import { Estado, Iniciales } from "../piezas";
 import { AccionesMotorista } from "./AccionesMotorista";
 import { PagoAcceso } from "./PagoAcceso";
@@ -38,9 +38,9 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
   ]);
   const saldo = Number(m.saldoCreditos);
   const enLinea = m.disponible && m.vistoEn && Date.now() - m.vistoEn.getTime() < 2 * 60_000;
-  // La foto de perfil es opcional y no cuenta como documento obligatorio.
-  const docsObligatorios = m.documentos.filter((d) => d.tipo !== "FOTO_PERFIL");
-  const tieneFoto = m.documentos.some((d) => d.tipo === "FOTO_PERFIL");
+  // La foto de perfil ahora es obligatoria y cuenta como un requisito más.
+  const fotoDoc = m.documentos.find((d) => d.tipo === "FOTO_PERFIL");
+  const tieneFoto = !!fotoDoc;
 
   const venc = diasParaVencer(m.licenciaVence);
   const dato = (t: string, v: React.ReactNode) => (
@@ -112,7 +112,27 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
           </section>
 
           <section className="tarjeta p-5">
-            <h2 className="seccion-titulo">Fotos y documentos ({docsObligatorios.length}/{TOTAL_DOCS})</h2>
+            <h2 className="seccion-titulo">Fotos y documentos ({m.documentos.length}/{TOTAL_REQUISITOS})</h2>
+            <div className="mt-4">
+              <p className="text-xs font-semibold text-suave uppercase">Foto de perfil</p>
+              <div className="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div>
+                  <p className="etiqueta">Foto de perfil (obligatoria)</p>
+                  {fotoDoc ? (
+                    <a href={`/api/documentos/${fotoDoc.id}`} target="_blank" rel="noopener noreferrer"
+                      className="block h-36 overflow-hidden rounded-xl border border-borde bg-fondo hover:border-naranja">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`/api/documentos/${fotoDoc.id}`} alt="Foto de perfil" className="h-full w-full object-cover" />
+                    </a>
+                  ) : (
+                    <Link href={`/panel/motoristas/${m.id}/editar`} className="flex h-36 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-naranja/50 bg-fondo text-xs text-naranja">
+                      <i className="fa-solid fa-camera text-xl" />Falta · subir foto
+                    </Link>
+                  )}
+                  {fotoDoc && <p className="mt-1 text-[11px] text-suave">Subida el {fechaCorta(fotoDoc.subidoEn)} · toca para ampliar</p>}
+                </div>
+              </div>
+            </div>
             {GRUPOS_DOC.map((g) => (
             <div key={g.titulo} className="mt-4">
             <p className="text-xs font-semibold text-suave uppercase">{g.titulo}</p>
@@ -204,7 +224,7 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
           </section>
         </div>
 
-        <AccionesMotorista id={m.id} nombre={m.nombre} telefono={m.telefono} estado={m.estado} documentos={docsObligatorios.length} licenciaVencida={venc < 0} accesoPagado={!!m.accesoPagadoEn}>
+        <AccionesMotorista id={m.id} nombre={m.nombre} telefono={m.telefono} estado={m.estado} documentos={m.documentos.length} licenciaVencida={venc < 0} accesoPagado={!!m.accesoPagadoEn}>
           <PagoAcceso id={m.id} precio={cfg.precioAcceso} pagado={m.accesoPagadoEn ? fechaCorta(m.accesoPagadoEn) : null} recibo={reciboAcceso?.numero ?? null}
             avisoReferencia={m.accesoReferencia} avisoFecha={m.accesoAvisadoEn ? fechaHora(m.accesoAvisadoEn) : null} />
         </AccionesMotorista>

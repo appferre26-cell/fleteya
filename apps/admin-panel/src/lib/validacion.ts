@@ -57,6 +57,8 @@ export const DOCUMENTOS = {
 export type TipoDoc = keyof typeof DOCUMENTOS;
 export const TIPOS_DOC = Object.keys(DOCUMENTOS) as TipoDoc[];
 export const TOTAL_DOCS = TIPOS_DOC.length;
+/** Requisitos de fotos del motorista: los documentos obligatorios + la foto de perfil (ahora obligatoria). */
+export const TOTAL_REQUISITOS = TOTAL_DOCS + 1;
 
 /** Cómo se agrupan las fotos en los formularios y en el detalle. */
 export const GRUPOS_DOC: { titulo: string; tipos: TipoDoc[] }[] = [

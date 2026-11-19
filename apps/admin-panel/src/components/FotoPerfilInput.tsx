@@ -20,9 +20,9 @@ async function reducirImagen(f: File): Promise<File> {
   }
 }
 
-/** Sube la foto de perfil (opcional). Solo imágenes: la ve el cliente para saber quién le atenderá. */
-export function FotoPerfilInput({ nombre = "foto_perfil", existente, error }: {
-  nombre?: string; existente?: string; error?: string;
+/** Sube la foto de perfil. Solo imágenes: la ve el cliente para saber quién le atenderá. */
+export function FotoPerfilInput({ nombre = "foto_perfil", existente, error, obligatoria = false }: {
+  nombre?: string; existente?: string; error?: string; obligatoria?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
   const [vista, setVista] = useState<string | null>(null);
@@ -56,7 +56,7 @@ export function FotoPerfilInput({ nombre = "foto_perfil", existente, error }: {
           <input ref={ref} type="file" name={nombre} accept="image/jpeg,image/png,image/webp" onChange={alCambiar} className="sr-only" />
         </span>
         <span className="min-w-0 text-sm">
-          <span className="font-semibold">Foto de perfil (opcional)</span>
+          <span className="font-semibold">Foto de perfil {obligatoria ? <span className="text-naranja">(obligatoria *)</span> : "(opcional)"}</span>
           <span className="mt-0.5 block text-[11px] text-suave">Para que el cliente sepa quién le atenderá. Solo imagen (JPG, PNG o WEBP), máx. 4 MB.</span>
           {error && <span className="mt-1 block text-[11px] text-error">{error}</span>}
           {procesando && <span className="mt-1 block text-[11px] text-suave">Preparando foto…</span>}

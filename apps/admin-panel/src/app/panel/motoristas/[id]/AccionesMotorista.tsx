@@ -2,7 +2,7 @@
 import type { EstadoMotorista } from "@prisma/client";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import { Credenciales } from "@/components/Credenciales";
-import { TOTAL_DOCS } from "@/lib/validacion";
+import { TOTAL_REQUISITOS } from "@/lib/validacion";
 import {
   aprobarMotorista, reactivarMotorista, restablecerContrasena, suspenderMotorista, type EstadoAccion,
 } from "../acciones";
@@ -41,8 +41,8 @@ export function AccionesMotorista({ id, nombre, telefono, estado, documentos, li
       {estado === "PENDIENTE" && (
         <section className="tarjeta border-naranja/40 p-5">
           <h2 className="flex items-center gap-2 font-bold"><i className="fa-solid fa-file-circle-check text-naranja" />Aprobar motorista</h2>
-          {documentos < TOTAL_DOCS ? (
-            <p className="mt-2 text-sm text-suave">Faltan {TOTAL_DOCS - documentos} de {TOTAL_DOCS} fotos. Súbelas en <span className="text-texto">Editar datos</span> para poder aprobarlo.</p>
+          {documentos < TOTAL_REQUISITOS ? (
+            <p className="mt-2 text-sm text-suave">Faltan {TOTAL_REQUISITOS - documentos} de {TOTAL_REQUISITOS} fotos (incluida la foto de perfil). Súbelas en <span className="text-texto">Editar datos</span> para poder aprobarlo.</p>
           ) : !accesoPagado ? (
             <p className="mt-2 text-sm text-suave" data-testid="falta-acceso">Primero registra su <span className="text-texto">pago de acceso</span> (abajo). Sin ese pago no se puede dar de alta.</p>
           ) : (

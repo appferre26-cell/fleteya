@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { EstadoMotorista, Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { exigirPropietario } from "@/lib/sesion";
-import { ESTADOS, TIPOS_VEHICULO, TOTAL_DOCS, diasParaVencer, fechaCorta, formatoTelefono, normalizarTelefono } from "@/lib/validacion";
+import { ESTADOS, TIPOS_VEHICULO, TOTAL_REQUISITOS, diasParaVencer, fechaCorta, formatoTelefono, normalizarTelefono } from "@/lib/validacion";
 import { Estado, Iniciales } from "./piezas";
 
 export const metadata = { title: "Motoristas — FleteYa" };
@@ -36,7 +36,7 @@ export default async function Motoristas({ searchParams }: { searchParams: Promi
     db.motorista.findMany({
       where, orderBy: [{ estado: "asc" }, { nombre: "asc" }],
       select: { id: true, nombre: true, telefono: true, placa: true, marca: true, modelo: true, tipoVehiculo: true,
-        capacidadTon: true, estado: true, creadoEn: true, licenciaVence: true, autoRegistro: true, accesoPagadoEn: true, accesoAvisadoEn: true, _count: { select: { documentos: { where: { tipo: { not: "FOTO_PERFIL" } } } } } },
+        capacidadTon: true, estado: true, creadoEn: true, licenciaVence: true, autoRegistro: true, accesoPagadoEn: true, accesoAvisadoEn: true, _count: { select: { documentos: true } } },
     }),
     db.motorista.groupBy({ by: ["estado"], _count: true }),
   ]);
@@ -120,7 +120,7 @@ export default async function Motoristas({ searchParams }: { searchParams: Promi
                         <p className="text-[11px] text-suave">{m.marca} {m.modelo} · {m.placa}</p>
                       </td>
                       <td className="py-3">
-                        <p className={m._count.documentos < TOTAL_DOCS ? "font-semibold text-naranja" : ""}>{m._count.documentos}/{TOTAL_DOCS} fotos</p>
+                        <p className={m._count.documentos < TOTAL_REQUISITOS ? "font-semibold text-naranja" : ""}>{m._count.documentos}/{TOTAL_REQUISITOS} fotos</p>
                         {m.estado === "PENDIENTE" && (
                           <p className={`text-[11px] ${m.accesoPagadoEn ? "text-exito" : "text-naranja"}`} data-testid="estado-acceso">
                             {m.accesoPagadoEn ? "Acceso pagado" : m.accesoAvisadoEn ? "Avisó su pago" : "Acceso sin pagar"}

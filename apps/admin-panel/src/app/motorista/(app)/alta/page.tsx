@@ -3,7 +3,7 @@ import { obtenerConfig } from "@/lib/config";
 import { db } from "@/lib/db";
 import { exigirMotorista } from "@/lib/sesion-motorista";
 import { dinero } from "@/lib/tarifa";
-import { TOTAL_DOCS, fechaCorta } from "@/lib/validacion";
+import { TOTAL_REQUISITOS, fechaCorta } from "@/lib/validacion";
 import { Copiar } from "../creditos/BotonesCliente";
 import { FormAviso } from "./FormAviso";
 
@@ -20,12 +20,12 @@ export default async function AltaMotorista({ searchParams }: { searchParams: Pr
   const [m, cfg] = await Promise.all([
     db.motorista.findUniqueOrThrow({
       where: { id: s.id },
-      select: { nombre: true, telefono: true, estado: true, accesoPagadoEn: true, accesoReferencia: true, accesoAvisadoEn: true, _count: { select: { documentos: { where: { tipo: { not: "FOTO_PERFIL" } } } } } },
+      select: { nombre: true, telefono: true, estado: true, accesoPagadoEn: true, accesoReferencia: true, accesoAvisadoEn: true, _count: { select: { documentos: true } } },
     }),
     obtenerConfig(),
   ]);
   const precio = dinero(cfg.precioAcceso);
-  const fotosOk = m._count.documentos >= TOTAL_DOCS;
+  const fotosOk = m._count.documentos >= TOTAL_REQUISITOS;
   const pagado = !!m.accesoPagadoEn;
   const activo = m.estado === "ACTIVO";
   const mensaje = encodeURIComponent(`Hola, soy ${m.nombre} (motorista, tel. ${m.telefono}). Me registré en FleteYa y quiero pagar mi acceso de ${precio}.`);
@@ -48,7 +48,7 @@ export default async function AltaMotorista({ searchParams }: { searchParams: Pr
       <p className="mt-1 text-sm text-suave">{activo ? "Tu perfil está activo." : "Tu cuenta está en revisión. Completa estos pasos para empezar a recibir viajes."}</p>
 
       <ul className="tarjeta mt-4 divide-y divide-borde">
-        {paso(fotosOk, "Datos y fotos", fotosOk ? `Recibimos tus ${TOTAL_DOCS} fotos.` : `Faltan fotos (${m._count.documentos}/${TOTAL_DOCS}). Escríbenos para completarlas.`, "paso-fotos")}
+        {paso(fotosOk, "Datos y fotos", fotosOk ? `Recibimos tus ${TOTAL_REQUISITOS} fotos (incluida tu foto de perfil).` : `Faltan fotos (${m._count.documentos}/${TOTAL_REQUISITOS}), incluida tu foto de perfil. Súbela en «Mi perfil» o escríbenos.`, "paso-fotos")}
         {paso(pagado, `Pago de acceso (${precio})`, pagado ? `Pagado el ${fechaCorta(m.accesoPagadoEn!)}.` : m.accesoAvisadoEn ? "Avisaste tu pago. FleteYa lo está confirmando." : "Pendiente. Mira abajo cómo pagar.", "paso-pago")}
         {paso(activo, "Revisión de FleteYa", activo ? "Perfil activo. ¡Bienvenido!" : "Revisamos que tus fotos se lean bien y coincidan con tus datos.", "paso-revision")}
       </ul>

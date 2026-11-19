@@ -30,7 +30,7 @@ export async function registrarMotorista(_: EstadoRegistro, form: FormData): Pro
   const r = esquemaMotorista.safeParse(valores);
   const f = esquemaFiscal.safeParse(valores);
   const { docs, errores: errDocs } = await leerDocumentos(form, { exigirTodas: true });
-  const { foto, error: errFoto } = await leerFotoPerfil(form);
+  const { foto, error: errFoto } = await leerFotoPerfil(form, { obligatoria: true });
   const errores: ErroresCampos = { ...(r.success ? {} : erroresDe(r.error)), ...(f.success ? {} : erroresDe(f.error)), ...errDocs };
   if (errFoto) errores.foto_perfil = errFoto;
   if (password.length < 8) errores.password = "Mínimo 8 letras o números";

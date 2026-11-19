@@ -11,7 +11,7 @@ const PASOS = [
   { titulo: "Tus datos", icono: "fa-user", campos: ["nombre", "telefono", "dui", "correo", "password", "repetir"] },
   { titulo: "Licencia", icono: "fa-id-card", campos: ["licenciaNumero", "licenciaVence"] },
   { titulo: "Vehículo", icono: "fa-truck", campos: ["placa", "tipoVehiculo", "marca", "modelo", "capacidadTon"] },
-  { titulo: "Fotos", icono: "fa-camera", campos: TIPOS_DOC.map((t) => `doc_${t}`) },
+  { titulo: "Fotos", icono: "fa-camera", campos: ["foto_perfil", ...TIPOS_DOC.map((t) => `doc_${t}`)] },
   { titulo: "Facturación", icono: "fa-file-invoice", campos: ["requiereCreditoFiscal", "nit", "nrc", "razonSocial", "giro", "direccionFiscal", "acepto"] },
   { titulo: "Pago y alta", icono: "fa-circle-check", campos: [] as string[] },
 ];
@@ -42,7 +42,7 @@ export function FormRegistro({ precio }: { precio: string }) {
       if (OPCIONALES.has(c)) continue;
       const el = f.elements.namedItem(c) as HTMLInputElement | null;
       if (!el) continue;
-      if (el.type === "file") { if (!el.files?.length) faltan[c] = "Falta esta foto"; }
+      if (el.type === "file") { if (!el.files?.length) faltan[c] = c === "foto_perfil" ? "La foto de perfil es obligatoria." : "Falta esta foto"; }
       else if (el.type === "checkbox") { if (!el.checked) faltan[c] = "Debes aceptar los términos para registrarte"; }
       else if (!el.value.trim()) faltan[c] = "Completa este dato";
     }
@@ -130,7 +130,7 @@ export function FormRegistro({ precio }: { precio: string }) {
 
       <div className={`mt-4 ${visible(3)}`}>
         <div className="tarjeta p-4">
-          <FotoPerfilInput existente={v.foto_perfil} error={err.foto_perfil} />
+          <FotoPerfilInput existente={v.foto_perfil} error={err.foto_perfil} obligatoria />
         </div>
         <p className="mt-4 text-xs text-suave">Las {TOTAL_DOCS} fotos son obligatorias. Que se lean bien, sin reflejos. El vehículo debe verse completo y con la placa visible atrás.</p>
         {GRUPOS_DOC.map((g) => (
