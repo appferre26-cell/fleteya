@@ -263,7 +263,7 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
       )}
 
       {a ? (
-        <ViajeActivo a={a} ocupado={ocupado} iniciar={iniciar} setAviso={setAviso} refrescar={refrescar} alTerminar={() => { terminePorMi.current = true; }} />
+        <ViajeActivo a={a} yo={yo} ocupado={ocupado} iniciar={iniciar} setAviso={setAviso} refrescar={refrescar} alTerminar={() => { terminePorMi.current = true; }} />
       ) : (
         <>
           {d.porCalificar && (
@@ -357,14 +357,34 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
 const PASOS = ["ASIGNADO", "EN_CAMINO", "CARGANDO", "EN_RUTA"] as const;
 const NOMBRE_PASO = { ASIGNADO: "Aceptado", EN_CAMINO: "En camino", CARGANDO: "Cargando", EN_RUTA: "En ruta" };
 
-function ViajeActivo({ a, ocupado, iniciar, setAviso, refrescar, alTerminar }: {
-  a: NonNullable<DatosInicio["activo"]>; ocupado: boolean; iniciar: (f: () => Promise<void>) => void;
+function ViajeActivo({ a, yo, ocupado, iniciar, setAviso, refrescar, alTerminar }: {
+  a: NonNullable<DatosInicio["activo"]>; yo: { lat: number; lng: number } | null; ocupado: boolean; iniciar: (f: () => Promise<void>) => void;
   setAviso: (a: { texto: string; tipo: "ok" | "error" } | null) => void; refrescar: () => Promise<void>; alTerminar: () => void;
 }) {
   const [soltando, setSoltando] = useState(false);
+  const [ruta, setRuta] = useState<{ lat: number; lng: number }[] | null>(null);
   const haciaRecogida = a.estado === "ASIGNADO" || a.estado === "EN_CAMINO";
   const meta = haciaRecogida ? a.origen : a.destino;
   const i = PASOS.indexOf(a.estado);
+
+  // Recorrido en vivo por calles (como Waze, pero dentro de la app): desde la posición del
+  // motorista hasta el punto al que va ahora. Se refresca al montar, cada 15s y al cambiar la meta.
+  useEffect(() => {
+    if (!yo) { setRuta(null); return; }
+    let vivo = true;
+    const consultar = async () => {
+      try {
+        const q = new URLSearchParams({ fromLat: String(yo.lat), fromLng: String(yo.lng), toLat: String(meta.lat), toLng: String(meta.lng) });
+        const r = await fetch(`/motorista/api/ruta?${q}`, { cache: "no-store" });
+        if (!r.ok) return;
+        const d = await r.json();
+        if (vivo && d.ruta) setRuta(d.ruta);
+      } catch { /* sin ruta: el mapa dibuja línea recta de respaldo */ }
+    };
+    void consultar();
+    const t = setInterval(consultar, 15000);
+    return () => { vivo = false; clearInterval(t); };
+  }, [yo, meta.lat, meta.lng]);
 
   const avanzar = () => iniciar(async () => {
     const r = await avanzarViaje(a.id, a.estado);
@@ -412,10 +432,11 @@ function ViajeActivo({ a, ocupado, iniciar, setAviso, refrescar, alTerminar }: {
       </div>
 
       <div className="relative mt-3">
-        <Mapa centro={meta} puntos={[
+        <Mapa centro={yo ?? meta} puntos={[
+          ...(yo ? [{ id: "yo", lat: yo.lat, lng: yo.lng, color: "#FF6B00", icono: "fa-truck", etiqueta: "Tú" }] : []),
           { id: "o", ...a.origen, color: "#FF6B00", icono: "fa-box", etiqueta: "Recogida" },
           { id: "d", ...a.destino, color: "#F5F5F5", icono: "fa-flag-checkered", etiqueta: "Destino" },
-        ]} className="h-44" etiqueta="Mapa del viaje" />
+        ]} ruta={ruta ?? undefined} vivo className="h-56" etiqueta="Mapa del viaje" />
       </div>
 
       <div className="mt-3 space-y-3">
