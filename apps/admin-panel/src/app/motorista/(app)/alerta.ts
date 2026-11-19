@@ -39,11 +39,3 @@ export function notificar(titulo: string, cuerpo: string) {
   } catch { /* Android exige service worker: el sonido y la vibración siguen funcionando */ }
 }
 
-/** Mantiene la pantalla encendida mientras está disponible (si el teléfono lo permite). */
-export async function pantallaEncendida(activar: boolean, actual: WakeLockSentinel | null) {
-  try {
-    if (activar && !actual && "wakeLock" in navigator) return await navigator.wakeLock.request("screen");
-    if (!activar && actual) { await actual.release(); return null; }
-  } catch { /* no soportado */ }
-  return actual;
-}

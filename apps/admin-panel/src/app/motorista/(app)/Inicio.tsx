@@ -7,7 +7,7 @@ import { avanzarViaje, calificarCliente, cambiarDisponible, soltarViaje, suscrib
 import { Calificar } from "@/components/Calificar";
 import { BotonAvisos } from "@/components/BotonAvisos";
 import { activarAvisos } from "@/lib/avisos-navegador";
-import { notificar, pantallaEncendida, prepararSonido, sonarAlerta } from "./alerta";
+import { notificar, prepararSonido, sonarAlerta } from "./alerta";
 import { ListaCarga, Ruta, TarjetaSolicitud, type Sol } from "./Solicitud";
 
 const SEGUNDOS_ALERTA = 30;
@@ -180,9 +180,35 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
     return () => { navigator.geolocation.clearWatch(id); clearInterval(latido); document.removeEventListener("visibilitychange", alVolverGps); };
   }, [compartir, reintentoGps, marcarErrorGps]);
 
-  // Pantalla encendida mientras está disponible.
+  // Pantalla encendida mientras está disponible o lleva un viaje (como Waze).
+  // El navegador SUELTA el wake lock al bloquear la pantalla o cambiar de app, así que hay que
+  // volver a pedirlo cada vez que la app regresa a primer plano; si no, la pantalla se apaga
+  // y el móvil suspende la página (el GPS deja de enviar y el cliente deja de ver el carrito).
   useEffect(() => {
-    void pantallaEncendida(compartir, wake.current).then((w) => { wake.current = w; });
+    if (!compartir || !("wakeLock" in navigator)) return;
+    let cancelado = false;
+
+    const pedir = async () => {
+      if (cancelado || wake.current || document.hidden) return;
+      try {
+        const sentinel = await navigator.wakeLock.request("screen");
+        if (cancelado) { void sentinel.release(); return; }
+        wake.current = sentinel;
+        // Cuando el navegador lo suelta (pantalla bloqueada o app en segundo plano), lo marcamos libre.
+        sentinel.addEventListener("release", () => { if (wake.current === sentinel) wake.current = null; });
+      } catch { /* el dispositivo no lo permite: no rompe nada */ }
+    };
+
+    // Al volver a primer plano, re-adquiere el bloqueo si el navegador lo había soltado.
+    const alVolver = () => { if (!document.hidden) void pedir(); };
+    document.addEventListener("visibilitychange", alVolver);
+    void pedir();
+
+    return () => {
+      cancelado = true;
+      document.removeEventListener("visibilitychange", alVolver);
+      if (wake.current) { void wake.current.release(); wake.current = null; }
+    };
   }, [compartir]);
 
   const alternar = () => iniciar(async () => {
