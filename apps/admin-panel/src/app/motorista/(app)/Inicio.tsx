@@ -165,7 +165,19 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
       );
     }, 10000);
 
-    return () => { navigator.geolocation.clearWatch(id); clearInterval(latido); };
+    // Al volver a primer plano (los navegadores móviles pausan el GPS en segundo plano/pantalla
+    // bloqueada): reenvía la ubicación al instante, sin esperar el próximo latido de 10 s.
+    const alVolverGps = () => {
+      if (document.hidden) return;
+      navigator.geolocation.getCurrentPosition(
+        (p) => enviar({ lat: p.coords.latitude, lng: p.coords.longitude }, true),
+        marcarErrorGps,
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 },
+      );
+    };
+    document.addEventListener("visibilitychange", alVolverGps);
+
+    return () => { navigator.geolocation.clearWatch(id); clearInterval(latido); document.removeEventListener("visibilitychange", alVolverGps); };
   }, [compartir, reintentoGps, marcarErrorGps]);
 
   // Pantalla encendida mientras está disponible.
