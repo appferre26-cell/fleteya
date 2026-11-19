@@ -19,6 +19,7 @@ type Props = {
 export function MapaViaje({ codigo, origen, destino, estadoInicial, motoristaInicial, className = "mt-3 h-52" }: Props) {
   const [estado, setEstado] = useState(estadoInicial);
   const [moto, setMoto] = useState<Motorista | null>(motoristaInicial);
+  const [rutaCalles, setRutaCalles] = useState<LatLng[] | null>(null);
   const estadoRef = useRef(estadoInicial);
   estadoRef.current = estado;
 
@@ -37,8 +38,10 @@ export function MapaViaje({ codigo, origen, destino, estadoInicial, motoristaIni
         }
         if (d.verUbicacion && d.lat != null && d.lng != null) {
           setMoto({ lat: d.lat, lng: d.lng, nombre: d.nombre || "Motorista" });
+          setRutaCalles(Array.isArray(d.ruta) && d.ruta.length >= 2 ? d.ruta : null);
         } else {
           setMoto(null);
+          setRutaCalles(null);
         }
       } catch {
         /* reintenta en el siguiente tic */
@@ -56,8 +59,9 @@ export function MapaViaje({ codigo, origen, destino, estadoInicial, motoristaIni
   let ruta: LatLng[] = [origen, destino];
   if (moto) {
     puntos.push({ id: "m", lat: moto.lat, lng: moto.lng, color: "#4CAF50", icono: "fa-truck", etiqueta: moto.nombre });
+    // Ruta real por calles (del servidor). Si aún no llega, línea recta como respaldo.
     // Camino a recoger: motorista → recogida → destino. En ruta: motorista → destino.
-    ruta = estado === "EN_RUTA" ? [moto, destino] : [moto, origen, destino];
+    ruta = rutaCalles ?? (estado === "EN_RUTA" ? [moto, destino] : [moto, origen, destino]);
   }
 
   return <Mapa centro={moto ?? origen} puntos={puntos} ruta={ruta} vivo className={className} etiqueta="Mapa del viaje en vivo" />;
