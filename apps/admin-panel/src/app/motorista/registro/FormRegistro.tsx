@@ -3,6 +3,7 @@ import Link from "next/link";
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { CamposFiscales } from "@/components/CamposFiscales";
 import { DocumentoInput } from "@/components/DocumentoInput";
+import { FotoPerfilInput } from "@/components/FotoPerfilInput";
 import { DOCUMENTOS, GRUPOS_DOC, TIPOS_DOC, TIPOS_VEHICULO, TOTAL_DOCS } from "@/lib/validacion";
 import { registrarMotorista, type EstadoRegistro } from "./acciones";
 
@@ -128,7 +129,10 @@ export function FormRegistro({ precio }: { precio: string }) {
       </div>
 
       <div className={`mt-4 ${visible(3)}`}>
-        <p className="text-xs text-suave">Las {TOTAL_DOCS} fotos son obligatorias. Que se lean bien, sin reflejos. El vehículo debe verse completo y con la placa visible atrás.</p>
+        <div className="tarjeta p-4">
+          <FotoPerfilInput existente={v.foto_perfil} error={err.foto_perfil} />
+        </div>
+        <p className="mt-4 text-xs text-suave">Las {TOTAL_DOCS} fotos son obligatorias. Que se lean bien, sin reflejos. El vehículo debe verse completo y con la placa visible atrás.</p>
         {GRUPOS_DOC.map((g) => (
           <div key={g.titulo} className="mt-4">
             <p className="text-xs font-semibold text-suave uppercase">{g.titulo}</p>

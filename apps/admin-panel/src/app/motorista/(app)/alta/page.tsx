@@ -20,7 +20,7 @@ export default async function AltaMotorista({ searchParams }: { searchParams: Pr
   const [m, cfg] = await Promise.all([
     db.motorista.findUniqueOrThrow({
       where: { id: s.id },
-      select: { nombre: true, telefono: true, estado: true, accesoPagadoEn: true, accesoReferencia: true, accesoAvisadoEn: true, _count: { select: { documentos: true } } },
+      select: { nombre: true, telefono: true, estado: true, accesoPagadoEn: true, accesoReferencia: true, accesoAvisadoEn: true, _count: { select: { documentos: { where: { tipo: { not: "FOTO_PERFIL" } } } } } },
     }),
     obtenerConfig(),
   ]);

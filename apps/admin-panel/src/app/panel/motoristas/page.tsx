@@ -36,7 +36,7 @@ export default async function Motoristas({ searchParams }: { searchParams: Promi
     db.motorista.findMany({
       where, orderBy: [{ estado: "asc" }, { nombre: "asc" }],
       select: { id: true, nombre: true, telefono: true, placa: true, marca: true, modelo: true, tipoVehiculo: true,
-        capacidadTon: true, estado: true, creadoEn: true, licenciaVence: true, autoRegistro: true, accesoPagadoEn: true, accesoAvisadoEn: true, _count: { select: { documentos: true } } },
+        capacidadTon: true, estado: true, creadoEn: true, licenciaVence: true, autoRegistro: true, accesoPagadoEn: true, accesoAvisadoEn: true, _count: { select: { documentos: { where: { tipo: { not: "FOTO_PERFIL" } } } } } },
     }),
     db.motorista.groupBy({ by: ["estado"], _count: true }),
   ]);

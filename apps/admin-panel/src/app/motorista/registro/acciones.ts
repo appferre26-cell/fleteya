@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { datosDe, errorDuplicado, leerDocumentos } from "@/lib/documentos";
+import { datosDe, errorDuplicado, leerDocumentos, leerFotoPerfil } from "@/lib/documentos";
 import { iniciarSesionMotorista, VERSION_TERMINOS } from "@/lib/sesion-motorista";
 import { CAMPOS_FISCALES, erroresDe, esquemaFiscal, esquemaMotorista, type ErroresCampos } from "@/lib/validacion";
 
@@ -30,7 +30,9 @@ export async function registrarMotorista(_: EstadoRegistro, form: FormData): Pro
   const r = esquemaMotorista.safeParse(valores);
   const f = esquemaFiscal.safeParse(valores);
   const { docs, errores: errDocs } = await leerDocumentos(form, { exigirTodas: true });
+  const { foto, error: errFoto } = await leerFotoPerfil(form);
   const errores: ErroresCampos = { ...(r.success ? {} : erroresDe(r.error)), ...(f.success ? {} : erroresDe(f.error)), ...errDocs };
+  if (errFoto) errores.foto_perfil = errFoto;
   if (password.length < 8) errores.password = "Mínimo 8 letras o números";
   else if (password !== repetir) errores.repetir = "Las dos contraseñas no son iguales";
   if (form.get("acepto") !== "on") errores.acepto = "Debes aceptar los términos para registrarte";
@@ -48,8 +50,8 @@ export async function registrarMotorista(_: EstadoRegistro, form: FormData): Pro
         terminosVersion: VERSION_TERMINOS,
         terminosAceptadosEn: new Date(),
         ultimoAcceso: new Date(),
-        documentos: { create: docs },
-        historial: { create: { accion: "AUTOREGISTRO", detalle: `${docs.length} fotos` } },
+        documentos: { create: foto ? [...docs, { tipo: "FOTO_PERFIL" as const, mime: foto.mime, datos: foto.datos }] : docs },
+        historial: { create: { accion: "AUTOREGISTRO", detalle: `${docs.length} fotos${foto ? " + foto de perfil" : ""}` } },
       },
       select: { id: true },
     });

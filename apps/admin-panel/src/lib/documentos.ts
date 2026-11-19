@@ -31,6 +31,24 @@ export async function leerDocumentos(form: FormData, opciones: { exigirTodas?: b
   return { docs, errores };
 }
 
+/** Solo imágenes para la foto de perfil (no PDF). */
+const MIME_FOTO_PERFIL = ["image/jpeg", "image/png", "image/webp"];
+
+/**
+ * Lee la foto de perfil OPCIONAL del formulario (campo `foto_perfil`).
+ * Acepta solo imágenes (JPG, PNG, WEBP), máx. 4 MB, validando el contenido real.
+ * Si no viene archivo no es error (devuelve {}). No entra en los documentos obligatorios.
+ */
+export async function leerFotoPerfil(form: FormData): Promise<{ foto?: { mime: string; datos: Uint8Array<ArrayBuffer> }; error?: string }> {
+  const f = form.get("foto_perfil");
+  if (!(f instanceof File) || f.size === 0) return {};
+  if (f.size > MAX_DOC_BYTES) return { error: "La foto pesa más de 4 MB" };
+  const datos = new Uint8Array(await f.arrayBuffer());
+  const mime = detectarMime(Buffer.from(datos.buffer));
+  if (!mime || !MIME_FOTO_PERFIL.includes(mime)) return { error: "Sube una imagen (JPG, PNG o WEBP)" };
+  return { foto: { mime, datos } };
+}
+
 export function errorDuplicado(e: unknown): ErroresCampos | null {
   if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
     const campos = String((e.meta?.target as string[] | undefined)?.join(",") ?? "");

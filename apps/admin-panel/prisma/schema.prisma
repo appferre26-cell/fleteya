@@ -115,6 +115,7 @@ enum TipoDocumento {
   VEHICULO_ATRAS
   VEHICULO_IZQUIERDA
   VEHICULO_DERECHA
+  FOTO_PERFIL // opcional: la ve el cliente para saber quién le atenderá (no entra en los documentos obligatorios)
 }
 
 model Documento {
@@ -181,7 +182,7 @@ model Configuracion {
   zonaLng        Float    @default(-89.37)
   zonaRadioKm    Decimal  @default(8) @db.Decimal(5, 1)
   whatsappAyuda  String?  // 8 dígitos; vacío = no se muestra el botón "Ayuda"
-  comisionPct    Decimal  @default(10) @db.Decimal(5, 2) // % de cada viaje que se descuenta de los créditos
+  comisionPct    Decimal  @default(13.5) @db.Decimal(5, 2) // % de cada viaje que se descuenta de los créditos
   // Parte 10: ya no hay planes; el motorista recarga el monto que quiera y paga una sola vez el acceso
   precioAcceso   Decimal  @default(10) @db.Decimal(8, 2)
   // Parte 4: datos que salen en los recibos y la cuenta donde el motorista paga

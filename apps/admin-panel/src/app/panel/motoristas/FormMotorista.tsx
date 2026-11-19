@@ -3,16 +3,18 @@ import Link from "next/link";
 import { useActionState, useMemo } from "react";
 import { Credenciales } from "@/components/Credenciales";
 import { DocumentoInput } from "@/components/DocumentoInput";
+import { FotoPerfilInput } from "@/components/FotoPerfilInput";
 import { DOCUMENTOS, GRUPOS_DOC, TIPOS_VEHICULO, TOTAL_DOCS, type TipoDoc } from "@/lib/validacion";
 import { CamposFiscales } from "@/components/CamposFiscales";
 import type { EstadoFormMotorista } from "./acciones";
 
 type Accion = (s: EstadoFormMotorista, f: FormData) => Promise<EstadoFormMotorista>;
 
-export function FormMotorista({ accion, inicial = {}, documentos = {}, cancelar }: {
+export function FormMotorista({ accion, inicial = {}, documentos = {}, fotoPerfil, cancelar }: {
   accion: Accion;
   inicial?: Record<string, string>;
   documentos?: Partial<Record<TipoDoc, string>>; // tipo → url de la foto actual
+  fotoPerfil?: string; // url de la foto de perfil actual (opcional)
   cancelar: string;
 }) {
   const [estado, enviar, enviando] = useActionState<EstadoFormMotorista, FormData>(accion, {});
@@ -103,6 +105,12 @@ export function FormMotorista({ accion, inicial = {}, documentos = {}, cancelar 
           {campo("capacidadTon", "Capacidad máxima (toneladas)", { type: "number", step: "0.1", min: "0.5", max: "40", inputMode: "decimal", placeholder: "1.0" },
             "Solo le llegarán viajes que quepan en su vehículo.")}
         </div>
+      </section>
+
+      <section className="tarjeta p-5">
+        <h2 className="seccion-titulo">Foto de perfil</h2>
+        <p className="mt-1 mb-3 text-xs text-suave">Opcional: la ve el cliente para saber quién le atenderá. Puedes subirla o reemplazarla cuando quieras.</p>
+        <FotoPerfilInput key={`fp-${intento}`} existente={fotoPerfil} error={err.foto_perfil} />
       </section>
 
       <section className="tarjeta p-5">

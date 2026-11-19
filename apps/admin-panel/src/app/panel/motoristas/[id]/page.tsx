@@ -38,6 +38,9 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
   ]);
   const saldo = Number(m.saldoCreditos);
   const enLinea = m.disponible && m.vistoEn && Date.now() - m.vistoEn.getTime() < 2 * 60_000;
+  // La foto de perfil es opcional y no cuenta como documento obligatorio.
+  const docsObligatorios = m.documentos.filter((d) => d.tipo !== "FOTO_PERFIL");
+  const tieneFoto = m.documentos.some((d) => d.tipo === "FOTO_PERFIL");
 
   const venc = diasParaVencer(m.licenciaVence);
   const dato = (t: string, v: React.ReactNode) => (
@@ -49,7 +52,12 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
       <Link href="/panel/motoristas" className="text-xs text-suave hover:text-texto"><i className="fa-solid fa-arrow-left mr-1.5" />Motoristas</Link>
 
       <div className="mt-3 flex flex-wrap items-center gap-4">
-        <Iniciales nombre={m.nombre} pendiente={m.estado === "PENDIENTE"} grande />
+        {tieneFoto ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={`/motorista/foto/${m.id}`} alt={`Foto de ${m.nombre}`} className="h-14 w-14 shrink-0 rounded-full object-cover" />
+        ) : (
+          <Iniciales nombre={m.nombre} pendiente={m.estado === "PENDIENTE"} grande />
+        )}
         <div className="min-w-[12rem] flex-1">
           <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="text-[24px] leading-tight font-extrabold lg:text-[28px]">{m.nombre}</h1>
@@ -104,7 +112,7 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
           </section>
 
           <section className="tarjeta p-5">
-            <h2 className="seccion-titulo">Fotos y documentos ({m.documentos.length}/{TOTAL_DOCS})</h2>
+            <h2 className="seccion-titulo">Fotos y documentos ({docsObligatorios.length}/{TOTAL_DOCS})</h2>
             {GRUPOS_DOC.map((g) => (
             <div key={g.titulo} className="mt-4">
             <p className="text-xs font-semibold text-suave uppercase">{g.titulo}</p>
@@ -196,7 +204,7 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
           </section>
         </div>
 
-        <AccionesMotorista id={m.id} nombre={m.nombre} telefono={m.telefono} estado={m.estado} documentos={m.documentos.length} licenciaVencida={venc < 0} accesoPagado={!!m.accesoPagadoEn}>
+        <AccionesMotorista id={m.id} nombre={m.nombre} telefono={m.telefono} estado={m.estado} documentos={docsObligatorios.length} licenciaVencida={venc < 0} accesoPagado={!!m.accesoPagadoEn}>
           <PagoAcceso id={m.id} precio={cfg.precioAcceso} pagado={m.accesoPagadoEn ? fechaCorta(m.accesoPagadoEn) : null} recibo={reciboAcceso?.numero ?? null}
             avisoReferencia={m.accesoReferencia} avisoFecha={m.accesoAvisadoEn ? fechaHora(m.accesoAvisadoEn) : null} />
         </AccionesMotorista>

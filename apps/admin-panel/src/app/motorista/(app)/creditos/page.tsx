@@ -2,7 +2,7 @@ import Link from "next/link";
 import { obtenerConfig } from "@/lib/config";
 import { db } from "@/lib/db";
 import { exigirMotorista } from "@/lib/sesion-motorista";
-import { centavos, dinero, numeroViaje } from "@/lib/tarifa";
+import { dinero, numeroViaje } from "@/lib/tarifa";
 import { CONCEPTOS, MONTOS_RAPIDOS, RECARGA_MIN, fechaRecibo, numeroRecibo } from "@/lib/recibo";
 import { fechaCorta, fechaHora } from "@/lib/validacion";
 import { Copiar } from "./BotonesCliente";
@@ -26,8 +26,6 @@ export default async function CreditosMotorista() {
   const viajes = await db.viaje.findMany({ where: { id: { in: movimientos.map((x) => x.viajeId).filter((x): x is string => !!x) } }, select: { id: true, numero: true } });
   const numero = new Map(viajes.map((v) => [v.id, v.numero]));
   const saldo = Number(m.saldoCreditos);
-  const comisionTipica = centavos((cfg.tarifaMinima * cfg.comisionPct) / 100);
-  const alcanza = saldo > 0 && comisionTipica > 0 ? Math.floor(saldo / comisionTipica) : 0;
   const mensaje = encodeURIComponent(`Hola, soy ${m.nombre} (motorista, tel. ${m.telefono}). Quiero recargar mis créditos de FleteYa.`);
 
   return (
@@ -41,7 +39,7 @@ export default async function CreditosMotorista() {
         <p className="text-[11px] font-semibold tracking-wider text-suave uppercase">Saldo disponible</p>
         <p className={`mt-1 text-5xl font-extrabold tabular-nums ${saldo < 0 ? "text-error" : ""}`} data-testid="saldo">{dinero(saldo)}</p>
         <p className="mt-2 text-xs text-suave">
-          {saldo > 0 ? `Alcanza para unos ${alcanza} viajes de ${dinero(cfg.tarifaMinima)}. Por cada viaje se descuenta el ${cfg.comisionPct}%.`
+          {saldo > 0 ? `Por cada viaje se descuenta el ${cfg.comisionPct}% del valor. Mantén saldo para seguir recibiendo viajes.`
             : saldo < 0 ? `Debes ${dinero(-saldo)}: se descuentan de tu próxima recarga. Mientras tanto no recibes viajes.`
             : "Sin créditos no recibes viajes. Recarga para empezar."}
         </p>
@@ -71,17 +69,13 @@ export default async function CreditosMotorista() {
       <section className="tarjeta mt-4 p-4" data-testid="montos-sugeridos">
         <p className="text-[11px] font-semibold tracking-wider text-suave uppercase">Montos más usados</p>
         <div className="mt-2 grid grid-cols-4 gap-2">
-          {MONTOS_RAPIDOS.map((x) => {
-            const viajes = comisionTipica > 0 ? Math.floor(x / comisionTipica) : 0;
-            return (
-              <div key={x} className="rounded-lg border border-borde bg-fondo p-2 text-center">
-                <p className="text-lg font-extrabold">{dinero(x)}</p>
-                <p className="text-[10px] text-suave">~{viajes} viajes</p>
-              </div>
-            );
-          })}
+          {MONTOS_RAPIDOS.map((x) => (
+            <div key={x} className="rounded-lg border border-borde bg-fondo p-2 text-center">
+              <p className="text-lg font-extrabold">{dinero(x)}</p>
+            </div>
+          ))}
         </div>
-        <p className="mt-2 text-[11px] text-suave">Aproximado con viajes de {dinero(cfg.tarifaMinima)}. Puedes recargar cualquier otro monto.</p>
+        <p className="mt-2 text-[11px] text-suave">Puedes recargar cualquier otro monto.</p>
       </section>
 
       <section className="mt-6">

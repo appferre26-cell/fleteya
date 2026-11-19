@@ -21,13 +21,14 @@ export default async function EditarMotorista({ params }: { params: Promise<{ id
     razonSocial: m.razonSocial ?? "", giro: m.giro ?? "", direccionFiscal: m.direccionFiscal ?? "",
   };
   // Solo se muestran como vista previa las imágenes (los PDF se abren desde el detalle).
-  const documentos = Object.fromEntries(m.documentos.filter((d) => d.mime.startsWith("image/")).map((d) => [d.tipo, `/api/documentos/${d.id}`]));
+  const documentos = Object.fromEntries(m.documentos.filter((d) => d.mime.startsWith("image/") && d.tipo !== "FOTO_PERFIL").map((d) => [d.tipo, `/api/documentos/${d.id}`]));
+  const tieneFoto = m.documentos.some((d) => d.tipo === "FOTO_PERFIL");
 
   return (
     <div className="max-w-4xl">
       <Link href={`/panel/motoristas/${id}`} className="text-xs text-suave hover:text-texto"><i className="fa-solid fa-arrow-left mr-1.5" />{m.nombre}</Link>
       <h1 className="mt-2 mb-6 text-[26px] leading-tight font-extrabold">Editar datos</h1>
-      <FormMotorista accion={editarMotorista.bind(null, id)} inicial={inicial} documentos={documentos} cancelar={`/panel/motoristas/${id}`} />
+      <FormMotorista accion={editarMotorista.bind(null, id)} inicial={inicial} documentos={documentos} fotoPerfil={tieneFoto ? `/motorista/foto/${id}` : undefined} cancelar={`/panel/motoristas/${id}`} />
     </div>
   );
 }

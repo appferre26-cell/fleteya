@@ -35,7 +35,7 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
     where: { codigo },
     include: {
       items: true,
-      motorista: { select: { nombre: true, telefono: true, placa: true, marca: true, modelo: true, tipoVehiculo: true, lat: true, lng: true, ubicacionEn: true } },
+      motorista: { select: { id: true, nombre: true, telefono: true, placa: true, marca: true, modelo: true, tipoVehiculo: true, lat: true, lng: true, ubicacionEn: true, documentos: { where: { tipo: "FOTO_PERFIL" }, select: { id: true } } } },
       ofertas: {
         where: { estado: "PENDIENTE", motorista: { disponible: true } }, orderBy: { precio: "asc" },
         include: { motorista: { select: { nombre: true, marca: true, modelo: true, tipoVehiculo: true, lat: true, lng: true } } },
@@ -92,7 +92,12 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
           <h2 className="seccion-titulo mb-3">{v.estado === "ENTREGADO" ? "Te atendió" : "Tu motorista"}</h2>
           <div className="tarjeta p-4">
             <div className="flex items-center gap-3">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-tarjeta-2"><i className="fa-solid fa-user text-suave" /></span>
+              {m.documentos.length > 0 ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={`/motorista/foto/${m.id}`} alt={`Foto de ${m.nombre}`} className="h-12 w-12 shrink-0 rounded-full object-cover" />
+              ) : (
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-tarjeta-2"><i className="fa-solid fa-user text-suave" /></span>
+              )}
               <div className="min-w-0 flex-1">
                 <p className="font-bold" data-testid="nombre-motorista">{m.nombre}</p>
                 <p className="text-xs text-suave">{TIPOS_VEHICULO[m.tipoVehiculo].nombre} · {m.marca} {m.modelo}</p>

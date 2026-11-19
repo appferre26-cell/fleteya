@@ -19,7 +19,7 @@ export default async function InicioPanel() {
   const [grupos, pendientes, licencias, recientes, buscando] = await Promise.all([
     db.motorista.groupBy({ by: ["estado"], _count: true }),
     db.motorista.findMany({ where: { estado: "PENDIENTE" }, orderBy: { creadoEn: "asc" }, take: 5,
-      select: { id: true, nombre: true, creadoEn: true, _count: { select: { documentos: true } } } }),
+      select: { id: true, nombre: true, creadoEn: true, _count: { select: { documentos: { where: { tipo: { not: "FOTO_PERFIL" } } } } } } }),
     db.motorista.findMany({
       where: { estado: { not: "SUSPENDIDO" }, licenciaVence: { lte: new Date(Date.now() + 30 * 86400000) } },
       orderBy: { licenciaVence: "asc" }, select: { id: true, nombre: true, licenciaVence: true },

@@ -7,16 +7,20 @@ import { promedioMotorista } from "@/lib/calificaciones";
 import { EstrellasFijas, Promedio } from "@/components/Estrellas";
 import { exigirMotorista, VERSION_TERMINOS } from "@/lib/sesion-motorista";
 import { ESTADOS, TIPOS_VEHICULO, diasParaVencer, fechaCorta, fechaHora, formatoTelefono } from "@/lib/validacion";
+import { FormFotoPerfil } from "./FormFotoPerfil";
 
 export const metadata = { title: "Perfil — FleteYa Motorista" };
 
 export default async function PerfilMotorista() {
   const m = await exigirMotorista();
   const cfg = await obtenerConfig();
-  const [calif, comentarios] = await Promise.all([
+  const [calif, comentarios, foto] = await Promise.all([
     promedioMotorista(m.id),
     db.viaje.findMany({ where: { motoristaId: m.id, comentarioMotorista: { not: null } }, orderBy: { motoristaCalificadoEn: "desc" }, take: 3, select: { id: true, estrellasMotorista: true, comentarioMotorista: true } }),
+    db.documento.findUnique({ where: { motoristaId_tipo: { motoristaId: m.id, tipo: "FOTO_PERFIL" } }, select: { subidoEn: true } }),
   ]);
+  // Rompe la caché pública (max-age=300) para que el motorista vea su foto recién cambiada.
+  const fotoSrc = foto ? `/motorista/foto/${m.id}?v=${foto.subidoEn.getTime()}` : "";
   const dias = diasParaVencer(m.licenciaVence);
   const filas: [string, string][] = [
     ["Teléfono", formatoTelefono(m.telefono)],
@@ -31,9 +35,16 @@ export default async function PerfilMotorista() {
     <main className="px-5 pt-6 pb-6">
       <h1 className="text-2xl font-extrabold">Mi perfil</h1>
       <div className="mt-4 flex items-center gap-3">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-tarjeta-2 text-lg font-bold"><i className="fa-solid fa-user text-suave" /></span>
+        {foto ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={fotoSrc} alt={`Foto de ${m.nombre}`} className="h-14 w-14 shrink-0 rounded-full object-cover" />
+        ) : (
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-tarjeta-2 text-lg font-bold"><i className="fa-solid fa-user text-suave" /></span>
+        )}
         <div><p className="text-lg font-bold">{m.nombre}</p><span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${ESTADOS[m.estado].clase}`}>{ESTADOS[m.estado].nombre}</span></div>
       </div>
+
+      <FormFotoPerfil tieneFoto={!!foto} src={fotoSrc} />
 
       <section className="tarjeta mt-4 p-4 text-sm" data-testid="mi-calificacion">
         <p className="text-[11px] font-semibold tracking-wider text-suave uppercase">Mi calificación</p>

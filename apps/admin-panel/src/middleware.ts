@@ -10,7 +10,8 @@ export async function middleware(req: NextRequest) {
   if (pathname.startsWith("/motorista")) {
     const id = await verificarToken(req.cookies.get(COOKIE_MOTORISTA)?.value, "motorista");
     const registro = pathname === "/motorista/registro"; // el motorista nuevo se registra solo
-    const publica = pathname === "/motorista/entrar" || registro || pathname.startsWith("/motorista/legal");
+    // /motorista/foto/[id] es pública: el cliente (sin sesión) ve la foto de quién le atiende.
+    const publica = pathname === "/motorista/entrar" || registro || pathname.startsWith("/motorista/legal") || pathname.startsWith("/motorista/foto/");
     if (!id && pathname.startsWith("/motorista/api/")) return new NextResponse("No autorizado", { status: 401 });
     if (!id && !publica) return NextResponse.redirect(new URL("/motorista/entrar", req.url));
     if (id && (pathname === "/motorista/entrar" || registro)) return NextResponse.redirect(new URL("/motorista", req.url));
