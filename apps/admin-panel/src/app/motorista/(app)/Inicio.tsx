@@ -126,31 +126,46 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
   useEffect(() => {
     if (!compartir) return;
     if (!("geolocation" in navigator)) { setEstadoGps("sinSenal"); return; }
-    let ultimo = 0;
+    let ultimo = 0;          // último envío efectivo al servidor (compartido por watch y latido)
     let fallosEnvio = 0;
+
+    // Manda la posición al servidor, pero no más de una vez cada 8 s para no duplicar envíos.
+    const enviar = (pos: { lat: number; lng: number }, forzar = false) => {
+      setYo(pos);
+      if (!forzar && Date.now() - ultimo < 8000) return;
+      ultimo = Date.now();
+      void fetch("/motorista/api/ubicacion", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pos) })
+        .then((r) => {
+          if (!r.ok) throw new Error("respuesta no-ok");
+          // Solo marcamos "ok" cuando la posición de verdad llegó al servidor.
+          fallosEnvio = 0;
+          setEnvioFalla(false);
+          setEstadoGps("ok");
+        })
+        .catch(() => {
+          fallosEnvio += 1;
+          if (fallosEnvio >= 2) setEnvioFalla(true); // falla repetida: no está llegando al cliente
+        });
+    };
+
+    // watchPosition: avisa cuando el teléfono detecta que el motorista se movió.
     const id = navigator.geolocation.watchPosition(
-      (p) => {
-        const pos = { lat: p.coords.latitude, lng: p.coords.longitude };
-        setYo(pos);
-        if (Date.now() - ultimo < 20000) return;
-        ultimo = Date.now();
-        void fetch("/motorista/api/ubicacion", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pos) })
-          .then((r) => {
-            if (!r.ok) throw new Error("respuesta no-ok");
-            // Solo marcamos "ok" cuando la posición de verdad llegó al servidor.
-            fallosEnvio = 0;
-            setEnvioFalla(false);
-            setEstadoGps("ok");
-          })
-          .catch(() => {
-            fallosEnvio += 1;
-            if (fallosEnvio >= 2) setEnvioFalla(true); // falla repetida: no está llegando al cliente
-          });
-      },
+      (p) => enviar({ lat: p.coords.latitude, lng: p.coords.longitude }),
       marcarErrorGps,
       { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 },
     );
-    return () => navigator.geolocation.clearWatch(id);
+
+    // Latido: cada 10 s pide la posición activamente y la manda, aunque el motorista esté quieto.
+    // Así el cliente siempre recibe una ubicación fresca (ubicacionEn no envejece) y el carrito no desaparece.
+    const latido = setInterval(() => {
+      navigator.geolocation.getCurrentPosition(
+        (p) => enviar({ lat: p.coords.latitude, lng: p.coords.longitude }, true),
+        marcarErrorGps,
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 },
+      );
+    }, 10000);
+
+    return () => { navigator.geolocation.clearWatch(id); clearInterval(latido); };
   }, [compartir, reintentoGps, marcarErrorGps]);
 
   // Pantalla encendida mientras está disponible.
