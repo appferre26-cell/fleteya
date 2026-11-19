@@ -59,7 +59,7 @@ export async function datosInicio(m: MotoristaSesion) {
       ferreteria: v.puntoQr?.nombre ?? null,
       distanciaKm: Number(v.distanciaKm), kmDeMi: v.kmDeMi, pesoKg: Number(v.pesoKg), nota: v.nota,
       precioBase: Number(v.precioBase), fueraDeRango: v.fueraDeRango, items: items(v.items), rangoTon: v.rangoTon,
-      miOferta: v.miOferta && { precio: Number(v.miOferta.precio), estado: v.miOferta.estado },
+      miOferta: v.miOferta && { precio: Number(v.miOferta.precio), estado: v.miOferta.estado, contraPrecio: v.miOferta.contraPrecio != null ? Number(v.miOferta.contraPrecio) : null },
     })),
     porCalificar: porCalificar && { id: porCalificar.id, numero: porCalificar.numero, clienteNombre: porCalificar.clienteNombre.split(" ")[0], precio: Number(porCalificar.precioFinal ?? 0) },
     hoy: { viajes: hoy._count, ganancias: Number(hoy._sum.precioFinal ?? 0), comision: Number(hoy._sum.comision ?? 0) },

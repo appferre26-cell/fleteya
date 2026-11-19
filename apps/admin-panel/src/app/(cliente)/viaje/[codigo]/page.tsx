@@ -37,7 +37,7 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
       items: true,
       motorista: { select: { id: true, nombre: true, telefono: true, placa: true, marca: true, modelo: true, tipoVehiculo: true, lat: true, lng: true, ubicacionEn: true, documentos: { where: { tipo: "FOTO_PERFIL" }, select: { id: true } } } },
       ofertas: {
-        where: { estado: "PENDIENTE", motorista: { disponible: true } }, orderBy: { precio: "asc" },
+        where: { estado: { in: ["PENDIENTE", "CONTRAOFERTA"] }, motorista: { disponible: true } }, orderBy: { precio: "asc" },
         include: { motorista: { select: { nombre: true, marca: true, modelo: true, tipoVehiculo: true, lat: true, lng: true } } },
       },
     },
@@ -57,6 +57,7 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
     id: o.id, precio: Number(o.precio), nombre: o.motorista.nombre.split(" ")[0],
     vehiculo: `${TIPOS_VEHICULO[o.motorista.tipoVehiculo].nombre} ${o.motorista.marca}`,
     kmDeRecogida: o.motorista.lat != null && o.motorista.lng != null ? centavos(distanciaKm({ lat: o.motorista.lat, lng: o.motorista.lng }, { lat: v.origenLat, lng: v.origenLng })) : null,
+    estado: o.estado, contraPrecio: o.contraPrecio != null ? Number(o.contraPrecio) : null,
   })) : [];
 
   return (

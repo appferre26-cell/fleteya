@@ -193,6 +193,28 @@ export async function rechazarOferta(codigo: string, ofertaId: string) {
   return { ok: true };
 }
 
+/** El cliente le propone al motorista SU propio precio (contraoferta). El motorista decide. */
+export async function contraofertarCliente(codigo: string, ofertaId: string, precioTexto: string) {
+  const v = await db.viaje.findUnique({ where: { codigo } });
+  if (!v) return { error: "Esta oferta ya no existe." };
+  if (v.estado !== "BUSCANDO") return { error: "Este pedido ya cambió. Actualiza la página." };
+  const o = await db.ofertaPrecio.findFirst({ where: { id: ofertaId, viajeId: v.id }, include: { motorista: { select: { disponible: true } } } });
+  if (!o) return { error: "Esta oferta ya no existe." };
+  if (o.estado !== "PENDIENTE" || !o.motorista.disponible) return { error: "El motorista retiró esa oferta." };
+  // Mismo saneo que el precio del motorista: número al centavo, positivo y con tope.
+  const precio = centavos(Number(String(precioTexto).replace(/[$,\s]/g, "")));
+  if (!Number.isFinite(precio) || precio <= 0) return { error: "Escribe cuánto quieres ofrecer." };
+  if (precio > 500) return { error: "El precio máximo es $500." };
+  // El cliente puede proponer menos (o más) que la oferta: el motorista decide si le sirve.
+  const r = await db.ofertaPrecio.updateMany({
+    where: { id: o.id, viajeId: v.id, estado: "PENDIENTE" },
+    data: { estado: "CONTRAOFERTA", contraPrecio: precio, respondidaEn: new Date() },
+  });
+  if (r.count === 0) return { error: "Esta oferta ya cambió, actualiza la página." };
+  despues(() => avisarMotoristas([o.motoristaId], { titulo: "El cliente propuso otro precio", cuerpo: `El cliente ofrece $${precio.toFixed(2)} por tu viaje. Abre la app para responder.`, url: "/motorista", tag: "fleteya-oferta", urgente: true }));
+  return { ok: true };
+}
+
 
 /** Parte 6: el cliente califica al motorista una sola vez, después de la entrega. */
 export async function calificarMotorista(codigo: string, estrellas: number, comentario: string) {

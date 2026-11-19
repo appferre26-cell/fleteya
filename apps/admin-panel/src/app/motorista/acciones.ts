@@ -129,8 +129,9 @@ export async function ofertarPrecio(viajeId: string, precioTexto: string): Promi
   const ocupado = await db.viaje.count({ where: { motoristaId: m.id, estado: { in: ["ASIGNADO", "EN_CAMINO", "CARGANDO", "EN_RUTA"] } } });
   if (ocupado) return { error: "Ya tienes un viaje en curso." };
 
+  // Retira cualquier oferta previa sin cerrar (incluida una contraoferta del cliente que aún no respondió) y crea la nueva.
   await db.$transaction([
-    db.ofertaPrecio.updateMany({ where: { viajeId, motoristaId: m.id, estado: "PENDIENTE" }, data: { estado: "RETIRADA", respondidaEn: new Date() } }),
+    db.ofertaPrecio.updateMany({ where: { viajeId, motoristaId: m.id, estado: { in: ["PENDIENTE", "CONTRAOFERTA"] } }, data: { estado: "RETIRADA", respondidaEn: new Date() } }),
     db.ofertaPrecio.create({ data: { viajeId, motoristaId: m.id, precio } }),
   ]);
   despues(() => avisarCliente(viajeId, { titulo: `Un motorista te propone ${dinero(precio)}`, cuerpo: `${m.nombre.split(" ")[0]} · ${m.marca} ${m.modelo}. Abre tu pedido para aceptar o decir «No, gracias».`, urgente: true }));
@@ -140,6 +141,39 @@ export async function ofertarPrecio(viajeId: string, precioTexto: string): Promi
 export async function retirarOferta(viajeId: string): Promise<Resultado> {
   const m = await exigirMotorista();
   await db.ofertaPrecio.updateMany({ where: { viajeId, motoristaId: m.id, estado: "PENDIENTE" }, data: { estado: "RETIRADA", respondidaEn: new Date() } });
+  return { ok: true };
+}
+
+/** El motorista acepta la contraoferta del cliente: el viaje queda asignado a ESE precio. */
+export async function aceptarContraoferta(viajeId: string): Promise<Resultado> {
+  const m = await exigirMotorista();
+  if (!m.disponible) return { error: "Activa «Disponible» para aceptar." };
+  const p = puedeRecibir(m);
+  if (!p.ok) return { error: p.motivo };
+  const o = await db.ofertaPrecio.findFirst({ where: { viajeId, motoristaId: m.id, estado: "CONTRAOFERTA" } });
+  if (!o || o.contraPrecio == null) return { error: "Esta propuesta ya cambió. Actualiza la pantalla." };
+  const precio = Number(o.contraPrecio);
+  // Deja la oferta como PENDIENTE para que asignar() la marque ACEPTADA dentro de su transacción.
+  const listo = await db.ofertaPrecio.updateMany({ where: { id: o.id, estado: "CONTRAOFERTA" }, data: { estado: "PENDIENTE", precio } });
+  if (listo.count === 0) return { error: "Esta propuesta ya cambió. Actualiza la pantalla." };
+  try {
+    const { saldo } = await asignar(viajeId, m.id, precio, o.id);
+    despues(() => avisarCliente(viajeId, { titulo: `¡${m.nombre.split(" ")[0]} aceptó tu precio!`, cuerpo: `Va en ${m.marca} ${m.modelo}, placa ${m.placa}. Precio: ${dinero(precio)} en efectivo.`, urgente: true }));
+    return { ok: true, aviso: avisoSaldo(saldo, await comisionDe(precio)) };
+  } catch (e) {
+    // No se pudo asignar: deja la contraoferta como estaba para que el motorista pueda reintentar.
+    await db.ofertaPrecio.updateMany({ where: { id: o.id, estado: "PENDIENTE" }, data: { estado: "CONTRAOFERTA" } });
+    return { error: textoError(e) };
+  }
+}
+
+/** El motorista no acepta el precio del cliente: la contraoferta se cierra y queda libre para ofrecer otro. */
+export async function rechazarContraoferta(viajeId: string): Promise<Resultado> {
+  const m = await exigirMotorista();
+  const o = await db.ofertaPrecio.findFirst({ where: { viajeId, motoristaId: m.id, estado: "CONTRAOFERTA" } });
+  const r = await db.ofertaPrecio.updateMany({ where: { viajeId, motoristaId: m.id, estado: "CONTRAOFERTA" }, data: { estado: "RETIRADA", respondidaEn: new Date() } });
+  if (r.count === 0) return { error: "Esta propuesta ya cambió. Actualiza la pantalla." };
+  if (o) despues(() => avisarCliente(viajeId, { titulo: "El motorista no aceptó tu precio", cuerpo: `Tu propuesta de ${dinero(Number(o.contraPrecio ?? 0))} no fue aceptada. Puedes aceptar el precio de la app o esperar otra oferta.` }));
   return { ok: true };
 }
 

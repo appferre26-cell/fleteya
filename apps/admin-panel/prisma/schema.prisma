@@ -283,13 +283,15 @@ model ViajeItem {
 // ───────────── Parte 3: app del motorista ─────────────
 
 enum EstadoOferta {
-  PENDIENTE  // el cliente aún no responde
+  PENDIENTE    // el motorista ofreció; el cliente aún no responde
+  CONTRAOFERTA // el cliente propuso su propio precio (contraPrecio); espera al motorista
   ACEPTADA
-  RECHAZADA  // el cliente dijo que no
-  RETIRADA   // el motorista la quitó o tomó otro viaje
+  RECHAZADA    // el cliente dijo que no (o el motorista no aceptó la contraoferta)
+  RETIRADA     // el motorista la quitó o tomó otro viaje
 }
 
-// Viajes de más km que los incluidos: el motorista propone un precio y el cliente acepta o no.
+// Viajes de más km que los incluidos: el motorista propone un precio y el cliente acepta,
+// lo rechaza o le contra-ofrece su propio precio (regateo de ida y vuelta, estilo inDrive).
 model OfertaPrecio {
   id           String       @id @default(cuid())
   viajeId      String
@@ -297,6 +299,7 @@ model OfertaPrecio {
   motoristaId  String
   motorista    Motorista    @relation(fields: [motoristaId], references: [id])
   precio       Decimal      @db.Decimal(8, 2)
+  contraPrecio Decimal?     @db.Decimal(8, 2) // precio que propone el cliente en respuesta a la oferta
   estado       EstadoOferta @default(PENDIENTE)
   creadaEn     DateTime     @default(now())
   respondidaEn DateTime?

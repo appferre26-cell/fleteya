@@ -3,7 +3,7 @@ import { useState, useTransition } from "react";
 import type { DatosInicio } from "@/lib/inicio-motorista";
 import { centavos, dinero, kg, numeroViaje } from "@/lib/tarifa";
 import { textoRango } from "@/lib/rangos";
-import { aceptarViaje, ofertarPrecio, rechazarViaje, retirarOferta, type Resultado } from "../acciones";
+import { aceptarContraoferta, aceptarViaje, ofertarPrecio, rechazarContraoferta, rechazarViaje, retirarOferta, type Resultado } from "../acciones";
 
 export type Sol = DatosInicio["solicitudes"][number];
 
@@ -57,15 +57,23 @@ export function TarjetaSolicitud({ s, comisionPct, contraofertaEnRango, alListo,
   const [error, setError] = useState("");
   const pendiente = s.miOferta?.estado === "PENDIENTE";
   const rechazada = s.miOferta?.estado === "RECHAZADA";
+  const contra = s.miOferta?.estado === "CONTRAOFERTA";
+  const contraPrecio = s.miOferta?.contraPrecio ?? null;
 
-  const correr = (tipo: "aceptar" | "rechazar" | "oferta" | "retirar") => iniciar(async () => {
+  const correr = (tipo: "aceptar" | "rechazar" | "oferta" | "retirar" | "aceptarContra" | "rechazarContra") => iniciar(async () => {
     setError("");
     const r = tipo === "aceptar" ? await aceptarViaje(s.id)
       : tipo === "rechazar" ? await rechazarViaje(s.id)
       : tipo === "retirar" ? await retirarOferta(s.id)
+      : tipo === "aceptarContra" ? await aceptarContraoferta(s.id)
+      : tipo === "rechazarContra" ? await rechazarContraoferta(s.id)
       : await ofertarPrecio(s.id, precio);
-    if (r.error) setError(r.error);
-    else { if (tipo === "oferta") setOfertando(false); if (tipo !== "retirar") alListo(r, tipo); else alListo(r, "oferta"); }
+    if (r.error) { setError(r.error); return; }
+    if (tipo === "oferta") { setOfertando(false); alListo(r, "oferta"); }
+    else if (tipo === "retirar") alListo(r, "oferta");
+    else if (tipo === "aceptarContra") alListo(r, "aceptar");
+    else if (tipo === "rechazarContra") alListo(r, "rechazar");
+    else alListo(r, tipo);
   });
 
   return (
@@ -111,6 +119,12 @@ export function TarjetaSolicitud({ s, comisionPct, contraofertaEnRango, alListo,
           El cliente no aceptó {dinero(s.miOferta!.precio)}. Puedes ofrecer otro precio o aceptar el de la app.
         </p>
       )}
+      {contra && contraPrecio !== null && (
+        <div className="mt-3 rounded-lg border border-naranja/50 bg-naranja/10 px-3 py-3 text-sm" data-testid="contraoferta-cliente">
+          <p><i className="fa-solid fa-handshake mr-2 text-naranja" />El cliente te propone <b className="text-naranja">{dinero(contraPrecio)}</b> por este viaje.</p>
+          <p className="mt-1 text-xs text-suave">Si lo aceptas, se descuentan {dinero(centavos(contraPrecio * comisionPct / 100))} ({comisionPct}%) de tus créditos sobre ese precio.</p>
+        </div>
+      )}
 
       {ofertando && (
         <div className="mt-3 flex gap-2">
@@ -123,20 +137,38 @@ export function TarjetaSolicitud({ s, comisionPct, contraofertaEnRango, alListo,
       )}
       {error && <p role="alert" className="mt-3 rounded-lg bg-error/10 px-3 py-2.5 text-sm text-error">{error}</p>}
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        {pendiente ? (
-          <button type="button" onClick={() => correr("retirar")} disabled={ocupado} className="btn-secundario h-12">Retirar oferta</button>
-        ) : (
-          <button type="button" onClick={() => correr("rechazar")} disabled={ocupado} className="h-12 rounded-3xl border-2 border-error/70 text-sm font-extrabold text-error disabled:opacity-60">RECHAZAR</button>
-        )}
-        <button type="button" onClick={() => correr("aceptar")} disabled={ocupado} className="btn-primario h-12">
-          <i className="fa-solid fa-check" />{puedeOfertar ? `ACEPTAR ${dinero(s.precioBase)}` : "ACEPTAR"}
-        </button>
-      </div>
-      {puedeOfertar && !ofertando && !pendiente && (
-        <button type="button" onClick={() => setOfertando(true)} className="mt-3 w-full py-1.5 text-sm font-semibold text-naranja">
-          <i className="fa-solid fa-tag mr-1.5" />{s.fueraDeRango ? "Ofrecer otro precio" : "Proponer otro precio"}
-        </button>
+      {contra ? (
+        <>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <button type="button" onClick={() => correr("rechazarContra")} disabled={ocupado} className="h-12 rounded-3xl border-2 border-error/70 text-sm font-extrabold text-error disabled:opacity-60">RECHAZAR</button>
+            <button type="button" onClick={() => correr("aceptarContra")} disabled={ocupado} className="btn-primario h-12">
+              <i className="fa-solid fa-check" />ACEPTAR {contraPrecio !== null ? dinero(contraPrecio) : ""}
+            </button>
+          </div>
+          {!ofertando && (
+            <button type="button" onClick={() => setOfertando(true)} className="mt-3 w-full py-1.5 text-sm font-semibold text-naranja">
+              <i className="fa-solid fa-tag mr-1.5" />Ofrecer otro precio
+            </button>
+          )}
+        </>
+      ) : (
+        <>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {pendiente ? (
+              <button type="button" onClick={() => correr("retirar")} disabled={ocupado} className="btn-secundario h-12">Retirar oferta</button>
+            ) : (
+              <button type="button" onClick={() => correr("rechazar")} disabled={ocupado} className="h-12 rounded-3xl border-2 border-error/70 text-sm font-extrabold text-error disabled:opacity-60">RECHAZAR</button>
+            )}
+            <button type="button" onClick={() => correr("aceptar")} disabled={ocupado} className="btn-primario h-12">
+              <i className="fa-solid fa-check" />{puedeOfertar ? `ACEPTAR ${dinero(s.precioBase)}` : "ACEPTAR"}
+            </button>
+          </div>
+          {puedeOfertar && !ofertando && !pendiente && (
+            <button type="button" onClick={() => setOfertando(true)} className="mt-3 w-full py-1.5 text-sm font-semibold text-naranja">
+              <i className="fa-solid fa-tag mr-1.5" />{s.fueraDeRango ? "Ofrecer otro precio" : "Proponer otro precio"}
+            </button>
+          )}
+        </>
       )}
     </article>
   );

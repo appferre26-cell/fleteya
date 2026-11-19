@@ -10,7 +10,7 @@ import { EstrellasFijas } from "@/components/Estrellas";
 
 export const metadata = { title: "Detalle del viaje — FleteYa" };
 
-const ESTADO_OFERTA = { PENDIENTE: "esperando al cliente", ACEPTADA: "aceptada", RECHAZADA: "no aceptada", RETIRADA: "retirada" } as const;
+const ESTADO_OFERTA = { PENDIENTE: "esperando al cliente", CONTRAOFERTA: "el cliente propuso otro precio", ACEPTADA: "aceptada", RECHAZADA: "no aceptada", RETIRADA: "retirada" } as const;
 const TIEMPOS = [["asignadoEn", "Aceptado"], ["enCaminoEn", "En camino"], ["cargandoEn", "Cargando"], ["enRutaEn", "En ruta"], ["entregadoEn", "Entregado"]] as const;
 
 export default async function DetalleViaje({ params }: { params: Promise<{ id: string }> }) {
