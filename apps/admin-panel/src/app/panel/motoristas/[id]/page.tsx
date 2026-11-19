@@ -186,7 +186,7 @@ export default async function DetalleMotorista({ params }: { params: Promise<{ i
               <ul className="mt-3 divide-y divide-borde border-t border-borde text-sm">
                 {movimientos.map((x) => (
                   <li key={x.id} className="flex justify-between gap-3 py-2">
-                    <span>{x.tipo === "COMISION" ? "Comisión" : x.tipo === "RECARGA" ? "Recarga" : "Ajuste"} <span className="text-suave">· {x.recarga ? <Link href={`/panel/creditos/recibo/${x.recarga.numero}`} className="text-naranja hover:underline">{x.detalle}</Link> : x.detalle} · {fechaHora(x.creadoEn)}</span></span>
+                    <span>{x.tipo === "COMISION" ? "Comisión" : x.tipo === "RECARGA" ? "Recarga" : x.tipo === "REEMBOLSO" ? "Devolución de comisión" : "Ajuste"} <span className="text-suave">· {x.recarga ? <Link href={`/panel/creditos/recibo/${x.recarga.numero}`} className="text-naranja hover:underline">{x.detalle}</Link> : x.detalle} · {fechaHora(x.creadoEn)}</span></span>
                     <span className={`tabular-nums ${Number(x.monto) < 0 ? "text-error" : "text-exito"}`}>{Number(x.monto) < 0 ? "-" : "+"}{dinero(Math.abs(Number(x.monto)))}</span>
                   </li>
                 ))}

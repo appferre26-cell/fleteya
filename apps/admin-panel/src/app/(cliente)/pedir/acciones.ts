@@ -7,7 +7,7 @@ import { dentroDeZona } from "@/lib/zona";
 import { centavos, distanciaKm, kg, precioViaje } from "@/lib/tarifa";
 import { RANGOS, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import { normalizarTelefono, type ErroresCampos } from "@/lib/validacion";
-import { asignar, ErrorViaje } from "@/lib/viajes-motorista";
+import { asignar, ErrorViaje, reembolsarComision } from "@/lib/viajes-motorista";
 import { avisarMotoristas, avisarPedidoNuevo, clavePublicaAvisos, despues, guardarSuscripcion } from "@/lib/avisos";
 import { clienteBloqueado, leerCalificacion } from "@/lib/calificaciones";
 
@@ -152,17 +152,23 @@ export async function cancelarViajeCliente(codigo: string, motivo: string) {
   const v = await db.viaje.findUnique({ where: { codigo } });
   if (!v) return { error: "Este viaje ya no se puede cancelar." };
   const ahora = new Date();
-  const r = await db.viaje.updateMany({
-    where: { id: v.id, estado: { in: [...CANCELABLE] } },
-    data: { estado: "CANCELADO", canceladoPor: "CLIENTE", motivoCancelacion: motivo.trim().slice(0, 200) || null, canceladoEn: ahora },
+  const r = await db.$transaction(async (tx) => {
+    const cambio = await tx.viaje.updateMany({
+      where: { id: v.id, estado: { in: [...CANCELABLE] } },
+      data: { estado: "CANCELADO", canceladoPor: "CLIENTE", motivoCancelacion: motivo.trim().slice(0, 200) || null, canceladoEn: ahora },
+    });
+    if (cambio.count === 0) return { count: 0 };
+    await tx.ofertaPrecio.updateMany({ where: { viajeId: v.id, estado: "PENDIENTE" }, data: { estado: "RECHAZADA", respondidaEn: ahora } });
+    // Si ya había motorista, se le devuelve la comisión que pagó al aceptar (idempotente).
+    if (v.motoristaId) await reembolsarComision(tx, v.id, v.motoristaId);
+    return { count: 1 };
   });
   if (r.count === 0) {
     return { error: v.estado === "CARGANDO" || v.estado === "EN_RUTA" ? "El motorista ya cargó tu material. Llámale para resolverlo." : "Este viaje ya no se puede cancelar." };
   }
-  await db.ofertaPrecio.updateMany({ where: { viajeId: v.id, estado: "PENDIENTE" }, data: { estado: "RECHAZADA", respondidaEn: ahora } });
   if (v.motoristaId) {
     const mid = v.motoristaId;
-    despues(() => avisarMotoristas([mid], { titulo: "El cliente canceló el viaje", cuerpo: "No se descontó nada de tus créditos. Ya puedes recibir otros pedidos.", url: "/motorista", tag: "fleteya-viaje", urgente: true }));
+    despues(() => avisarMotoristas([mid], { titulo: "El cliente canceló el viaje", cuerpo: "Te devolvimos la comisión a tus créditos. Ya puedes recibir otros pedidos.", url: "/motorista", tag: "fleteya-viaje", urgente: true }));
   }
   return { ok: true };
 }

@@ -243,7 +243,7 @@ model Viaje {
   motoristaId       String?
   motorista         Motorista?  @relation(fields: [motoristaId], references: [id])
   precioFinal       Decimal?    @db.Decimal(8, 2) // precio acordado (base u oferta aceptada)
-  comision          Decimal?    @db.Decimal(8, 2) // lo que se descontó de créditos al entregar
+  comision          Decimal?    @db.Decimal(8, 2) // comisión descontada de los créditos al aceptar (0 si se devolvió por cancelación)
   asignadoEn        DateTime?
   enCaminoEn        DateTime?
   cargandoEn        DateTime?
@@ -321,9 +321,10 @@ model RechazoViaje {
 }
 
 enum TipoMovimiento {
-  RECARGA  // la registra un propietario (ver Recarga)
-  COMISION // % de un viaje entregado
-  AJUSTE   // corrección manual
+  RECARGA   // la registra un propietario (ver Recarga)
+  COMISION  // % de un viaje, se descuenta al aceptarlo
+  REEMBOLSO // devolución de la comisión si el viaje se cancela antes de entregar
+  AJUSTE    // corrección manual
 }
 
 model MovimientoCredito {

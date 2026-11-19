@@ -75,7 +75,7 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
   useEffect(() => {
     const id = d.activo?.id ?? null;
     if (activoAntes.current && !id && !terminePorMi.current) {
-      setAviso({ texto: "El cliente canceló el viaje. No se descontó nada de tus créditos.", tipo: "error" });
+      setAviso({ texto: "El cliente canceló el viaje. Te devolvimos la comisión a tus créditos.", tipo: "error" });
       sonarAlerta();
     }
     activoAntes.current = id;
@@ -416,14 +416,14 @@ function ViajeActivo({ a, yo, ocupado, iniciar, setAviso, refrescar, alTerminar 
     const r = await avanzarViaje(a.id, a.estado);
     if (!r.error && a.estado === "EN_RUTA") alTerminar();
     if (r.error) setAviso({ texto: r.error, tipo: "error" });
-    else if (r.aviso) setAviso({ texto: `¡Entrega completada! Cobra ${dinero(a.precio)} en efectivo. ${r.aviso}`, tipo: "ok" });
+    else if (r.aviso) setAviso({ texto: r.aviso, tipo: "ok" });
     await refrescar();
   });
   const soltar = () => iniciar(async () => {
     const r = await soltarViaje(a.id);
     if (!r.error) alTerminar();
     setSoltando(false);
-    setAviso(r.error ? { texto: r.error, tipo: "error" } : { texto: "Soltaste el viaje. Lo verán otros motoristas.", tipo: "ok" });
+    setAviso(r.error ? { texto: r.error, tipo: "error" } : { texto: "Soltaste el viaje. Te devolvimos la comisión a tus créditos. Lo verán otros motoristas.", tipo: "ok" });
     await refrescar();
   });
 

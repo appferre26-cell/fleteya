@@ -8,7 +8,7 @@ import { centavos, dinero } from "@/lib/tarifa";
 import { normalizarTelefono } from "@/lib/validacion";
 import { leerCalificacion } from "@/lib/calificaciones";
 import { avisarCliente, avisarPedidoNuevo, avisarMotoristas, clavePublicaAvisos, despues, guardarSuscripcion } from "@/lib/avisos";
-import { asignar, avanzar, comisionDe, ErrorViaje, puedeRecibir, SIGUIENTE, soltar } from "@/lib/viajes-motorista";
+import { asignar, avanzar, ErrorViaje, puedeRecibir, SIGUIENTE, soltar } from "@/lib/viajes-motorista";
 
 export type Resultado = { error?: string; ok?: boolean; aviso?: string };
 
@@ -79,11 +79,10 @@ function textoError(e: unknown) {
   return "No se pudo completar. Revisa tu internet e inténtalo de nuevo.";
 }
 
-/** Aviso cuando la comisión será mayor que los créditos que le quedan. */
-function avisoSaldo(saldo: number, comision: number) {
-  if (comision <= saldo) return undefined;
-  const falta = centavos(comision - saldo);
-  return `Te quedan ${dinero(saldo)} en créditos. Este viaje descuenta ${dinero(comision)}. Los ${dinero(falta)} restantes se descontarán de tu siguiente recarga.`;
+/** Aviso al aceptar: la comisión ya se descontó de los créditos. */
+function avisoComision(comision: number, saldoDespues: number) {
+  const base = `Aceptaste el viaje. Se descontaron ${dinero(comision)} de comisión; te quedan ${dinero(saldoDespues)} en créditos.`;
+  return saldoDespues < 0 ? `${base} Tu saldo quedó negativo: recarga para seguir recibiendo viajes.` : base;
 }
 
 // ───── Solicitudes ─────
@@ -94,9 +93,9 @@ export async function aceptarViaje(viajeId: string): Promise<Resultado> {
   if (!v) return { error: "Este viaje ya no existe." };
   try {
     const precio = Number(v.precioBase);
-    const { saldo } = await asignar(viajeId, m.id, precio);
+    const { comision, saldoDespues } = await asignar(viajeId, m.id, precio);
     despues(() => avisarCliente(viajeId, { titulo: `¡${m.nombre.split(" ")[0]} aceptó tu flete!`, cuerpo: `Va en ${m.marca} ${m.modelo}, placa ${m.placa}. Precio: ${dinero(precio)} en efectivo.`, urgente: true }));
-    return { ok: true, aviso: avisoSaldo(saldo, await comisionDe(precio)) };
+    return { ok: true, aviso: avisoComision(comision, saldoDespues) };
   } catch (e) {
     return { error: textoError(e) };
   }
@@ -157,9 +156,9 @@ export async function aceptarContraoferta(viajeId: string): Promise<Resultado> {
   const listo = await db.ofertaPrecio.updateMany({ where: { id: o.id, estado: "CONTRAOFERTA" }, data: { estado: "PENDIENTE", precio } });
   if (listo.count === 0) return { error: "Esta propuesta ya cambió. Actualiza la pantalla." };
   try {
-    const { saldo } = await asignar(viajeId, m.id, precio, o.id);
+    const { comision, saldoDespues } = await asignar(viajeId, m.id, precio, o.id);
     despues(() => avisarCliente(viajeId, { titulo: `¡${m.nombre.split(" ")[0]} aceptó tu precio!`, cuerpo: `Va en ${m.marca} ${m.modelo}, placa ${m.placa}. Precio: ${dinero(precio)} en efectivo.`, urgente: true }));
-    return { ok: true, aviso: avisoSaldo(saldo, await comisionDe(precio)) };
+    return { ok: true, aviso: avisoComision(comision, saldoDespues) };
   } catch (e) {
     // No se pudo asignar: deja la contraoferta como estaba para que el motorista pueda reintentar.
     await db.ofertaPrecio.updateMany({ where: { id: o.id, estado: "PENDIENTE" }, data: { estado: "CONTRAOFERTA" } });
@@ -191,14 +190,9 @@ export async function avanzarViaje(viajeId: string, desde: string): Promise<Resu
     const r = await avanzar(viajeId, m.id, desde as keyof typeof SIGUIENTE);
     const aviso = AVISO_PASO[r.estado as keyof typeof AVISO_PASO];
     if (aviso) despues(() => avisarCliente(viajeId, aviso));
-    if (r.estado === "ENTREGADO" && "comision" in r) {
-      const negativo = (r.saldoDespues ?? 0) < 0;
-      return {
-        ok: true, comision: r.comision,
-        aviso: negativo
-          ? `Se descontaron ${dinero(r.comision!)} de tus créditos. Tu saldo quedó en ${dinero(r.saldoDespues!)}: recarga para seguir recibiendo viajes.`
-          : `Se descontaron ${dinero(r.comision!)} de tus créditos. Te quedan ${dinero(r.saldoDespues!)}.`,
-      };
+    if (r.estado === "ENTREGADO" && "precio" in r) {
+      // La comisión ya se cobró al aceptar: al entregar solo se recuerda cobrar en efectivo.
+      return { ok: true, aviso: `¡Entrega completada! Cobra ${dinero(r.precio!)} en efectivo al cliente.` };
     }
     return { ok: true };
   } catch (e) {

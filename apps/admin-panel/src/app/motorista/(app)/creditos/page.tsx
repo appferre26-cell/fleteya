@@ -12,6 +12,7 @@ export const metadata = { title: "Créditos — FleteYa Motorista" };
 const TIPO = {
   RECARGA: { icono: "fa-receipt", color: "text-exito", nombre: "Recarga" },
   COMISION: { icono: "fa-truck", color: "text-suave", nombre: "Comisión" },
+  REEMBOLSO: { icono: "fa-rotate-left", color: "text-exito", nombre: "Devolución de comisión" },
   AJUSTE: { icono: "fa-pen", color: "text-suave", nombre: "Ajuste" },
 } as const;
 

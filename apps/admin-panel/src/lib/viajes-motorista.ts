@@ -102,11 +102,49 @@ export async function asignar(viajeId: string, motoristaId: string, precioFinal:
     // Las demás ofertas de este viaje quedan rechazadas; las otras ofertas de este motorista, retiradas.
     await tx.ofertaPrecio.updateMany({ where: { viajeId, estado: "PENDIENTE" }, data: { estado: "RECHAZADA", respondidaEn: ahora } });
     await tx.ofertaPrecio.updateMany({ where: { motoristaId, estado: "PENDIENTE" }, data: { estado: "RETIRADA", respondidaEn: ahora } });
-    return { saldo: Number(m.saldoCreditos) };
+
+    // La comisión se cobra AL ACEPTAR (no al entregar). Se descuenta de los créditos del motorista.
+    // Puede dejar el saldo negativo: no se bloquea la aceptación (puedeRecibir ya exigió saldo > 0).
+    const cfg = await tx.configuracion.findUniqueOrThrow({ where: { id: 1 } });
+    const comision = centavos((precioFinal * Number(cfg.comisionPct)) / 100);
+    const saldoAntes = Number(m.saldoCreditos);
+    const saldoDespues = centavos(saldoAntes - comision);
+    await tx.motorista.update({ where: { id: motoristaId }, data: { saldoCreditos: saldoDespues } });
+    await tx.viaje.update({ where: { id: viajeId }, data: { comision } });
+    await tx.movimientoCredito.create({
+      data: {
+        motoristaId, tipo: "COMISION", monto: -comision, saldoAntes, saldoDespues, viajeId,
+        detalle: `${Number(cfg.comisionPct)}% del viaje de $${precioFinal.toFixed(2)} (al aceptar)`,
+      },
+    });
+    return { saldo: saldoAntes, comision, saldoDespues };
   });
 }
 
-/** Marca el siguiente paso. Al entregar descuenta la comisión de los créditos. */
+/**
+ * Devuelve la comisión ya cobrada si el viaje se cancela/suelta antes de entregar.
+ * Idempotente: solo actúa si hay comisión guardada (> 0) y la deja en 0 para no devolver dos veces.
+ * Debe llamarse DENTRO de una transacción que ya esté cambiando el estado del viaje.
+ */
+export async function reembolsarComision(tx: Prisma.TransactionClient, viajeId: string, motoristaId: string) {
+  const v = await tx.viaje.findUnique({ where: { id: viajeId } });
+  const comision = Number(v?.comision ?? 0);
+  if (!v || comision <= 0) return;
+  await tx.$queryRaw`SELECT id FROM "Motorista" WHERE id = ${motoristaId} FOR UPDATE`;
+  const m = await tx.motorista.findUniqueOrThrow({ where: { id: motoristaId } });
+  const saldoAntes = Number(m.saldoCreditos);
+  const saldoDespues = centavos(saldoAntes + comision);
+  await tx.motorista.update({ where: { id: motoristaId }, data: { saldoCreditos: saldoDespues } });
+  await tx.viaje.update({ where: { id: viajeId }, data: { comision: 0 } });
+  await tx.movimientoCredito.create({
+    data: {
+      motoristaId, tipo: "REEMBOLSO", monto: comision, saldoAntes, saldoDespues, viajeId,
+      detalle: "Devolución de comisión por viaje cancelado",
+    },
+  });
+}
+
+/** Marca el siguiente paso. La comisión ya se cobró al aceptar, así que al entregar NO se toca el saldo. */
 export async function avanzar(viajeId: string, motoristaId: string, desde: keyof typeof SIGUIENTE) {
   const paso = SIGUIENTE[desde];
   if (!paso) throw new ErrorViaje("Paso no válido.");
@@ -123,23 +161,9 @@ export async function avanzar(viajeId: string, motoristaId: string, desde: keyof
     }
     if (paso.a !== "ENTREGADO") return { estado: paso.a };
 
+    // La comisión ya se cobró al aceptar: al entregar solo informamos el precio a cobrar en efectivo.
     const v = await tx.viaje.findUniqueOrThrow({ where: { id: viajeId } });
-    const cfg = await tx.configuracion.findUniqueOrThrow({ where: { id: 1 } });
-    const precio = Number(v.precioFinal ?? v.precioBase);
-    const comision = centavos((precio * Number(cfg.comisionPct)) / 100);
-    await tx.$queryRaw`SELECT id FROM "Motorista" WHERE id = ${motoristaId} FOR UPDATE`;
-    const m = await tx.motorista.findUniqueOrThrow({ where: { id: motoristaId } });
-    const antes = Number(m.saldoCreditos);
-    const despues = centavos(antes - comision);
-    await tx.motorista.update({ where: { id: motoristaId }, data: { saldoCreditos: despues } });
-    await tx.viaje.update({ where: { id: viajeId }, data: { comision } });
-    await tx.movimientoCredito.create({
-      data: {
-        motoristaId, tipo: "COMISION", monto: -comision, saldoAntes: antes, saldoDespues: despues, viajeId,
-        detalle: `${Number(cfg.comisionPct)}% del viaje de $${precio.toFixed(2)}`,
-      },
-    });
-    return { estado: paso.a, comision, saldoAntes: antes, saldoDespues: despues, precio };
+    return { estado: paso.a, comision: Number(v.comision ?? 0), precio: Number(v.precioFinal ?? v.precioBase) };
   });
 }
 
@@ -151,6 +175,8 @@ export async function soltar(viajeId: string, motoristaId: string) {
       data: { estado: "BUSCANDO", motoristaId: null, precioFinal: null, asignadoEn: null, enCaminoEn: null },
     });
     if (r.count === 0) throw new ErrorViaje("Ya no se puede soltar este viaje. Si hay un problema, llama a FleteYa.");
+    // Devuelve la comisión que se cobró al aceptar (idempotente).
+    await reembolsarComision(tx, viajeId, motoristaId);
     await tx.ofertaPrecio.updateMany({ where: { viajeId, motoristaId, estado: "ACEPTADA" }, data: { estado: "RETIRADA" } });
     await tx.rechazoViaje.upsert({
       where: { viajeId_motoristaId: { viajeId, motoristaId } },
