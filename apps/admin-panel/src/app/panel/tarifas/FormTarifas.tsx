@@ -6,7 +6,7 @@ import { areaKm2, centroDe, MAX_PUNTOS_ZONA, seCruza, type LatLng } from "@/lib/
 import { guardarTarifas, type EstadoTarifas } from "./acciones";
 
 type Cfg = {
-  precioTonelada: number; tarifaMinima: number; kmIncluidos: number;
+  precioTonelada: number; tarifaMinima: number; kmIncluidos: number; recargoKmPct: number;
   zonaNombre: string; zonaLat: number; zonaLng: number; zonaRadioKm: number; whatsappAyuda: string | null;
   contraofertaEnRango: boolean; zonaPoligono: LatLng[] | null;
 };
@@ -47,7 +47,9 @@ export function FormTarifas({ cfg }: { cfg: Cfg }) {
           {campo("tarifaMinima", "Tarifa mínima ($)", { ...nro, onChange: (x) => setT({ ...t, tarifaMinima: Number(x.target.value) || 0 }) })}
         </div>
         {campo("kmIncluidos", "Km incluidos en el precio (a la redonda desde la ferretería)", { ...nro, step: "0.5" },
-          "Se miden desde la ferretería donde se carga hasta el destino. Más lejos de eso, el motorista puede ofrecer otro precio y el cliente acepta o no.")}
+          "Se miden desde la ferretería donde se carga hasta el destino. Los km que pasen de aquí se cobran aparte (ver abajo).")}
+        {campo("recargoKmPct", "Recargo por km extra (% del precio por cada km que pase de los incluidos)", { ...nro, step: "0.5" },
+          "Se suma al precio cuando el destino pasa de los km incluidos. Ejemplo: base $10, destino a 3 km extra, 10% → +$3 → total $13.")}
         <div className="rounded-lg bg-fondo p-3 text-xs text-suave">
           <p className="mb-1 font-semibold text-texto">Ejemplos con estos valores</p>
           <p>300 kg → {dinero(precioPorPeso(300, { ...t, kmIncluidos: 0 }))} · 1,500 kg → {dinero(precioPorPeso(1500, { ...t, kmIncluidos: 0 }))} · 3,000 kg → {dinero(precioPorPeso(3000, { ...t, kmIncluidos: 0 }))}</p>

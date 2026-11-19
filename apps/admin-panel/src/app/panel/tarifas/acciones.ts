@@ -13,6 +13,7 @@ const esquema = z.object({
   precioTonelada: num("Escribe el precio").min(1, "Mínimo $1").max(500, "Máximo $500"),
   tarifaMinima: num("Escribe la tarifa mínima").min(1, "Mínimo $1").max(500, "Máximo $500"),
   kmIncluidos: num("Escribe los km").min(1, "Mínimo 1 km").max(100, "Máximo 100 km"),
+  recargoKmPct: num("Escribe el recargo").min(0, "Mínimo 0%").max(100, "Máximo 100%"),
   zonaNombre: z.string().trim().min(3, "Escribe el nombre de la zona").max(60, "Es demasiado largo"),
   zonaLat: num("Marca el centro en el mapa").min(13, "Fuera de El Salvador").max(14.5, "Fuera de El Salvador"),
   zonaLng: num("Marca el centro en el mapa").min(-90.2, "Fuera de El Salvador").max(-87.6, "Fuera de El Salvador"),

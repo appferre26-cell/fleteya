@@ -17,7 +17,7 @@ export default async function TerminosPrimerIngreso() {
     ["fa-user", "Trabajas de forma independiente", "Tú decides cuándo te conectas y qué viajes aceptas."],
     ["fa-coins", "Créditos y comisión", `El acceso a la plataforma cuesta ${dinero(cfg.precioAcceso)} (pago único). Después recargas el monto que quieras; sin saldo no recibes viajes. Por cada viaje se descuenta el ${cfg.comisionPct}% de tus créditos.`],
     ["fa-box", "Cuidas la carga", "Respondes por daños o pérdidas desde que recibes la carga hasta que la entregas."],
-    ["fa-scale-balanced", "Precio justo", `${dinero(cfg.precioTonelada)} por tonelada, mínimo ${dinero(cfg.tarifaMinima)}, hasta ${cfg.kmIncluidos} km desde la ferretería. Más lejos puedes ofrecer otro precio y el cliente decide.`],
+    ["fa-scale-balanced", "Precio justo", `${dinero(cfg.precioTonelada)} por tonelada, mínimo ${dinero(cfg.tarifaMinima)}, incluye hasta ${cfg.kmIncluidos} km desde la ferretería. Los km que pasen de ahí se cobran automáticamente al ${cfg.recargoKmPct}% del precio por cada km extra.`],
     ["fa-money-bill-wave", "Cobras en efectivo", "El cliente te paga directo al terminar. El dinero del viaje es tuyo; la comisión sale solo de tus créditos."],
     ["fa-shield-halved", "Tus datos", "Usamos tu DUI, licencia, tarjeta de circulación, las fotos de tu vehículo y tus datos de facturación solo para verificarte, emitir tus comprobantes y operar el servicio."],
   ];

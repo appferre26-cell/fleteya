@@ -1,6 +1,6 @@
 // Cálculos de precio y distancia. Se usan igual en el navegador (vista previa) y en el servidor (precio que se guarda).
 
-export type Tarifa = { precioTonelada: number; tarifaMinima: number; kmIncluidos: number };
+export type Tarifa = { precioTonelada: number; tarifaMinima: number; kmIncluidos: number; recargoKmPct?: number };
 
 /** Distancia en línea recta entre dos puntos, en km ("a la redonda"). */
 export function distanciaKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
@@ -14,9 +14,25 @@ export function distanciaKm(a: { lat: number; lng: number }, b: { lat: number; l
 
 export const centavos = (n: number) => Math.round(n * 100) / 100;
 
-/** $ por tonelada, proporcional al peso, con tarifa mínima. Redondeado al centavo. */
+/** $ por tonelada, proporcional al peso, con tarifa mínima. Redondeado al centavo. Solo cobra el peso. */
 export function precioPorPeso(pesoKg: number, t: Tarifa) {
   return centavos(Math.max(t.tarifaMinima, (pesoKg / 1000) * t.precioTonelada));
+}
+
+/** Km que pasan de los incluidos (fraccional, nunca negativo). */
+export function kmExtra(km: number, t: Tarifa) {
+  return Math.max(0, km - t.kmIncluidos);
+}
+
+/**
+ * Precio completo del viaje = precio por peso + recargo por los km que pasen de los incluidos.
+ * El recargo = precio base × (recargoKmPct/100) × kmExtra. Ej.: base $10, 3 km extra, 10% → +$3 → total $13.
+ */
+export function precioViaje(pesoKg: number, km: number, t: Tarifa): { base: number; kmExtra: number; recargoKm: number; total: number } {
+  const base = precioPorPeso(pesoKg, t);
+  const extra = kmExtra(km, t);
+  const recargoKm = centavos(base * ((t.recargoKmPct ?? 0) / 100) * extra);
+  return { base, kmExtra: extra, recargoKm, total: centavos(base + recargoKm) };
 }
 
 export function dinero(n: number) {

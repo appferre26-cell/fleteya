@@ -48,6 +48,7 @@ Total ........ 1,109 kg
 1.109 ton × ${dinero(cfg.precioTonelada)} = ${dinero(1.109 * cfg.precioTonelada)}`}</pre>
             <ul className="mt-3 space-y-1.5 text-xs text-suave">
               <li>Mínimo {dinero(cfg.tarifaMinima)} · incluye {cfg.kmIncluidos} km · proporcional al peso.</li>
+              <li>Los km que pasen de los incluidos se cobran automáticamente al {cfg.recargoKmPct}% del precio por cada km extra.</li>
               <li>Los pesos son aproximados. Conviene revisarlos con una ferretería.</li>
               <li>Si un material no está, el cliente usa «Otro» y escribe su peso.</li>
               <li>Ocultar un material lo quita de la lista del cliente sin borrarlo.</li>

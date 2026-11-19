@@ -197,7 +197,7 @@ export default async function ViajeCliente({ params }: { params: Promise<{ codig
             <span className="text-lg font-extrabold text-naranja" data-testid="precio-viaje">{dinero(precio)}</span>
           </div>
           {v.estado === "BUSCANDO" && (v.fueraDeRango || contraoferta) && (
-            <p className="p-3.5 text-xs text-suave"><i className={`fa-solid ${v.fueraDeRango ? "fa-route" : "fa-handshake"} mr-1.5 text-naranja`} />{v.fueraDeRango ? "Como el destino está lejos, el motorista te puede ofrecer otro precio." : "Un motorista te puede proponer otro precio."} Tú decides si lo aceptas.</p>
+            <p className="p-3.5 text-xs text-suave"><i className={`fa-solid ${v.fueraDeRango ? "fa-route" : "fa-handshake"} mr-1.5 text-naranja`} />{v.fueraDeRango ? "Este precio ya incluye el cobro por los km extra. Un motorista aún puede proponerte otro precio." : "Un motorista te puede proponer otro precio."} Tú decides si lo aceptas.</p>
           )}
         </div>
         <p className="mt-2 text-[11px] text-suave">Pedido el {fechaHora(v.creadoEn)} a nombre de {v.clienteNombre}.</p>

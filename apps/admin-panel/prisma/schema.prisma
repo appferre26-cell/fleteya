@@ -177,6 +177,7 @@ model Configuracion {
   precioTonelada Decimal  @default(10) @db.Decimal(8, 2)
   tarifaMinima   Decimal  @default(10) @db.Decimal(8, 2)
   kmIncluidos    Decimal  @default(5) @db.Decimal(5, 1)
+  recargoKmPct   Decimal  @default(10) @db.Decimal(5, 2) // % del precio base que se cobra por cada km que pase de los km incluidos
   zonaNombre     String   @default("Lourdes, Colón")
   zonaLat        Float    @default(13.725)
   zonaLng        Float    @default(-89.37)

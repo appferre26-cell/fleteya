@@ -98,7 +98,7 @@ export function TarjetaSolicitud({ s, comisionPct, contraofertaEnRango, alListo,
 
       {s.fueraDeRango && (
         <div className="mt-3 rounded-lg bg-naranja/10 px-3 py-2.5 text-xs">
-          <i className="fa-solid fa-route mr-1.5 text-naranja" />El destino está más lejos que los km incluidos. Puedes aceptar este precio u <b>ofrecer otro</b>; el cliente decide.
+          <i className="fa-solid fa-route mr-1.5 text-naranja" />El destino pasa de los km incluidos: este precio <b>ya trae el cobro por los km extra</b>. Puedes aceptarlo u ofrecer otro; el cliente decide.
         </div>
       )}
       {pendiente && (

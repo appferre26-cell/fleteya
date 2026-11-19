@@ -16,7 +16,7 @@ export default async function Pedir({ searchParams }: { searchParams: Promise<{ 
       <h1 className="text-[26px] leading-tight font-extrabold">¿Qué llevamos hoy?</h1>
       <p className="mt-1 text-sm text-suave">Pide tu flete en 1 minuto. Sin descargar ninguna app.</p>
       <FormPedido
-        tarifa={{ precioTonelada: cfg.precioTonelada, tarifaMinima: cfg.tarifaMinima, kmIncluidos: cfg.kmIncluidos }}
+        tarifa={{ precioTonelada: cfg.precioTonelada, tarifaMinima: cfg.tarifaMinima, kmIncluidos: cfg.kmIncluidos, recargoKmPct: cfg.recargoKmPct }}
         zona={zonaDe(cfg)}
         materiales={materiales.map((m) => ({ id: m.id, nombre: m.nombre, unidad: m.unidad, pesoKg: Number(m.pesoKg) }))}
         maxKg={maxKg}

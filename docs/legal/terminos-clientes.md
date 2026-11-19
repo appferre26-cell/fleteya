@@ -17,8 +17,9 @@ FleteYa conecta a personas que necesitan transportar carga con motoristas indepe
 2.4. El servicio está disponible solo dentro de la zona activa (actualmente Lourdes, Colón).
 
 ## 3. Precio
-3.1. **$10 por tonelada**, proporcional al peso, con un mínimo de **$10**, dentro de 5 km desde el punto de salida.
-3.2. Para distancias mayores a 5 km, el motorista puede proponer otro precio. Usted decide si lo acepta. El viaje solo se confirma si los dos están de acuerdo.
+3.1. **$10 por tonelada**, proporcional al peso, con un mínimo de **$10**. El precio incluye hasta **5 km** desde el punto de salida.
+3.2. Por cada kilómetro que pase de los 5 km incluidos se agrega automáticamente un recargo del **10% del precio base por cada km extra**. Este recargo ya viene sumado en el precio que usted ve antes de confirmar.
+3.3. Además, un motorista puede proponerle otro precio. Usted decide si lo acepta; el viaje solo se confirma si los dos están de acuerdo.
 
 ## 4. Pago
 El viaje se paga **en efectivo** directamente al motorista al terminar el viaje. Por ahora no se aceptan pagos con tarjeta ni en línea.

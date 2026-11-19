@@ -105,7 +105,7 @@ export default async function Viajes({ searchParams }: { searchParams: Promise<P
         )}
         <p className="border-t border-borde px-5 py-3 text-xs text-suave">
           Mostrando {viajes.length} de {cuenta(filtro.estados)}{viajes.length === 100 ? " (los 100 más recientes; «Exportar a Excel» los trae todos)" : ""} ·{" "}
-          <span data-testid="totales-viajes">Entregados: {totales._count} · cobrado {dinero(Number(totales._sum.precioFinal ?? 0))} · comisión {dinero(Number(totales._sum.comision ?? 0))}</span> · <span className="text-naranja">*</span> más lejos que los km incluidos: el motorista puede ofrecer otro precio.
+          <span data-testid="totales-viajes">Entregados: {totales._count} · cobrado {dinero(Number(totales._sum.precioFinal ?? 0))} · comisión {dinero(Number(totales._sum.comision ?? 0))}</span> · <span className="text-naranja">*</span> más lejos que los km incluidos: el precio ya incluye el cobro por los km extra.
         </p>
       </section>
     </>

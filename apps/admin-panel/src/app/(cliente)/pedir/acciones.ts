@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { capacidadMaximaKg, obtenerConfig, zonaDe } from "@/lib/config";
 import { dentroDeZona } from "@/lib/zona";
-import { centavos, distanciaKm, kg, precioPorPeso } from "@/lib/tarifa";
+import { centavos, distanciaKm, kg, precioViaje } from "@/lib/tarifa";
 import { RANGOS, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import { normalizarTelefono, type ErroresCampos } from "@/lib/validacion";
 import { asignar, ErrorViaje } from "@/lib/viajes-motorista";
@@ -121,6 +121,8 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
   }
 
   const km = distanciaKm(origen, destino);
+  // El precio ya incluye el recargo por los km que pasen de los incluidos, para que la comisión y las ofertas se calculen sobre el precio real.
+  const { total } = precioViaje(pesoKg, km, cfg);
   const viaje = await db.viaje.create({
     data: {
       codigo: codigoSecreto(),
@@ -130,7 +132,7 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
       destinoDireccion: destino.direccion, destinoLat: destino.lat, destinoLng: destino.lng,
       distanciaKm: centavos(km),
       pesoKg,
-      precioBase: precioPorPeso(pesoKg, cfg),
+      precioBase: total,
       fueraDeRango: km > cfg.kmIncluidos,
       rangoTon: d.rango?.id ?? null,
       nota: d.nota || null,

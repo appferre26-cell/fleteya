@@ -41,9 +41,10 @@ El vehículo puede ser propio, prestado o alquilado. El motorista se compromete 
 5.5. Los créditos [no son reembolsables / política de reembolso pendiente].
 
 ## 6. Precio de los viajes
-6.1. La app calcula el precio con la tarifa vigente: **$10 por tonelada**, proporcional al peso, con un mínimo de **$10**, dentro de 5 km desde el punto de salida.
-6.2. En viajes de más de 5 km, el motorista puede proponer otro precio y el cliente decide si lo acepta.
-6.3. El motorista no debe cobrar al cliente montos distintos al precio acordado en la app.
+6.1. La app calcula el precio con la tarifa vigente: **$10 por tonelada**, proporcional al peso, con un mínimo de **$10**. El precio incluye hasta **5 km** desde el punto de salida.
+6.2. Por cada kilómetro que pase de los 5 km incluidos, la app agrega automáticamente un recargo del **10% del precio base por cada km extra**, que ya viene sumado en el precio del viaje.
+6.3. Además, el motorista puede proponer otro precio y el cliente decide si lo acepta.
+6.4. El motorista no debe cobrar al cliente montos distintos al precio acordado en la app.
 
 ## 7. Cobro y pagos
 7.1. Por ahora todos los viajes se pagan **en efectivo**: el motorista cobra directamente al cliente al terminar el viaje.

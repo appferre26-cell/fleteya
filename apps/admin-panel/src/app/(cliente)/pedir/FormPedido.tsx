@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { Mapa, type PuntoMapa } from "@/components/Mapa";
-import { dinero, distanciaKm, kg, precioPorPeso, type Tarifa } from "@/lib/tarifa";
+import { dinero, distanciaKm, kg, precioPorPeso, precioViaje, type Tarifa } from "@/lib/tarifa";
 import { RANGOS, TON_EXTRA, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import type { ErroresCampos } from "@/lib/validacion";
 import { dentroDeZona, type Zona } from "@/lib/zona";
@@ -116,10 +116,16 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
   const pesoKg = porToneladas
     ? (rango ? toneladasDeRango(rango, tonExtra) * 1000 : 0)
     : items.reduce((s, i) => s + (Number(i.cantidad) || 0) * (Number(i.pesoKg) || 0), 0);
-  const precioRango = (id: IdRango) => precioPorPeso(toneladasDeRango(id, tonExtra) * 1000, tarifa);
+  // El precio del rango ya incluye el recargo por km extra cuando el cliente marcó el destino.
+  const precioRango = (id: IdRango) => {
+    const peso = toneladasDeRango(id, tonExtra) * 1000;
+    return km !== null ? precioViaje(peso, km, tarifa).total : precioPorPeso(peso, tarifa);
+  };
   const maxTonExtra = maxKg !== null ? Math.min(TON_EXTRA.max, Math.floor(maxKg / 500) / 2) : TON_EXTRA.max;
-  const precio = pesoKg > 0 ? precioPorPeso(pesoKg, tarifa) : null;
-  const lejos = km !== null && km > tarifa.kmIncluidos;
+  // Desglose completo (base por peso + recargo por km extra + total) cuando hay carga y destino.
+  const desglose = pesoKg > 0 && km !== null ? precioViaje(pesoKg, km, tarifa) : null;
+  const precio = pesoKg > 0 ? (desglose ? desglose.total : precioPorPeso(pesoKg, tarifa)) : null;
+  const recargoKmPct = tarifa.recargoKmPct ?? 0;
   const muyPesado = maxKg !== null && pesoKg > maxKg;
 
   const puntos = useMemo(() => {
@@ -427,12 +433,17 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
         <p className="mt-3 text-xs leading-relaxed text-suave">
           {dinero(tarifa.precioTonelada)} por tonelada · mínimo {dinero(tarifa.tarifaMinima)} · incluye hasta {tarifa.kmIncluidos} km a la redonda desde {qr ? "la ferretería" : "donde se carga"}. Solo te llegan motoristas cuyo vehículo aguanta este peso.
         </p>
-        {lejos && (
-          <p className="mt-2 rounded-lg bg-fondo/50 px-3 py-2 text-xs text-texto" data-testid="aviso-lejos">
-            <i className="fa-solid fa-route mr-1.5 text-naranja" />Tu destino está a más de {tarifa.kmIncluidos} km {qr ? "de la ferretería" : "de donde se carga"}. El motorista te puede ofrecer otro precio y tú decides si lo aceptas.
-          </p>
+        {desglose && desglose.recargoKm > 0 && (
+          <div className="mt-3 rounded-lg bg-fondo/50 px-3 py-2.5 text-xs text-texto" data-testid="aviso-lejos">
+            <p className="font-semibold"><i className="fa-solid fa-route mr-1.5 text-naranja" />Tu destino está a {km!.toFixed(1)} km. Los primeros {tarifa.kmIncluidos} km van incluidos; los {desglose.kmExtra.toFixed(1)} km extra se cobran al {recargoKmPct}% del precio por cada km.</p>
+            <div className="mt-2 space-y-0.5 text-suave">
+              <p className="flex justify-between"><span>Base por peso</span><span className="tabular-nums text-texto">{dinero(desglose.base)}</span></p>
+              <p className="flex justify-between"><span>Recargo por {desglose.kmExtra.toFixed(1)} km extra ({recargoKmPct}% c/u)</span><span className="tabular-nums text-texto">+{dinero(desglose.recargoKm)}</span></p>
+              <p className="flex justify-between border-t border-borde pt-1 font-bold text-texto"><span>Total</span><span className="tabular-nums text-naranja">{dinero(desglose.total)}</span></p>
+            </div>
+          </div>
         )}
-        {!lejos && contraoferta && precio !== null && (
+        {contraoferta && precio !== null && (
           <p className="mt-2 text-xs text-suave" data-testid="aviso-contraoferta">
             <i className="fa-solid fa-handshake mr-1.5 text-naranja" />Un motorista puede proponerte otro precio. Tú decides: si no aceptas, seguimos buscando con {dinero(precio)}.
           </p>

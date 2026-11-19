@@ -64,7 +64,7 @@ export default async function DetalleViaje({ params }: { params: Promise<{ id: s
           {v.comision && (
             <div className="flex items-center justify-between p-5 text-sm"><span>Comisión descontada de los créditos del motorista</span><span className="font-bold" data-testid="comision">{dinero(Number(v.comision))}</span></div>
           )}
-          {v.fueraDeRango && <p className="p-5 text-xs text-suave"><i className="fa-solid fa-route mr-1.5 text-naranja" />Más lejos que los km incluidos: el motorista puede ofrecer otro precio y el cliente decide.</p>}
+          {v.fueraDeRango && <p className="p-5 text-xs text-suave"><i className="fa-solid fa-route mr-1.5 text-naranja" />Más lejos que los km incluidos: el precio ya incluye el cobro automático por los km extra.</p>}
           {v.ofertas.length > 0 && (
             <div className="p-5 text-sm">
               <p className="seccion-titulo mb-2">Ofertas de precio</p>

@@ -9,6 +9,7 @@ export async function obtenerConfig() {
     precioTonelada: Number(c.precioTonelada),
     tarifaMinima: Number(c.tarifaMinima),
     kmIncluidos: Number(c.kmIncluidos),
+    recargoKmPct: Number(c.recargoKmPct),
     zonaNombre: c.zonaNombre,
     zonaLat: c.zonaLat,
     zonaLng: c.zonaLng,
