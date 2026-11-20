@@ -90,7 +90,10 @@ export function Mapa({ centro, zoom = 14, puntos, circulo, zona, vertices, ruta,
   // Crear el mapa una sola vez
   useEffect(() => {
     let montado = true;
+    let yaEsOsm = false; // ya se cambió a OpenStreetMap: no volver a hacer fallback
+    let vigilante: ReturnType<typeof setTimeout> | null = null;
     const alClic = (p: LatLng) => clic.current?.(p);
+    const limpiarVigilante = () => { if (vigilante) { clearTimeout(vigilante); vigilante = null; } };
     const montar = (m: MotorMapa) => {
       if (!montado) return m.destruir();
       motor.current?.destruir();
@@ -98,13 +101,21 @@ export function Mapa({ centro, zoom = 14, puntos, circulo, zona, vertices, ruta,
       m.dibujar(datos.current);
     };
     const usarOsm = () => {
-      if (!montado || !caja.current) return;
+      if (!montado || yaEsOsm || !caja.current) return;
+      yaEsOsm = true;
+      limpiarVigilante();
       motor.current?.destruir();
       motor.current = null;
       const nueva = document.createElement("div");
       nueva.className = "h-full w-full";
       caja.current.replaceChildren(nueva);
       crearMapaOsm(nueva, centro, zoom, alClic).then(montar);
+    };
+    // Revisa si Google realmente pintó imágenes de calles (tiles). Si no cargó ninguna,
+    // casi seguro la clave/el proyecto no sirve (sin facturación o API no activada) → OpenStreetMap.
+    const googlePintoTiles = (div: HTMLElement) => {
+      const imgs = Array.from(div.querySelectorAll("img"));
+      return imgs.some((img) => /googleapis\.com|gstatic\.com|ggpht\.com/.test(img.src) && img.naturalWidth > 0);
     };
     claveGoogle().then((clave) => {
       if (!montado || !caja.current) return;
@@ -115,10 +126,23 @@ export function Mapa({ centro, zoom = 14, puntos, circulo, zona, vertices, ruta,
       // Si Google rechaza la clave (mal escrita, sin facturación o sin permiso para esta dirección), se cambia a OpenStreetMap.
       window.gm_authFailure = () => { console.error("Google Maps rechazó la clave; se usa OpenStreetMap."); window.dispatchEvent(new Event("fy-gmaps-fallo")); };
       window.addEventListener("fy-gmaps-fallo", usarOsm);
-      import("./mapa-google").then(({ crearMapaGoogle }) => crearMapaGoogle(div, clave, centro, zoom, alClic)).then(montar).catch(usarOsm);
+      import("./mapa-google")
+        .then(({ crearMapaGoogle }) => crearMapaGoogle(div, clave, centro, zoom, alClic))
+        .then((m) => {
+          montar(m);
+          // Watchdog: si en ~2.8s Google no pintó tiles reales, cambiar a OpenStreetMap.
+          limpiarVigilante();
+          vigilante = setTimeout(() => {
+            vigilante = null;
+            if (!montado || yaEsOsm) return;
+            if (!googlePintoTiles(div)) { console.error("Google Maps no pintó el mapa; se usa OpenStreetMap."); usarOsm(); }
+          }, 2800);
+        })
+        .catch(usarOsm);
     });
     return () => {
       montado = false;
+      limpiarVigilante();
       window.removeEventListener("fy-gmaps-fallo", usarOsm);
       motor.current?.destruir();
       motor.current = null;
