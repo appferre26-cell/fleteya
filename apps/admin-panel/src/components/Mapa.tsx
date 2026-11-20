@@ -153,5 +153,5 @@ export function Mapa({ centro, zoom = 14, puntos, circulo, zona, vertices, ruta,
   const firma = JSON.stringify([puntos, circulo, zona, vertices, ruta, vivo]);
   useEffect(() => { motor.current?.dibujar(datos.current); }, [firma]);
 
-  return <div ref={caja} role="application" aria-label={etiqueta} className={`z-0 overflow-hidden rounded-xl border border-borde bg-[#17191c] ${className}`} />;
+  return <div ref={caja} role="application" aria-label={etiqueta} className={`z-0 overflow-hidden rounded-xl border border-borde bg-[#e9eaec] ${className}`} />;
 }

@@ -21,19 +21,6 @@ function cargar(clave: string): Promise<void> {
   return window.__fyGmaps;
 }
 
-// Colores oscuros parecidos al resto de la app.
-const ESTILO_OSCURO: google.maps.MapTypeStyle[] = [
-  { elementType: "geometry", stylers: [{ color: "#1d2024" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#9aa0a6" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#16181b" }] },
-  { featureType: "poi", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-  { featureType: "poi.business", stylers: [{ visibility: "off" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#2c3036" }] },
-  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#3b3f46" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1a24" }] },
-  { featureType: "transit", stylers: [{ visibility: "off" }] },
-];
-
 const NARANJA = "#FF6B00";
 
 export async function crearMapaGoogle(caja: HTMLDivElement, clave: string, centro: { lat: number; lng: number }, zoom: number,
@@ -41,7 +28,7 @@ export async function crearMapaGoogle(caja: HTMLDivElement, clave: string, centr
   await cargar(clave);
   const g = google.maps;
   const m = new g.Map(caja, {
-    center: centro, zoom, styles: ESTILO_OSCURO, backgroundColor: "#17191c",
+    center: centro, zoom, styles: [], backgroundColor: "#e9eaec",
     disableDefaultUI: true, zoomControl: true, fullscreenControl: true, gestureHandling: "greedy", clickableIcons: false,
   });
   m.addListener("click", (e: google.maps.MapMouseEvent) => { if (e.latLng) onClick({ lat: e.latLng.lat(), lng: e.latLng.lng() }); });
