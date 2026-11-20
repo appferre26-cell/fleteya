@@ -5,7 +5,7 @@ import { landingConfig } from "@/lib/landing-config";
 export const metadata: Metadata = {
   title: "FleteYa — Tus materiales a casa, rápido y barato",
   description:
-    "Pide un flete para tus materiales en 1 minuto, sin crear cuenta ni descargar nada. Pagas por el peso real y ves el precio antes de confirmar.",
+    "Pide un flete para tus materiales en 1 minuto, sin crear cuenta ni descargar nada. Ves el precio antes de confirmar.",
   robots: { index: true, follow: true },
 };
 
@@ -135,17 +135,17 @@ export default async function Landing({ searchParams }: { searchParams: Promise<
           <ol className="space-y-3">
             <Paso n={1} icono="fa-id-card" titulo="Te registras con tu foto y tu vehículo">
               <p className="mt-1 text-sm leading-relaxed text-suave">
-                Un pago único de <span className="font-bold text-texto">$10</span> para activar tu cuenta en la app.
+                Pagas <span className="font-bold text-texto">$10 una sola vez</span> para activar tu cuenta. Es un pago único de registro.
               </p>
             </Paso>
-            <Paso n={2} icono="fa-bell" titulo="Recibes solicitudes de fletes cerca de ti">
+            <Paso n={2} icono="fa-wallet" titulo="Trabajas con tu saldo de créditos">
               <p className="mt-1 text-sm leading-relaxed text-suave">
-                Te avisamos cuando haya un flete a tu alrededor.
+                Dentro de la app manejas un saldo de créditos. De ahí sale la comisión de cada viaje que aceptas.
               </p>
             </Paso>
             <Paso n={3} icono="fa-sack-dollar" titulo="Aceptas, entregas y ganas">
               <p className="mt-1 text-sm leading-relaxed text-suave">
-                Solo se te descuenta una comisión del <span className="font-bold text-texto">13.5%</span> por viaje. El resto es tuyo.
+                Al aceptar un viaje se descuenta de tus créditos una comisión del <span className="font-bold text-texto">13.5%</span>. Lo demás es tuyo.
               </p>
             </Paso>
           </ol>
@@ -154,62 +154,7 @@ export default async function Landing({ searchParams }: { searchParams: Promise<
           </Link>
         </section>
 
-        {/* 4. ¿CUÁNTO CUESTA UN FLETE? */}
-        <section className="py-8">
-          <div className="mb-5 text-center">
-            <p className="seccion-titulo">Precio justo</p>
-            <h2 className="mt-1.5 text-2xl font-extrabold tracking-tight">¿Cuánto cuesta un flete?</h2>
-          </div>
-          <div className="tarjeta p-5">
-            <p className="text-sm leading-relaxed text-texto">
-              La tarifa es de <span className="font-bold text-naranja">$10 por tonelada</span>, pero{" "}
-              <span className="font-bold">pagas solo por lo que llevas</span>: si tu carga pesa menos de una tonelada, pagas la
-              parte proporcional.
-            </p>
-
-            {/* Ejemplo visual del cobro proporcional (concepto, no precios inventados) */}
-            <div className="mt-4 space-y-2.5">
-              <div className="flex items-center gap-3">
-                <span className="w-24 shrink-0 text-xs font-semibold text-suave">1 tonelada</span>
-                <span className="h-3 flex-1 rounded-full bg-tarjeta-2">
-                  <span className="block h-3 w-full rounded-full bg-naranja" />
-                </span>
-                <span className="w-20 shrink-0 text-right text-xs font-bold">precio lleno</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-24 shrink-0 text-xs font-semibold text-suave">½ tonelada</span>
-                <span className="h-3 flex-1 rounded-full bg-tarjeta-2">
-                  <span className="block h-3 w-1/2 rounded-full bg-naranja" />
-                </span>
-                <span className="w-20 shrink-0 text-right text-xs font-bold">la mitad</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-24 shrink-0 text-xs font-semibold text-suave">¼ de tonelada</span>
-                <span className="h-3 flex-1 rounded-full bg-tarjeta-2">
-                  <span className="block h-3 w-1/4 rounded-full bg-naranja" />
-                </span>
-                <span className="w-20 shrink-0 text-right text-xs font-bold">un cuarto</span>
-              </div>
-            </div>
-
-            <ul className="mt-5 space-y-2.5 border-t border-borde pt-4">
-              <li className="flex items-start gap-2.5 text-sm">
-                <i className="fa-solid fa-weight-scale mt-0.5 text-naranja" />
-                <span><span className="font-semibold">Pagas por el peso real</span>, no por toneladas completas.</span>
-              </li>
-              <li className="flex items-start gap-2.5 text-sm">
-                <i className="fa-solid fa-location-dot mt-0.5 text-naranja" />
-                <span><span className="font-semibold">5 km incluidos</span> a la redonda desde donde se carga. Si es más lejos, un pequeño extra por kilómetro.</span>
-              </li>
-              <li className="flex items-start gap-2.5 text-sm">
-                <i className="fa-solid fa-eye mt-0.5 text-naranja" />
-                <span><span className="font-semibold">Precio visible antes de aceptar.</span> Sin sorpresas.</span>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        {/* 5. PREGUNTAS FRECUENTES */}
+        {/* 4. PREGUNTAS FRECUENTES */}
         <section className="py-8">
           <div className="mb-5 text-center">
             <p className="seccion-titulo">Dudas</p>
@@ -223,11 +168,6 @@ export default async function Landing({ searchParams }: { searchParams: Promise<
             </Faq>
             <Faq p="¿Cómo pago?">
               Puedes pagar en línea desde el mismo enlace, o en efectivo al motorista cuando recibes tu carga.
-            </Faq>
-            <Faq p="¿Cuánto cuesta?">
-              La tarifa es de $10 por tonelada y pagas solo por el peso real de tu carga (si llevas menos de una tonelada, pagas
-              la parte proporcional). Incluye los primeros 5 km a la redonda; más lejos, un pequeño extra por kilómetro. Siempre
-              ves el precio exacto antes de aceptar.
             </Faq>
             <Faq p="¿Es seguro?">
               Sí. Cada motorista se registra con su foto y los datos de su vehículo antes de poder recibir fletes.
