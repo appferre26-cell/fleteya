@@ -607,7 +607,7 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
           <div>
             <div className="flex">
               <span className="flex h-12 items-center rounded-l-lg border border-r-0 border-borde bg-tarjeta-2 px-3 text-sm text-suave">+503</span>
-              <input className="campo rounded-l-none" type="tel" inputMode="numeric" autoComplete="tel-national" placeholder="7123-4567" aria-label="Tu celular"
+              <input className="campo rounded-l-none" type="tel" inputMode="numeric" autoComplete="off" name="fy-cel" placeholder="7123-4567" aria-label="Tu celular"
                 value={telefono} onChange={(e) => setTelefono(e.target.value)} />
             </div>
             <Aviso m={errores.telefono} />
