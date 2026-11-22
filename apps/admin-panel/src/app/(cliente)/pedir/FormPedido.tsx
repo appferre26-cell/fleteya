@@ -103,23 +103,38 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
     }, 160);
   };
 
-  const marcar = (p: { lat: number; lng: number }) => {
-    if (modo === "origen") {
-      if (qr) return;
-      setOrigen((o) => ({ ...p, direccion: o?.direccion ?? "" }));
-      if (!destino) setModo("destino");
-    } else {
-      setDestino((d) => ({ ...p, direccion: d?.direccion ?? "" }));
-    }
+  // Al tocar el mapa se coloca el punto de inmediato y se busca sola la dirección de ese lugar.
+  const marcar = async (p: { lat: number; lng: number }) => {
+    if (modo === "origen" && qr) return;
+    const cual = modo; // fijamos el punto que se está marcando en el momento del toque
+    const poner = (direccion: string) => {
+      if (cual === "origen") setOrigen({ ...p, direccion });
+      else setDestino({ ...p, direccion });
+    };
+    // El pin aparece al instante; mientras tanto avisamos que estamos buscando la dirección.
+    poner("Buscando dirección…");
+    if (cual === "origen" && !destino) setModo("destino");
+    setResultados(null);
+    setErrores((e) => ({ ...e, [cual]: undefined }));
+    // Geocodificación inversa: llena el campo con la dirección del punto marcado.
+    let direccion = "";
+    try { direccion = await direccionDe(p.lat, p.lng); } catch { /* usamos el respaldo de abajo */ }
+    poner(direccion || `Punto en el mapa (${p.lat.toFixed(5)}, ${p.lng.toFixed(5)})`);
   };
 
   // Buscar la dirección escrita en un campo y mostrar coincidencias debajo de ese campo.
   const buscarDir = (cual: "origen" | "destino") => {
-    const q = (cual === "origen" ? qOrigen : qDestino).trim();
+    // Si el punto ya está puesto, el texto editado vive en su dirección; si no, en el campo de búsqueda.
+    const texto = cual === "origen" ? (origen ? origen.direccion : qOrigen) : (destino ? destino.direccion : qDestino);
+    const q = texto.trim();
     if (q.length < 3) { setResultados({ cual, lista: [] }); return; }
     setBuscandoCual(cual);
     buscarDireccion(q)
-      .then((lista) => setResultados({ cual, lista }))
+      .then((lista) => {
+        // Una sola coincidencia: la fijamos sola en el mapa, sin pedir otro toque.
+        if (lista.length === 1) { elegirDireccion(cual, lista[0]); return; }
+        setResultados({ cual, lista });
+      })
       .finally(() => setBuscandoCual(null));
   };
 
