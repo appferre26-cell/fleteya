@@ -94,8 +94,11 @@ export function TarjetaSolicitud({ s, comisionPct, contraofertaEnRango, alListo,
         )}
       </div>
 
-      <p className="mt-3 text-[11px] font-semibold tracking-wider text-suave uppercase">Precio del viaje</p>
+      <p className="mt-3 text-[11px] font-semibold tracking-wider text-suave uppercase">Precio que ofrece el cliente</p>
       <p className="text-[38px] leading-none font-extrabold text-naranja tabular-nums" data-testid="precio-solicitud">{dinero(s.precioBase)}</p>
+      {s.precioSugerido != null && Math.abs(s.precioSugerido - s.precioBase) >= 0.01 && (
+        <p className="mt-1 text-[11px] text-suave">Precio sugerido por la app: {dinero(s.precioSugerido)}</p>
+      )}
       <p className="mt-1.5 text-xs text-suave"><i className="fa-solid fa-money-bill-wave mr-1 text-exito" />Efectivo · se descuentan {dinero(centavos(s.precioBase * comisionPct / 100))} ({comisionPct}%) de tus créditos</p>
 
       <div className="mt-4 space-y-3">

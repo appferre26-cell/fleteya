@@ -111,7 +111,7 @@ export default async function Landing({ searchParams }: { searchParams: Promise<
             </Paso>
             <Paso n={2} icono="fa-box-open" titulo="Dices qué llevas y a dónde">
               <p className="mt-1 text-sm leading-relaxed text-suave">
-                Escoges el peso de tu carga y marcas tu dirección en el mapa. Al instante ves el precio.
+                Escoges el peso de tu carga y marcas tu dirección en el mapa. Te damos un precio sugerido y tú ofreces cuánto quieres pagar.
               </p>
             </Paso>
             <Paso n={3} icono="fa-house-chimney" titulo="Un motorista lo recoge y te lo lleva a casa">
@@ -123,6 +123,13 @@ export default async function Landing({ searchParams }: { searchParams: Promise<
           <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-exito/40 bg-exito/10 px-4 py-3 text-sm">
             <i className="fa-solid fa-circle-check text-exito" />
             <span>No necesitas crear cuenta ni descargar ninguna app.</span>
+          </div>
+          {/* Nota PWA: cómo dejar FleteYa a un toque en el celular (sin tienda de apps). */}
+          <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-borde bg-tarjeta px-4 py-3 text-sm">
+            <i className="fa-solid fa-mobile-screen-button mt-0.5 text-naranja" />
+            <span className="text-suave">
+              <span className="font-semibold text-texto">¿Quieres tenerla a la mano?</span> Puedes dejar FleteYa en la pantalla de inicio de tu celular. En el navegador toca el menú de los tres puntos y elige <span className="font-semibold text-texto">«Agregar a pantalla de inicio»</span> (o «Instalar app»). Queda como un acceso directo, sin descargar nada.
+            </span>
           </div>
         </section>
 

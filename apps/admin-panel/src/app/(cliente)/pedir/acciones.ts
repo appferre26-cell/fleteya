@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { capacidadMaximaKg, obtenerConfig, zonaDe } from "@/lib/config";
 import { dentroDeZona } from "@/lib/zona";
-import { centavos, distanciaKm, kg, precioViaje } from "@/lib/tarifa";
+import { centavos, distanciaKm, kg, pisoOferta, precioViaje } from "@/lib/tarifa";
 import { RANGOS, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import { normalizarTelefono, type ErroresCampos } from "@/lib/validacion";
 import { asignar, ErrorViaje, reembolsarComision } from "@/lib/viajes-motorista";
@@ -35,6 +35,8 @@ const esquema = z.object({
     ton: z.number().optional(),
   }).nullable().optional(),
   nota: z.string().trim().max(300, "La nota es muy larga").optional(),
+  // Oferta del cliente (estilo inDrive): cuánto ofrece pagar. Se valida contra el piso en el servidor.
+  oferta: z.number().positive("Escribe cuánto quieres ofrecer").max(500, "El precio máximo es $500").nullable().optional(),
   acepto: z.literal(true, { message: "Debes aceptar los Términos y el Aviso de Privacidad" }),
 });
 
@@ -121,8 +123,19 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
   }
 
   const km = distanciaKm(origen, destino);
-  // El precio ya incluye el recargo por los km que pasen de los incluidos, para que la comisión y las ofertas se calculen sobre el precio real.
-  const { total } = precioViaje(pesoKg, km, cfg);
+  // Precio sugerido por la app (peso + recargo por los km que pasen de los incluidos). Solo de referencia.
+  const { total: sugerido } = precioViaje(pesoKg, km, cfg);
+  // El cliente propone su precio (estilo inDrive). Con piso de seguridad = 70% del sugerido (ver PISO_OFERTA_PCT).
+  const piso = pisoOferta(sugerido);
+  const oferta = d.oferta != null ? centavos(d.oferta) : sugerido;
+  if (!Number.isFinite(oferta) || oferta <= 0) {
+    return { errores: { general: "Escribe cuánto quieres ofrecer por el flete." } };
+  }
+  if (oferta < piso) {
+    return { errores: { general: `Tu oferta es muy baja, puede que ningún motorista la tome. Mínimo sugerido: $${piso.toFixed(2)}.` } };
+  }
+  // El precio del viaje es la oferta del cliente; sobre él se calculan la comisión y el pago.
+  const total = oferta;
   const viaje = await db.viaje.create({
     data: {
       codigo: codigoSecreto(),
@@ -132,6 +145,7 @@ export async function solicitarViaje(datosJson: string): Promise<EstadoPedido> {
       destinoDireccion: destino.direccion, destinoLat: destino.lat, destinoLng: destino.lng,
       distanciaKm: centavos(km),
       pesoKg,
+      precioSugerido: sugerido,
       precioBase: total,
       fueraDeRango: km > cfg.kmIncluidos,
       rangoTon: d.rango?.id ?? null,

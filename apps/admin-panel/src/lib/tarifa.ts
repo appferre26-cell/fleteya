@@ -35,6 +35,16 @@ export function precioViaje(pesoKg: number, km: number, t: Tarifa): { base: numb
   return { base, kmExtra: extra, recargoKm, total: centavos(base + recargoKm) };
 }
 
+// ───── Oferta del cliente (estilo inDrive) ─────
+// El cliente propone cuánto quiere pagar. Para proteger a los motoristas, su oferta no puede
+// bajar de este % del precio sugerido por la app. Cambia este número si quieres otro piso.
+export const PISO_OFERTA_PCT = 70;
+
+/** Oferta mínima aceptable (piso de seguridad) a partir del precio sugerido, al centavo. */
+export function pisoOferta(sugerido: number) {
+  return centavos((sugerido * PISO_OFERTA_PCT) / 100);
+}
+
 export function dinero(n: number) {
   return `${n < 0 ? "-" : ""}$${Math.abs(n).toFixed(2)}`;
 }

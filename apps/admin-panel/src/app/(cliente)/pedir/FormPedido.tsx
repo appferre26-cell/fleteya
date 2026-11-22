@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Mapa, type PuntoMapa } from "@/components/Mapa";
-import { dinero, distanciaKm, kg, precioPorPeso, precioViaje, type Tarifa } from "@/lib/tarifa";
+import { centavos, dinero, distanciaKm, kg, pisoOferta, precioPorPeso, precioViaje, type Tarifa } from "@/lib/tarifa";
 import { RANGOS, TON_EXTRA, toneladasDeRango, type IdRango } from "@/lib/rangos";
 import type { ErroresCampos } from "@/lib/validacion";
 import { dentroDeZona, type Zona } from "@/lib/zona";
@@ -43,6 +43,9 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
   const [acepto, setAcepto] = useState(false);
+  // Oferta del cliente (estilo inDrive): empieza igual al precio sugerido y él la ajusta.
+  const [oferta, setOferta] = useState("");
+  const [ofertaTocada, setOfertaTocada] = useState(false);
   const [errores, setErrores] = useState<ErroresCampos>({});
   const [enviando, iniciar] = useTransition();
   const [ubicando, setUbicando] = useState(false);
@@ -184,6 +187,22 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
   const recargoKmPct = tarifa.recargoKmPct ?? 0;
   const muyPesado = maxKg !== null && pesoKg > maxKg;
 
+  // El campo "Tu oferta" se prellena con el precio sugerido mientras el cliente no lo haya cambiado.
+  useEffect(() => {
+    if (!ofertaTocada && precio !== null) setOferta(String(precio));
+  }, [precio, ofertaTocada]);
+
+  const ofertaNum = oferta.trim() === "" ? null : centavos(Number(oferta.replace(/[$,\s]/g, "")));
+  const piso = precio !== null ? pisoOferta(precio) : null; // 70% del sugerido (ver PISO_OFERTA_PCT en lib/tarifa)
+  const ofertaBaja = ofertaNum !== null && piso !== null && ofertaNum < piso;
+  const ofertaInvalida = precio !== null && (ofertaNum === null || !Number.isFinite(ofertaNum) || ofertaNum <= 0 || ofertaBaja);
+  const ajustarOferta = (delta: number) => {
+    const actual = ofertaNum ?? precio ?? 0;
+    setOfertaTocada(true);
+    setOferta(String(Math.max(0, centavos(actual + delta))));
+  };
+  const usarSugerido = () => { setOfertaTocada(false); if (precio !== null) setOferta(String(precio)); };
+
   const puntos = useMemo(() => {
     const p: PuntoMapa[] = [];
     if (origen) p.push({ id: "o", lat: origen.lat, lng: origen.lng, color: "#FF6B00", icono: qr ? "fa-store" : "fa-box", etiqueta: "Recogida" });
@@ -205,7 +224,7 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
   const enviar = () => {
     setErrores({});
     const datos = {
-      nombre, telefono, nota, acepto, qr: qr?.codigo,
+      nombre, telefono, nota, acepto, qr: qr?.codigo, oferta: ofertaNum,
       origen: origen ? { ...origen, direccion: origen.direccion.trim() } : null,
       destino: destino ? { ...destino, direccion: destino.direccion.trim() } : null,
       rango: porToneladas && rango ? { id: rango, ton: tonExtra } : null,
@@ -490,8 +509,8 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
             </p>
           </div>
           <div className="text-right">
-            <p className="seccion-titulo">Precio</p>
-            <p className="mt-0.5 text-[32px] leading-none font-extrabold text-naranja tabular-nums" data-testid="precio">{precio !== null ? dinero(precio) : "—"}</p>
+            <p className="seccion-titulo">Precio sugerido</p>
+            <p className="mt-0.5 text-2xl leading-none font-bold text-texto tabular-nums" data-testid="precio">{precio !== null ? dinero(precio) : "—"}</p>
           </div>
         </div>
         <p className="mt-3 text-xs leading-relaxed text-suave">
@@ -507,9 +526,47 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
             </div>
           </div>
         )}
-        {contraoferta && precio !== null && (
+        {/* Oferta del cliente estilo inDrive: él decide cuánto pagar (mínimo el piso de seguridad). */}
+        {precio !== null && (
+          <div className="mt-4 rounded-xl border border-naranja/40 bg-fondo/50 p-3.5" data-testid="oferta">
+            <label htmlFor="oferta-precio" className="seccion-titulo flex items-center gap-1.5">
+              <i className="fa-solid fa-hand-holding-dollar text-naranja" />Tu oferta
+            </label>
+            <p className="mt-0.5 text-xs text-suave">Tú decides cuánto ofrecer. Una buena oferta la toma un motorista más rápido.</p>
+            <div className="mt-2.5 flex items-center gap-2">
+              <button type="button" aria-label="Bajar un dólar" onClick={() => ajustarOferta(-1)}
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-borde text-texto">
+                <i className="fa-solid fa-minus" />
+              </button>
+              <div className="flex h-12 flex-1 items-center rounded-lg border border-borde bg-tarjeta px-3">
+                <span className="mr-1 text-lg font-bold text-suave">$</span>
+                <input id="oferta-precio" type="number" inputMode="decimal" min={0} step={1}
+                  value={oferta} onChange={(e) => { setOfertaTocada(true); setOferta(e.target.value); }}
+                  className="w-full bg-transparent text-2xl font-extrabold tabular-nums text-naranja outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                  aria-label="Cuánto ofreces pagar en dólares" data-testid="oferta-input" />
+              </div>
+              <button type="button" aria-label="Subir un dólar" onClick={() => ajustarOferta(1)}
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-borde text-naranja">
+                <i className="fa-solid fa-plus" />
+              </button>
+            </div>
+            <button type="button" onClick={usarSugerido} className="mt-2 text-xs font-semibold text-naranja">
+              <i className="fa-solid fa-wand-magic-sparkles mr-1" />Usar el precio sugerido ({dinero(precio)})
+            </button>
+            {ofertaBaja ? (
+              <p className="mt-2 rounded-lg bg-error/10 px-3 py-2 text-xs text-error" data-testid="oferta-baja">
+                <i className="fa-solid fa-circle-exclamation mr-1.5" />Tu oferta es muy baja, puede que ningún motorista la tome. Mínimo sugerido: {dinero(piso!)}.
+              </p>
+            ) : ofertaNum !== null && ofertaNum > 0 ? (
+              <p className="mt-2 text-xs text-suave"><i className="fa-solid fa-circle-check mr-1.5 text-exito" />Ofreces {dinero(ofertaNum)}. El motorista cobra este monto en efectivo.</p>
+            ) : (
+              <p className="mt-2 text-xs text-error"><i className="fa-solid fa-circle-exclamation mr-1.5" />Escribe cuánto quieres ofrecer.</p>
+            )}
+          </div>
+        )}
+        {contraoferta && ofertaNum !== null && ofertaNum > 0 && (
           <p className="mt-2 text-xs text-suave" data-testid="aviso-contraoferta">
-            <i className="fa-solid fa-handshake mr-1.5 text-naranja" />Un motorista puede proponerte otro precio. Tú decides: si no aceptas, seguimos buscando con {dinero(precio)}.
+            <i className="fa-solid fa-handshake mr-1.5 text-naranja" />Un motorista puede proponerte otro precio. Tú decides: si no aceptas, seguimos buscando con tu oferta de {dinero(ofertaNum)}.
           </p>
         )}
         {muyPesado && <Aviso m={`Es más de lo que lleva el vehículo más grande disponible (${kg(maxKg!)}). Divide la carga en dos pedidos.`} />}
@@ -556,13 +613,13 @@ export function FormPedido({ tarifa, zona, materiales, maxKg, qr, contraoferta }
       </div>
 
       <div>
-        <button type="button" onClick={enviar} disabled={enviando || muyPesado || fueraZona} className="btn-primario h-14 w-full text-base">
-          {enviando ? <><i className="fa-solid fa-spinner fa-spin" />Enviando…</> : <>Solicitar FleteYa{precio !== null ? ` · ${dinero(precio)}` : ""} <i className="fa-solid fa-arrow-right" /></>}
+        <button type="button" onClick={enviar} disabled={enviando || muyPesado || fueraZona || ofertaInvalida} className="btn-primario h-14 w-full text-base">
+          {enviando ? <><i className="fa-solid fa-spinner fa-spin" />Enviando…</> : <>Solicitar FleteYa{ofertaNum !== null && ofertaNum > 0 ? ` · ${dinero(ofertaNum)}` : ""} <i className="fa-solid fa-arrow-right" /></>}
         </button>
         <div className="mt-4 flex items-center justify-center gap-4 text-xs text-suave">
           <span><i className="fa-solid fa-shield-halved mr-1 text-exito" />Motoristas verificados</span>
           <span className="h-3 w-px bg-borde" />
-          <span><i className="fa-solid fa-scale-balanced mr-1 text-exito" />Precio por peso</span>
+          <span><i className="fa-solid fa-hand-holding-dollar mr-1 text-exito" />Tú pones el precio</span>
         </div>
       </div>
     </div>

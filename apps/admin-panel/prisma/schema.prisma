@@ -225,7 +225,8 @@ model Viaje {
   destinoLng        Float
   distanciaKm       Decimal     @db.Decimal(6, 2) // en línea recta ("a la redonda")
   pesoKg            Decimal     @db.Decimal(10, 2)
-  precioBase        Decimal     @db.Decimal(8, 2) // por peso, con mínimo
+  precioSugerido    Decimal?    @db.Decimal(8, 2) // precio calculado por la app (peso + km extra), solo de referencia
+  precioBase        Decimal     @db.Decimal(8, 2) // PRECIO DEL VIAJE = lo que ofreció el cliente (estilo inDrive). La comisión y el pago se calculan sobre este monto.
   fueraDeRango      Boolean     // más km que los incluidos: el motorista puede ofrecer otro precio
   rangoTon          String?     // Parte 5: el cliente eligió por toneladas ("0-1", "1-2", "2-3", "3+") en vez de materiales
   nota              String?
