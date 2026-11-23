@@ -3,7 +3,7 @@
 > **BORRADOR (versión 0.2).** Este documento no es asesoría legal. Debe revisarlo un abogado de El Salvador antes de publicarlo. Los textos entre [corchetes] están pendientes de completar.
 
 **Última actualización:** 22 de noviembre de 2026
-**Responsable:** FleteYa es un nombre comercial operado por **Jorge Luis Sánchez López**, persona natural inscrita como contribuyente de IVA en El Salvador, NIT **05049173-0**, NRC **365259-3**. Dirección y correo de contacto: [pendientes].
+**Responsable:** FleteYa es un nombre comercial operado por **Jorge Luis Sánchez López**, persona natural inscrita como contribuyente de IVA en El Salvador, NIT **05049173-0**, NRC **365259-3**. Dirección: Colonia Villas de San Juan, Pasaje B, Casa 4, Calle Tabacalera, Lourdes Colón, distrito de Colón, municipio de La Libertad Oeste, departamento de La Libertad. Correo de contacto: appferre26@gmail.com.
 
 ---
 
@@ -32,7 +32,7 @@ El vehículo puede ser propio, prestado o alquilado. El motorista se compromete 
 4.3. El motorista es responsable de lo que se haga con su cuenta.
 
 ## 5. Créditos y comisión
-5.1. **Acceso a la plataforma:** para dar de alta su perfil, el motorista paga una sola vez **$10.00**. Este pago no se convierte en créditos y [no es reembolsable / política pendiente] una vez activada la cuenta.
+5.1. **Acceso a la plataforma:** para dar de alta su perfil, el motorista paga una sola vez **$10.00**. Este pago no se convierte en créditos y **no es reembolsable** una vez activada la cuenta.
 5.1.1. **Recargas:** para recibir viajes, el motorista debe tener créditos. No hay planes: el motorista recarga **el monto que quiera** (desde $1.00). Las recargas y el acceso se pagan **por transferencia a la cuenta bancaria de FleteYa** (cuyos datos se muestran en la app) **o en efectivo** al equipo de FleteYa; más adelante también **en línea con tarjeta** [proveedor de pagos pendiente: Wompi]. Solo se aceptan pagos a esa cuenta, entregados en persona al equipo de FleteYa o por el medio de pago en línea de la app.
 5.1.2. **Factura:** por el acceso y por cada recarga FleteYa emite el documento tributario que corresponda: factura de consumidor final o, si el motorista lo pide y da su NIT, NRC, nombre o razón social, giro y dirección, **comprobante de crédito fiscal**. [Pendiente: facturación electrónica (DTE) a partir del registro de la empresa.] Mientras tanto, la app entrega un comprobante interno de pago.
 5.2. Por cada viaje completado, FleteYa descuenta de sus créditos el **13.5% del valor del viaje** como comisión.
@@ -73,7 +73,7 @@ El uso de los datos del motorista se explica en el [Aviso de Privacidad](aviso-p
 FleteYa puede actualizar estos términos. Cuando haya cambios, la app le pedirá al motorista que los acepte de nuevo para seguir usándola.
 
 ## 13. Contacto
-[Teléfono / WhatsApp / correo de soporte — pendiente]
+Correo de soporte: appferre26@gmail.com. [Teléfono / WhatsApp — pendientes]
 
 ---
 

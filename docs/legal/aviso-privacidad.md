@@ -3,7 +3,7 @@
 > **BORRADOR (versión 0.2).** Este documento no es asesoría legal. Debe revisarlo un abogado de El Salvador, que confirme qué exige la normativa vigente de protección de datos, antes de publicarlo. Los textos entre [corchetes] están pendientes de completar.
 
 **Última actualización:** 22 de noviembre de 2026
-**Responsable de los datos:** FleteYa, operado por **Jorge Luis Sánchez López**, persona natural contribuyente de IVA en El Salvador, NIT **05049173-0**, NRC **365259-3**. Dirección y correo de contacto: [pendientes].
+**Responsable de los datos:** FleteYa, operado por **Jorge Luis Sánchez López**, persona natural contribuyente de IVA en El Salvador, NIT **05049173-0**, NRC **365259-3**. Dirección: Colonia Villas de San Juan, Pasaje B, Casa 4, Calle Tabacalera, Lourdes Colón, distrito de Colón, municipio de La Libertad Oeste, departamento de La Libertad. Correo de contacto: appferre26@gmail.com.
 
 ---
 
@@ -40,7 +40,7 @@ Por ahora los viajes se pagan **solo en efectivo**, así que FleteYa **no recibe
 Los datos se guardan en servidores con acceso restringido. Solo los propietarios autorizados pueden ver los documentos de los motoristas.
 
 ## 6. Sus derechos
-Puede pedir ver, corregir o eliminar sus datos escribiendo a [correo de contacto — pendiente]. Algunos datos de viajes y pagos pueden conservarse si la ley lo exige.
+Puede pedir ver, corregir o eliminar sus datos escribiendo a appferre26@gmail.com. Algunos datos de viajes y pagos pueden conservarse si la ley lo exige.
 
 ## 7. Cambios a este aviso
 Si cambiamos este aviso, lo publicaremos con su nueva fecha. A los motoristas se les pedirá aceptarlo de nuevo en la app.

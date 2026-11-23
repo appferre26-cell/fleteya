@@ -3,7 +3,7 @@
 > **BORRADOR (versión 0.1).** Este documento no es asesoría legal. Debe revisarlo un abogado de El Salvador antes de publicarlo. Los textos entre [corchetes] están pendientes de completar.
 
 **Última actualización:** 22 de noviembre de 2026
-**Responsable:** FleteYa es un nombre comercial operado por **Jorge Luis Sánchez López**, persona natural inscrita como contribuyente de IVA en El Salvador, NIT **05049173-0**, NRC **365259-3**. Dirección y correo de contacto: [pendientes].
+**Responsable:** FleteYa es un nombre comercial operado por **Jorge Luis Sánchez López**, persona natural inscrita como contribuyente de IVA en El Salvador, NIT **05049173-0**, NRC **365259-3**. Dirección: Colonia Villas de San Juan, Pasaje B, Casa 4, Calle Tabacalera, Lourdes Colón, distrito de Colón, municipio de La Libertad Oeste, departamento de La Libertad. Correo de contacto: appferre26@gmail.com.
 
 ---
 
@@ -42,7 +42,7 @@ No se transportan artículos ilegales, armas, explosivos, sustancias peligrosas 
 El uso de sus datos se explica en el [Aviso de Privacidad](aviso-privacidad.md).
 
 ## 10. Contacto y soporte
-[Teléfono / WhatsApp / correo de soporte — pendiente]
+Correo de soporte: appferre26@gmail.com. [Teléfono / WhatsApp — pendientes]
 
 ---
 
