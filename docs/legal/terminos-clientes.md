@@ -30,7 +30,7 @@ La carga del material normalmente la hace el personal de la ferretería. FleteYa
 ## 6. Daños a la carga
 6.1. El motorista es responsable de los daños o pérdidas que sufra la carga **mientras está bajo su cuidado**, desde que la recibe hasta que la entrega.
 6.2. Revise su carga al recibirla. Si hay algún daño, repórtelo de inmediato a soporte, con fotos si es posible.
-6.3. [Plazo para reclamar y cómo se resuelve — pendiente]
+6.3. Como el motorista es el responsable de la carga, si al recibirla nota algún daño o falta, **repórtelo el mismo día de la entrega, dentro de las 24 horas siguientes**, escribiendo a soporte (correo o WhatsApp del punto 10) **con fotos del daño** y una breve explicación. FleteYa revisa el caso con usted y con el motorista y ayuda a buscar una solución. Pasado ese plazo, sin un reporte con evidencia, es más difícil atender el reclamo.
 
 ## 7. Artículos no permitidos
 No se transportan artículos ilegales, armas, explosivos, sustancias peligrosas ni animales vivos.

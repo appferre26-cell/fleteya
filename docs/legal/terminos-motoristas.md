@@ -54,7 +54,7 @@ El vehículo puede ser propio, prestado o alquilado. El motorista se compromete 
 8.1. **El motorista es responsable de los daños o pérdidas de la carga** mientras está bajo su cuidado, desde que la recibe hasta que la entrega.
 8.2. El motorista debe manejar la carga con cuidado y asegurarla bien en el vehículo.
 8.3. Antes de salir, el motorista debe revisar que la carga coincida con la lista del cliente y reportar en la app cualquier daño que ya tenga.
-8.4. [Cómo se resuelven los reclamos por daños: plazo, evidencia con fotos, monto máximo, etc. — pendiente]
+8.4. Si el cliente reporta un daño o una pérdida, debe hacerlo **dentro de las 24 horas siguientes a la entrega**, con fotos y una explicación, a soporte. FleteYa le avisa al motorista y revisa el caso con las dos partes. Como el motorista es el responsable de la carga mientras está bajo su cuidado (punto 8.1), si se confirma que el daño ocurrió durante el viaje, **el motorista responde por el daño o la pérdida** y debe llegar a un acuerdo de reparación o compensación con el cliente. FleteYa media para resolverlo y puede suspender la cuenta del motorista si no atiende reclamos válidos.
 
 ## 9. Conducta
 El motorista se compromete a:
