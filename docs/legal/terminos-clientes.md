@@ -2,8 +2,8 @@
 
 > **BORRADOR (versión 0.1).** Este documento no es asesoría legal. Debe revisarlo un abogado de El Salvador antes de publicarlo. Los textos entre [corchetes] están pendientes de completar.
 
-**Última actualización:** [fecha]
-**Responsable:** [Razón social de FleteYa, NIT y dirección — pendiente del registro de la empresa]
+**Última actualización:** 22 de noviembre de 2026
+**Responsable:** FleteYa es un nombre comercial operado por **Jorge Luis Sánchez López**, persona natural inscrita como contribuyente de IVA en El Salvador, NIT **05049173-0**, NRC **365259-3**. Dirección y correo de contacto: [pendientes].
 
 ---
 

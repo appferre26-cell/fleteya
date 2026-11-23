@@ -2,8 +2,8 @@
 
 > **BORRADOR (versión 0.2).** Este documento no es asesoría legal. Debe revisarlo un abogado de El Salvador, que confirme qué exige la normativa vigente de protección de datos, antes de publicarlo. Los textos entre [corchetes] están pendientes de completar.
 
-**Última actualización:** [fecha]
-**Responsable de los datos:** [Razón social de FleteYa, NIT, dirección y correo de contacto — pendiente]
+**Última actualización:** 22 de noviembre de 2026
+**Responsable de los datos:** FleteYa, operado por **Jorge Luis Sánchez López**, persona natural contribuyente de IVA en El Salvador, NIT **05049173-0**, NRC **365259-3**. Dirección y correo de contacto: [pendientes].
 
 ---
 
