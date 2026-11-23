@@ -36,13 +36,13 @@ La carga del material normalmente la hace el personal de la ferretería. FleteYa
 No se transportan artículos ilegales, armas, explosivos, sustancias peligrosas ni animales vivos.
 
 ## 8. Cancelaciones
-[Política de cancelación: si se cobra algo cuando el motorista ya va en camino — pendiente]
+Como el viaje se paga **en efectivo al terminarlo**, cancelar **no tiene ningún costo** para usted. Le pedimos cancelar lo antes posible, sobre todo si el motorista ya va en camino, para no hacerlo perder el tiempo ni el combustible.
 
 ## 9. Datos personales
 El uso de sus datos se explica en el [Aviso de Privacidad](aviso-privacidad.md).
 
 ## 10. Contacto y soporte
-Correo de soporte: appferre26@gmail.com. [Teléfono / WhatsApp — pendientes]
+Correo de soporte: appferre26@gmail.com · WhatsApp: +503 6296-4390
 
 ---
 

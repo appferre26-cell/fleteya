@@ -33,12 +33,12 @@ El vehículo puede ser propio, prestado o alquilado. El motorista se compromete 
 
 ## 5. Créditos y comisión
 5.1. **Acceso a la plataforma:** para dar de alta su perfil, el motorista paga una sola vez **$10.00**. Este pago no se convierte en créditos y **no es reembolsable** una vez activada la cuenta.
-5.1.1. **Recargas:** para recibir viajes, el motorista debe tener créditos. No hay planes: el motorista recarga **el monto que quiera** (desde $1.00). Las recargas y el acceso se pagan **por transferencia a la cuenta bancaria de FleteYa** (cuyos datos se muestran en la app) **o en efectivo** al equipo de FleteYa; más adelante también **en línea con tarjeta** [proveedor de pagos pendiente: Wompi]. Solo se aceptan pagos a esa cuenta, entregados en persona al equipo de FleteYa o por el medio de pago en línea de la app.
-5.1.2. **Factura:** por el acceso y por cada recarga FleteYa emite el documento tributario que corresponda: factura de consumidor final o, si el motorista lo pide y da su NIT, NRC, nombre o razón social, giro y dirección, **comprobante de crédito fiscal**. [Pendiente: facturación electrónica (DTE) a partir del registro de la empresa.] Mientras tanto, la app entrega un comprobante interno de pago.
+5.1.1. **Recargas:** para recibir viajes, el motorista debe tener créditos. No hay planes: el motorista recarga **el monto que quiera** (desde $1.00). Las recargas y el acceso se pagan **por transferencia a la cuenta bancaria de FleteYa** (cuyos datos se muestran en la app) **o en efectivo** al equipo de FleteYa. Solo se aceptan pagos a esa cuenta o entregados en persona al equipo de FleteYa.
+5.1.2. **Factura:** por el acceso y por cada recarga, la **facturación la lleva el contador de FleteYa**, que emite el documento tributario que corresponda: factura de consumidor final o, si el motorista lo pide y da su NIT, NRC, nombre o razón social, giro y dirección, **comprobante de crédito fiscal**. La app no emite facturas; entrega un comprobante interno de pago y los datos fiscales se pasan al contador para la facturación.
 5.2. Por cada viaje completado, FleteYa descuenta de sus créditos el **13.5% del valor del viaje** como comisión.
 5.3. Cuando sus créditos llegan a $0, el motorista no puede recibir viajes nuevos hasta que recargue.
 5.4. Si el saldo no alcanza para cubrir la comisión de un viaje, la app le permite terminarlo. La diferencia queda como saldo negativo y se descuenta de su siguiente recarga.
-5.5. Los créditos [no son reembolsables / política de reembolso pendiente].
+5.5. Los créditos **no se reembolsan de forma automática**. Si un viaje se cancela o hay algún cobro que no corresponde, el motorista debe **comunicarse con soporte**, que revisa el caso y, si procede, le devuelve los créditos a su saldo.
 
 ## 6. Precio de los viajes
 6.1. La app calcula el precio con la tarifa vigente: **$10 por tonelada**, proporcional al peso, con un mínimo de **$10**. El precio incluye hasta **5 km** desde el punto de salida.
@@ -73,7 +73,7 @@ El uso de los datos del motorista se explica en el [Aviso de Privacidad](aviso-p
 FleteYa puede actualizar estos términos. Cuando haya cambios, la app le pedirá al motorista que los acepte de nuevo para seguir usándola.
 
 ## 13. Contacto
-Correo de soporte: appferre26@gmail.com. [Teléfono / WhatsApp — pendientes]
+Correo de soporte: appferre26@gmail.com · WhatsApp: +503 6296-4390
 
 ---
 
