@@ -13,7 +13,6 @@ export default function InstalarMotorista() {
   const [so, setSo] = useState<"android" | "ios" | "otro">("otro");
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [instalada, setInstalada] = useState(false);
-  const [link, setLink] = useState("");
 
   useEffect(() => {
     const ua = navigator.userAgent || "";
@@ -27,8 +26,6 @@ export default function InstalarMotorista() {
       // @ts-expect-error iOS Safari
       window.navigator.standalone === true;
     setInstalada(standalone);
-
-    setLink(window.location.origin + "/motorista/instalar");
 
     const onPrompt = (e: Event) => {
       e.preventDefault();
@@ -45,9 +42,6 @@ export default function InstalarMotorista() {
     await prompt.userChoice.catch(() => {});
     setPrompt(null);
   }
-
-  const mensajeWsp = `¡Hola! 🚚 Te comparto FleteYa para motoristas.\n\nInstala la app en tu teléfono desde aquí y empieza a recibir viajes:\n${link}\n\nEs rápido: abres el enlace y tocas "Instalar". ¡No necesitas descargar nada de ninguna tienda!`;
-  const wspHref = `https://wa.me/?text=${encodeURIComponent(mensajeWsp)}`;
 
   return (
     <main className="flex min-h-dvh flex-col px-5 pt-8 pb-10">
@@ -120,21 +114,6 @@ export default function InstalarMotorista() {
           </div>
         </>
       )}
-
-      {/* Compartir por WhatsApp */}
-      <div className="tarjeta mt-8 p-4">
-        <p className="text-sm font-semibold">¿Conoces a otro motorista?</p>
-        <p className="mt-1 text-xs text-suave">Mándale el enlace de instalación por WhatsApp con el mensaje ya listo.</p>
-        <a
-          href={wspHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          data-testid="btn-wsp"
-          className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-3xl bg-[#25D366] px-5 text-sm font-extrabold text-[#0a2b16] hover:brightness-95"
-        >
-          <i className="fa-brands fa-whatsapp text-lg" /> Compartir por WhatsApp
-        </a>
-      </div>
 
       {/* Ir a entrar / registro */}
       <div className="mt-auto pt-8">
