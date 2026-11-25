@@ -1,6 +1,6 @@
 # Términos y Condiciones para Motoristas — FleteYa
 
-> **BORRADOR (versión 0.2).** Este documento no es asesoría legal. Debe revisarlo un abogado de El Salvador antes de publicarlo. Los textos entre [corchetes] están pendientes de completar.
+> **BORRADOR (versión 0.2).** Este documento no es asesoría legal. Debe revisarlo un abogado de El Salvador antes de publicarlo.
 
 **Última actualización:** 22 de noviembre de 2026
 **Responsable:** FleteYa es un nombre comercial operado por **Jorge Luis Sánchez López**, persona natural inscrita como contribuyente de IVA en El Salvador, NIT **05049173-0**, NRC **365259-3**. Dirección: Colonia Villas de San Juan, Pasaje B, Casa 4, Calle Tabacalera, Lourdes Colón, distrito de Colón, municipio de La Libertad Oeste, departamento de La Libertad. Correo de contacto: appferre26@gmail.com.
