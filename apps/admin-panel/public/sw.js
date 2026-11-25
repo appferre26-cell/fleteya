@@ -1,7 +1,14 @@
-// FleteYa · avisos con la app cerrada (Parte 8).
-// Solo muestra avisos y abre la pantalla correcta al tocarlos; no guarda páginas en caché.
+// FleteYa · avisos con la app cerrada + instalación PWA (Parte 11).
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
+
+// Manejador de red: Chrome EXIGE que el service worker tenga un evento "fetch"
+// para considerar la app instalable (si no, nunca dispara el instalador automático).
+// No guardamos nada en caché: solo dejamos pasar las peticiones a la red.
+self.addEventListener("fetch", (e) => {
+  if (e.request.method !== "GET") return;
+  e.respondWith(fetch(e.request).catch(() => Response.error()));
+});
 
 self.addEventListener("push", (e) => {
   let d = {};

@@ -8,5 +8,9 @@
   "background_color": "#121212",
   "theme_color": "#121212",
   "lang": "es",
-  "icons": [{ "src": "/icono.png", "sizes": "512x512", "type": "image/png" }]
+  "icons": [
+    { "src": "/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icono.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icono.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
 }
