@@ -42,7 +42,7 @@ Como el viaje se paga **en efectivo al terminarlo**, cancelar **no tiene ningún
 El uso de sus datos se explica en el [Aviso de Privacidad](aviso-privacidad.md).
 
 ## 10. Contacto y soporte
-Correo de soporte: appferre26@gmail.com · WhatsApp: +503 6296-4390
+Correo de soporte: appferre26@gmail.com · WhatsApp: +503 7687-8956
 
 ---
 

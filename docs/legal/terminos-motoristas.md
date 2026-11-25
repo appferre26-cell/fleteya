@@ -73,7 +73,7 @@ El uso de los datos del motorista se explica en el [Aviso de Privacidad](aviso-p
 FleteYa puede actualizar estos términos. Cuando haya cambios, la app le pedirá al motorista que los acepte de nuevo para seguir usándola.
 
 ## 13. Contacto
-Correo de soporte: appferre26@gmail.com · WhatsApp: +503 6296-4390
+Correo de soporte: appferre26@gmail.com · WhatsApp: +503 7687-8956
 
 ---
 
