@@ -18,7 +18,7 @@ type LandingConfigDatos = {
 
 export const landingConfig: LandingConfigDatos = {
   // Número de WhatsApp SIN el +503, solo los 8 dígitos. Ej.: "7777-7777" o "77777777".
-  whatsapp: "", // RELLENAR CUANDO TENGAN EL NÚMERO
+  whatsapp: "7687-8956", // WhatsApp de soporte de FleteYa
 
   // URLs completas de las redes sociales (incluyendo https://). Ej.: "https://facebook.com/fleteya".
   facebook: "", // RELLENAR CUANDO TENGAN LA PÁGINA
