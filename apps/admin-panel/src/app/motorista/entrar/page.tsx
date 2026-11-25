@@ -19,7 +19,10 @@ export default async function EntrarMotorista() {
         <p className="mt-2 text-sm text-suave">Usa tu número de teléfono y tu contraseña.</p>
       </div>
       <FormEntrar />
-      <Link href="/motorista/registro" className="tarjeta mt-auto flex items-center gap-3 p-4 text-xs leading-relaxed text-suave hover:border-naranja" data-testid="ir-registro">
+      <Link href="/motorista/instalar" className="mt-auto mb-3 inline-flex items-center justify-center gap-2 text-xs font-semibold text-suave hover:text-naranja" data-testid="ir-instalar">
+        <i className="fa-solid fa-mobile-screen-button text-naranja" /> Instalar FleteYa en tu teléfono
+      </Link>
+      <Link href="/motorista/registro" className="tarjeta flex items-center gap-3 p-4 text-xs leading-relaxed text-suave hover:border-naranja" data-testid="ir-registro">
         <i className="fa-solid fa-user-plus text-base text-naranja" />
         <p className="flex-1"><span className="font-semibold text-texto">¿Eres motorista nuevo? Regístrate aquí.</span> Sube tus datos y fotos y paga {dinero(cfg.precioAcceso)} de acceso (una sola vez).</p>
         <i className="fa-solid fa-chevron-right" />
