@@ -20,6 +20,7 @@ export default function InstalarMotorista() {
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [instalada, setInstalada] = useState(false);
   const [ayuda, setAyuda] = useState(false); // muestra los pasos manuales si no hay instalador automático
+  const [preparando, setPreparando] = useState(false); // esperando a que Chrome habilite el instalador
 
   useEffect(() => {
     const ua = navigator.userAgent || "";
@@ -34,6 +35,15 @@ export default function InstalarMotorista() {
       window.navigator.standalone === true;
     setInstalada(standalone);
 
+    // Registrar el service worker AQUÍ mismo: es uno de los requisitos para que Chrome
+    // ofrezca instalar. Antes solo se registraba al entrar con sesión, así que la primera
+    // vez desde el QR Chrome aún no consideraba la página "instalable".
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistration("/").then((r) => {
+        if (!r) navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
+      });
+    }
+
     // 1) El script del layout pudo capturar el evento ANTES de que React montara
     //    (al escanear el QR, Chrome lo dispara muy temprano). Lo tomamos de window.
     if (window.__fyInstallPrompt) setPrompt(window.__fyInstallPrompt);
@@ -45,6 +55,7 @@ export default function InstalarMotorista() {
     // 3) Por si el evento del navegador llega directo a esta página.
     const onPrompt = (e: Event) => {
       e.preventDefault();
+      window.__fyInstallPrompt = e as Prompt;
       setPrompt(e as Prompt);
     };
     const onInstalled = () => {
@@ -61,16 +72,61 @@ export default function InstalarMotorista() {
     };
   }, []);
 
+  // Espera a que llegue el instalador de Chrome (hasta `ms` milisegundos).
+  // Devuelve el instalador en cuanto esté listo, o null si no llega a tiempo.
+  function esperarInstalador(ms: number): Promise<Prompt | null> {
+    return new Promise((resolve) => {
+      if (window.__fyInstallPrompt) return resolve(window.__fyInstallPrompt);
+      let listo = false;
+      const terminar = (p: Prompt | null) => {
+        if (listo) return;
+        listo = true;
+        window.removeEventListener("fy-install-ready", onReady);
+        window.removeEventListener("beforeinstallprompt", onBip);
+        clearTimeout(t);
+        resolve(p);
+      };
+      const onReady = () => terminar(window.__fyInstallPrompt ?? null);
+      const onBip = (e: Event) => {
+        e.preventDefault();
+        window.__fyInstallPrompt = e as Prompt;
+        terminar(e as Prompt);
+      };
+      window.addEventListener("fy-install-ready", onReady);
+      window.addEventListener("beforeinstallprompt", onBip);
+      const t = setTimeout(() => terminar(window.__fyInstallPrompt ?? null), ms);
+    });
+  }
+
+  async function lanzar(p: Prompt) {
+    await p.prompt();
+    await p.userChoice.catch(() => {});
+    setPrompt(null);
+    window.__fyInstallPrompt = null;
+  }
+
   async function instalar() {
     // Si el navegador ya nos dio el instalador automático, lo lanzamos.
     if (prompt) {
-      await prompt.prompt();
-      await prompt.userChoice.catch(() => {});
-      setPrompt(null);
-      window.__fyInstallPrompt = null;
+      await lanzar(prompt);
       return;
     }
-    // Si no (iPhone, o Chrome aún no lo habilita), mostramos los pasos manuales.
+    // En iPhone no hay instalador automático: directo a los pasos manuales.
+    if (so === "ios") {
+      setAyuda(true);
+      document.getElementById("pasos-instalar")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    // Android/otros: Chrome puede tardar un par de segundos en habilitar el instalador.
+    // Esperamos a que llegue (mostrando "Preparando…") en vez de rendirnos al instante.
+    setPreparando(true);
+    const p = await esperarInstalador(6000);
+    setPreparando(false);
+    if (p) {
+      await lanzar(p);
+      return;
+    }
+    // Si de verdad no llegó, mostramos los pasos manuales.
     setAyuda(true);
     document.getElementById("pasos-instalar")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -104,12 +160,25 @@ export default function InstalarMotorista() {
           {/* Botón de instalación SIEMPRE visible.
               - Android con instalador listo: lanza el instalador automático.
               - iPhone o Chrome sin instalador aún: abre los pasos manuales de abajo. */}
-          <button onClick={instalar} className="btn-primario mt-8 h-14 text-base" data-testid="btn-instalar">
-            <i className="fa-solid fa-download" /> {prompt ? "Instalar FleteYa ahora" : "Instalar FleteYa"}
+          <button
+            onClick={instalar}
+            disabled={preparando}
+            className="btn-primario mt-8 h-14 text-base disabled:opacity-70"
+            data-testid="btn-instalar"
+          >
+            {preparando ? (
+              <>
+                <i className="fa-solid fa-spinner fa-spin" /> Preparando instalación…
+              </>
+            ) : (
+              <>
+                <i className="fa-solid fa-download" /> {prompt ? "Instalar FleteYa ahora" : "Instalar FleteYa"}
+              </>
+            )}
           </button>
-          {!prompt && (
+          {!prompt && !preparando && (
             <p className="mt-2 text-center text-xs text-suave">
-              Toca el botón y te muestro los pasos para tu teléfono.
+              Toca el botón para instalarla en tu teléfono.
             </p>
           )}
 
