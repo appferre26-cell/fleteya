@@ -21,7 +21,7 @@ export const landingConfig: LandingConfigDatos = {
   whatsapp: "7687-8956", // WhatsApp de soporte de FleteYa
 
   // URLs completas de las redes sociales (incluyendo https://). Ej.: "https://facebook.com/fleteya".
-  facebook: "", // RELLENAR CUANDO TENGAN LA PÁGINA
+  facebook: "https://www.facebook.com/share/1FndDUU6A7/", // Página oficial FleteYa
   instagram: "", // RELLENAR CUANDO TENGAN LA CUENTA
   tiktok: "", // RELLENAR CUANDO TENGAN LA CUENTA
 
