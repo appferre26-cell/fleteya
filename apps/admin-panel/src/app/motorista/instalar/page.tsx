@@ -9,10 +9,17 @@ import { Logo } from "@/components/Logo";
 
 type Prompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
+declare global {
+  interface Window {
+    __fyInstallPrompt?: Prompt | null;
+  }
+}
+
 export default function InstalarMotorista() {
   const [so, setSo] = useState<"android" | "ios" | "otro">("otro");
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [instalada, setInstalada] = useState(false);
+  const [ayuda, setAyuda] = useState(false); // muestra los pasos manuales si no hay instalador automático
 
   useEffect(() => {
     const ua = navigator.userAgent || "";
@@ -27,20 +34,45 @@ export default function InstalarMotorista() {
       window.navigator.standalone === true;
     setInstalada(standalone);
 
+    // 1) El script del layout pudo capturar el evento ANTES de que React montara
+    //    (al escanear el QR, Chrome lo dispara muy temprano). Lo tomamos de window.
+    if (window.__fyInstallPrompt) setPrompt(window.__fyInstallPrompt);
+
+    // 2) Avisos de ese script cuando el evento llega después de montar.
+    const onReady = () => {
+      if (window.__fyInstallPrompt) setPrompt(window.__fyInstallPrompt);
+    };
+    // 3) Por si el evento del navegador llega directo a esta página.
     const onPrompt = (e: Event) => {
       e.preventDefault();
       setPrompt(e as Prompt);
     };
+    const onInstalled = () => {
+      setPrompt(null);
+      setInstalada(true);
+    };
+    window.addEventListener("fy-install-ready", onReady);
     window.addEventListener("beforeinstallprompt", onPrompt);
-    window.addEventListener("appinstalled", () => setPrompt(null));
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("fy-install-ready", onReady);
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
   }, []);
 
   async function instalar() {
-    if (!prompt) return;
-    await prompt.prompt();
-    await prompt.userChoice.catch(() => {});
-    setPrompt(null);
+    // Si el navegador ya nos dio el instalador automático, lo lanzamos.
+    if (prompt) {
+      await prompt.prompt();
+      await prompt.userChoice.catch(() => {});
+      setPrompt(null);
+      window.__fyInstallPrompt = null;
+      return;
+    }
+    // Si no (iPhone, o Chrome aún no lo habilita), mostramos los pasos manuales.
+    setAyuda(true);
+    document.getElementById("pasos-instalar")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
@@ -69,15 +101,23 @@ export default function InstalarMotorista() {
         </div>
       ) : (
         <>
-          {/* Botón de instalación directa (cuando el teléfono lo permite) */}
-          {prompt && (
-            <button onClick={instalar} className="btn-primario mt-8 h-14 text-base" data-testid="btn-instalar">
-              <i className="fa-solid fa-download" /> Instalar FleteYa ahora
-            </button>
+          {/* Botón de instalación SIEMPRE visible.
+              - Android con instalador listo: lanza el instalador automático.
+              - iPhone o Chrome sin instalador aún: abre los pasos manuales de abajo. */}
+          <button onClick={instalar} className="btn-primario mt-8 h-14 text-base" data-testid="btn-instalar">
+            <i className="fa-solid fa-download" /> {prompt ? "Instalar FleteYa ahora" : "Instalar FleteYa"}
+          </button>
+          {!prompt && (
+            <p className="mt-2 text-center text-xs text-suave">
+              Toca el botón y te muestro los pasos para tu teléfono.
+            </p>
           )}
 
           {/* Pasos según el teléfono */}
-          <div className="mt-8">
+          <div
+            id="pasos-instalar"
+            className={`mt-8 scroll-mt-4 rounded-2xl transition-shadow ${ayuda ? "ring-2 ring-naranja/60 p-3 -mx-3" : ""}`}
+          >
             <p className="seccion-titulo mb-3">
               {so === "ios" ? "En iPhone (Safari)" : so === "android" ? "En Android (Chrome)" : "Cómo instalarla"}
             </p>
