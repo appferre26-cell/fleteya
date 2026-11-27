@@ -73,6 +73,11 @@ export function FormRegistro({ precio }: { precio: string }) {
     startTransition(() => enviar(fd));
   }
 
+  // Rango para la fecha de vencimiento de la licencia: desde hoy hasta 20 años adelante,
+  // para que el calendario del teléfono permita elegir 2027, 2028 y más (no se quede en 2026).
+  const hoyISO = new Date().toISOString().slice(0, 10);
+  const maxVenceISO = (() => { const d = new Date(); d.setFullYear(d.getFullYear() + 20); return d.toISOString().slice(0, 10); })();
+
   const campo = (nombre: string, etiqueta: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}, ayuda?: string) => (
     <div>
       <label htmlFor={nombre} className="etiqueta">{etiqueta}</label>
@@ -108,7 +113,7 @@ export function FormRegistro({ precio }: { precio: string }) {
 
       <div className={`mt-4 space-y-4 ${visible(1)}`}>
         {campo("licenciaNumero", "Número de licencia", { placeholder: "Normalmente es el mismo del DUI" })}
-        {campo("licenciaVence", "Fecha de vencimiento", { type: "date" })}
+        {campo("licenciaVence", "Fecha de vencimiento", { type: "date", min: hoyISO, max: maxVenceISO })}
       </div>
 
       <div className={`mt-4 space-y-4 ${visible(2)}`}>

@@ -46,6 +46,10 @@ export function FormMotorista({ accion, inicial = {}, documentos = {}, fotoPerfi
     );
   }
 
+  // Rango amplio para el vencimiento de la licencia: hoy hasta 20 años adelante.
+  const hoyISO = new Date().toISOString().slice(0, 10);
+  const maxVenceISO = (() => { const d = new Date(); d.setFullYear(d.getFullYear() + 20); return d.toISOString().slice(0, 10); })();
+
   const campo = (nombre: string, etiqueta: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}, ayuda?: string) => (
     <div>
       <label htmlFor={nombre} className="etiqueta">{etiqueta}</label>
@@ -82,7 +86,7 @@ export function FormMotorista({ accion, inicial = {}, documentos = {}, fotoPerfi
         <h2 className="seccion-titulo">Licencia de conducir</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {campo("licenciaNumero", "Número de licencia", { placeholder: "Normalmente es el mismo del DUI" })}
-          {campo("licenciaVence", "Fecha de vencimiento", { type: "date" })}
+          {campo("licenciaVence", "Fecha de vencimiento", { type: "date", min: hoyISO, max: maxVenceISO })}
         </div>
       </section>
 
