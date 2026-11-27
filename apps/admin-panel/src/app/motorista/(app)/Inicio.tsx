@@ -7,7 +7,7 @@ import { avanzarViaje, calificarCliente, cambiarDisponible, soltarViaje, suscrib
 import { Calificar } from "@/components/Calificar";
 import { BotonAvisos } from "@/components/BotonAvisos";
 import { activarAvisos } from "@/lib/avisos-navegador";
-import { notificar, prepararSonido, sonarAlerta } from "./alerta";
+import { desbloquearConToque, notificar, prepararSonido, sonarAlerta } from "./alerta";
 import { ListaCarga, Ruta, TarjetaSolicitud, type Sol } from "./Solicitud";
 
 const SEGUNDOS_ALERTA = 30;
@@ -50,6 +50,10 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
       setSinInternet(false);
     } catch { setSinInternet(true); }
   }, []);
+
+  // Desbloquea el sonido de alerta con el primer toque en cualquier parte de la pantalla
+  // (los navegadores móviles no dejan sonar hasta que el usuario interactúa una vez).
+  useEffect(() => desbloquearConToque(), []);
 
   // Pregunta al servidor cada 5 s (más rápido que esto no hace falta y gasta datos).
   useEffect(() => {

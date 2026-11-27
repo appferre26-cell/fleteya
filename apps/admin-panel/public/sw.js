@@ -20,6 +20,7 @@ self.addEventListener("push", (e) => {
     badge: "/icono.png",
     tag: d.tag || "fleteya",
     renotify: true,
+    silent: false, // explícito: que suene con el tono del sistema (no en silencio)
     requireInteraction: !!d.urgente,
     vibrate: d.urgente ? [400, 150, 400, 150, 600] : [200, 100, 200],
     data: { url: d.url || "/" },
