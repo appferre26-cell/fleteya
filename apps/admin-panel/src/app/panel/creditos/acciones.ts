@@ -61,6 +61,7 @@ export async function registrarRecargaAccion(_: EstadoForm, form: FormData): Pro
   }
   if (conCorreo) await enviarReciboPorCorreo(numero); // si falla, el recibo muestra el error y se puede reenviar
   revalidatePath("/panel", "layout");
+  revalidatePath("/motorista", "layout"); // que el saldo nuevo se vea también en la app del motorista
   redirect(`/panel/creditos/recibo/${numero}?nuevo=1`);
 }
 
@@ -99,6 +100,7 @@ export async function anularRecargaAccion(id: string, _: EstadoForm, form: FormD
   try {
     const r = await anularRecarga(id, p.id, motivo);
     revalidatePath("/panel", "layout");
+    revalidatePath("/motorista", "layout"); // el saldo corregido también se ve en la app del motorista
     return { ok: `${numeroRecibo(r.numero)} anulado. El saldo del motorista quedó en ${dinero(r.saldoDespues)}.` };
   } catch (e) {
     if (e instanceof ErrorRecarga) return { error: e.message };
