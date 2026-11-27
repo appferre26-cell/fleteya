@@ -91,7 +91,13 @@ export const esquemaMotorista = z.object({
     .string()
     .refine((v) => /^\d{4}-\d{2}-\d{2}$/.test(v), "Elige la fecha de vencimiento")
     .transform((v) => new Date(`${v}T00:00:00Z`)),
-  placa: z.string().transform(normalizarPlaca).refine((p) => /^[A-Z]{1,3}[ -]?[0-9][0-9 -]{2,8}$/.test(p), "Placa no válida (ej. P 123-456)"),
+  placa: z.string().transform(normalizarPlaca).refine(
+    (p) => {
+      const limpia = p.replace(/[ -]/g, "");
+      return /^[A-Z0-9]{3,12}$/.test(limpia) && /[0-9]/.test(limpia);
+    },
+    "Escribe la placa del vehículo (ej. P 123-456, C 1234-567, M 12345)",
+  ),
   marca: texto(2, 40, "Escribe la marca"),
   modelo: texto(1, 40, "Escribe el modelo"),
   tipoVehiculo: z.enum(["PICKUP", "CAMION_LIVIANO", "CAMION_MEDIANO_GRANDE"], { message: "Elige el tipo de vehículo" }),
