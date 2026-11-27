@@ -332,6 +332,11 @@ export function Inicio({ inicial, claveAvisos = null }: { inicial: DatosInicio; 
                 <i className="fa-solid fa-power-off" /><span className="flex-1">{m.disponible ? "DISPONIBLE" : "NO DISPONIBLE"}</span>
                 <span className={`flex h-8 w-14 items-center rounded-full p-1 ${m.disponible ? "justify-end bg-fondo/25" : "justify-start bg-tarjeta-2"}`}><span className="h-6 w-6 rounded-full bg-white" /></span>
               </button>
+              <button type="button" data-testid="probar-aviso"
+                onClick={() => { prepararSonido(); sonarAlerta(); setAviso({ texto: "Si no sonó ni vibró: sube el volumen, quita el modo silencio/No molestar y vuelve a tocar.", tipo: "ok" }); }}
+                className="btn-secundario mt-3 h-11 w-full text-sm">
+                <i className="fa-solid fa-bell" />Probar aviso (sonido y vibración)
+              </button>
               {m.disponible && (
                 <div className="mt-4">
                   <BotonAvisos key={vAvisos} clave={claveAvisos} modo="motorista" ocultarSiActivo titulo="Recibe pedidos con la app cerrada"
