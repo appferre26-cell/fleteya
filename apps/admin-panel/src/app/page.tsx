@@ -152,7 +152,7 @@ export default async function Landing({ searchParams }: { searchParams: Promise<
             </Paso>
             <Paso n={3} icono="fa-sack-dollar" titulo="Aceptas, entregas y ganas">
               <p className="mt-1 text-sm leading-relaxed text-suave">
-                Al aceptar un viaje se descuenta de tus créditos una comisión del <span className="font-bold text-texto">13.5%</span>. Lo demás es tuyo.
+                Al aceptar un viaje se descuenta de tus créditos una comisión del <span className="font-bold text-texto">10%</span>. Lo demás es tuyo.
               </p>
             </Paso>
           </ol>
